@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien\util">
+      <UniqueIdentifier>{fc5a61f3-8bf2-4def-a229-30eb8b7f98f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\cam">
+      <UniqueIdentifier>{5d186e00-6da4-4ad1-bf70-a1790c3e8448}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\cam">
+      <UniqueIdentifier>{51d35913-5b2f-4e7e-8167-849ec8b1e71d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\util">
+      <UniqueIdentifier>{cad42936-de66-411a-badb-33754b086fd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\material">
+      <UniqueIdentifier>{4d8bb401-9763-401f-83ce-c71519513621}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\material">
+      <UniqueIdentifier>{e59c79fb-0896-42a6-8b80-4fc76616fe04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\shapes">
+      <UniqueIdentifier>{7df46997-a85d-4318-8da3-d085a86b988d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\shapes">
+      <UniqueIdentifier>{06c1bab3-8cb6-4a4b-ab45-daa5d094fa8e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Testing.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="CamObs.h">
+      <Filter>Headerdateien\cam</Filter>
+    </ClInclude>
+    <ClInclude Include="Ray.h">
+      <Filter>Headerdateien\cam</Filter>
+    </ClInclude>
+    <ClInclude Include="Image.h">
+      <Filter>Headerdateien\util</Filter>
+    </ClInclude>
+    <ClInclude Include="Mat4.h">
+      <Filter>Headerdateien\util</Filter>
+    </ClInclude>
+    <ClInclude Include="Vec3.h">
+      <Filter>Headerdateien\util</Filter>
+    </ClInclude>
+    <ClInclude Include="Hit.h">
+      <Filter>Headerdateien\cam</Filter>
+    </ClInclude>
+    <ClInclude Include="Sampler.h">
+      <Filter>Headerdateien\util</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Headerdateien\material</Filter>
+    </ClInclude>
+    <ClInclude Include="Constant.h">
+      <Filter>Headerdateien\material</Filter>
+    </ClInclude>
+    <ClInclude Include="Transformation.h">
+      <Filter>Headerdateien\util</Filter>
+    </ClInclude>
+    <ClInclude Include="BackgroundMaterial.h">
+      <Filter>Headerdateien\material</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Group.h">
+      <Filter>Headerdateien\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="Shape.h">
+      <Filter>Headerdateien\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="Background.h">
+      <Filter>Headerdateien\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="CirclePlane.h">
+      <Filter>Headerdateien\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="DiffuseMaterial.h">
+      <Filter>Headerdateien\material</Filter>
+    </ClInclude>
+    <ClInclude Include="StratifiedSampler.h">
+      <Filter>Headerdateien\util</Filter>
+    </ClInclude>
+    <ClInclude Include="GridSampler.h">
+      <Filter>Headerdateien\util</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Hit.cpp">
+      <Filter>Quelldateien\cam</Filter>
+    </ClCompile>
+    <ClCompile Include="CamObs.cpp">
+      <Filter>Quelldateien\cam</Filter>
+    </ClCompile>
+    <ClCompile Include="Ray.cpp">
+      <Filter>Quelldateien\cam</Filter>
+    </ClCompile>
+    <ClCompile Include="Image.cpp">
+      <Filter>Quelldateien\util</Filter>
+    </ClCompile>
+    <ClCompile Include="Mat4.cpp">
+      <Filter>Quelldateien\util</Filter>
+    </ClCompile>
+    <ClCompile Include="Vec3.cpp">
+      <Filter>Quelldateien\util</Filter>
+    </ClCompile>
+    <ClCompile Include="Testing.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Constant.cpp">
+      <Filter>Quelldateien\material</Filter>
+    </ClCompile>
+    <ClCompile Include="Transformation.cpp">
+      <Filter>Quelldateien\util</Filter>
+    </ClCompile>
+    <ClCompile Include="BackgroundMaterial.cpp">
+      <Filter>Quelldateien\material</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Group.cpp">
+      <Filter>Quelldateien\shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="Background.cpp">
+      <Filter>Quelldateien\shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="CirclePlane.cpp">
+      <Filter>Quelldateien\shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="DiffuseMaterial.cpp">
+      <Filter>Quelldateien\material</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Quelldateien\material</Filter>
+    </ClCompile>
+    <ClCompile Include="StratifiedSampler.cpp">
+      <Filter>Quelldateien\util</Filter>
+    </ClCompile>
+    <ClCompile Include="GridSampler.cpp">
+      <Filter>Quelldateien\util</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

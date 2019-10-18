@@ -1,0 +1,6 @@
+﻿  Main.cpp
+C:\Users\ydb19\source\repos\RayTracer\RayTracer\Main.cpp(80,28): warning C4244:  "=": Konvertierung von "float" in "char", möglicher Datenverlust
+C:\Users\ydb19\source\repos\RayTracer\RayTracer\Main.cpp(81,30): warning C4244:  "=": Konvertierung von "float" in "char", möglicher Datenverlust
+C:\Users\ydb19\source\repos\RayTracer\RayTracer\Main.cpp(82,29): warning C4244:  "=": Konvertierung von "float" in "char", möglicher Datenverlust
+C:\Users\ydb19\source\repos\RayTracer\RayTracer\Main.cpp(133,39): warning C4305:  "Argument": Verkürzung von "double" in "float"
+  RayTracer.vcxproj -> C:\Users\ydb19\source\repos\RayTracer\Debug\RayTracer.exe
