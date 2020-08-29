@@ -1,10 +1,11 @@
 #pragma once
-#include "Hit.h"
-#include "Ray.h"
+
+#include "../camera/Hit.h"
+#include "../camera/Ray.h"
 
 namespace shapes {
-	class Shape {
-	public:
-		virtual std::shared_ptr<cam::Hit> intersect (const cam::Ray& r) = 0;
-	};
+class Shape {
+public:
+    virtual std::shared_ptr<cam::Hit> intersect(const cam::Ray& r) = 0;
+};
 }

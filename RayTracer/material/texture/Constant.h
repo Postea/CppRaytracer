@@ -1,17 +1,16 @@
 #pragma once
 
-#include "Vec3.h"
-#include "Sampler.h"
+#include "../../sampling/Sampler.h"
+#include "../../tools/Vec3.h"
 
 namespace material {
-	class Constant : public util::Sampler
-	{
-	private:
-		const util::Vec3 color_;
-	public:
-		Constant (const util::Vec3& color);
+class Constant : public util::Sampler {
+private:
+    const util::Vec3 color_;
 
-		util::Vec3 color (float x, float y) const override;
-	};
+public:
+    Constant(const util::Vec3& color);
+
+    util::Vec3 color(float x, float y) const override;
+};
 }
-
