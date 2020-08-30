@@ -6,6 +6,7 @@
 #include "sampling/Scene.h"
 #include "shape/Background.h"
 #include "shape/CirclePlane.h"
+#include "shape/Sphere.h"
 #include "testing/Testing.h"
 #include "tools/Mat4.h"
 #include <fstream>
@@ -22,8 +23,8 @@ using namespace std;
 void writeBmp(const char* filename, Image img)
 {
 
-    int width = img.width_; // Width of the image
-    int height = img.height_; // Height of the image
+    int width = img.width; // Width of the image
+    int height = img.height; // Height of the image
 
     int horizontalBytes; // Horizontal bytes to add, so the pixelarrays width is a multiple of 4
     horizontalBytes = 4 - ((width * 3) % 4);
@@ -119,6 +120,7 @@ void printBits(void const* const ptr, size_t const size)
 
 int main()
 {
+    cout << "Start" << endl;
     //Image img = Image (100, 100);
 
     Mat4 ident;
@@ -126,23 +128,30 @@ int main()
     //Mat4 group22Mat = rotate (Vec3 (1, 0, 0), 0);
     CamObs obs(camm, M_PI / 2, 500, 500);
     shared_ptr<Group> group = make_shared<Group>(ident);
-    shared_ptr<Group> group2 = make_shared<Group>(ident);
 
     BackgroundMaterial bg_colo(Vec3(1, 1, 1));
     Background bg(make_shared<BackgroundMaterial>(bg_colo));
 
-    DiffuseMaterial circ_colo(Vec3(0, 0, 0.5));
+    shared_ptr<Group> circplane_group = make_shared<Group>(ident);
+    DiffuseMaterial circ_colo(Vec3(0, 1, 0.5));
     CirclePlane circ(10, make_shared<DiffuseMaterial>(circ_colo));
+    circplane_group->add(make_shared<CirclePlane>(circ));
+
+    shared_ptr<Group> sphere_group = make_shared<Group>(translate(Vec3(0, 1, 0)));
+    DiffuseMaterial sphere_colo(Vec3(1, 0, 0));
+    Sphere sphere(0.5, make_shared<DiffuseMaterial>(sphere_colo));
+    sphere_group->add(make_shared<Sphere>(sphere));
 
     group->add(make_shared<Background>(bg));
-    group->add(group2);
-    group2->add(make_shared<CirclePlane>(circ));
+    group->add(circplane_group);
+    group->add(sphere_group);
 
-    auto sc = std::make_shared<Scene>(Scene(group, obs, 2));
+    auto sc = std::make_shared<Scene>(Scene(group, obs, 3));
 
-    size_t n = 1;
+    size_t n = 20;
+    cout << "Start render" << endl;
     Image img = raytrace(obs, sc, n * n);
-    //img.setPixels (std::make_shared<Scene> (sc));
-
+    cout << "Start imaging" << endl;
     writeBmp("results/test.bmp", img);
+    cout << "End" << endl;
 };
