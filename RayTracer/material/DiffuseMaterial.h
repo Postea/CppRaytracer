@@ -7,7 +7,7 @@
 namespace material {
 class DiffuseMaterial : public Material {
 public:
-    DiffuseMaterial(const std::shared_ptr<util::Sampler>& albedo, const std::shared_ptr<util::Sampler>& emission);
+    DiffuseMaterial(const std::shared_ptr<util::Sampler>& albedo_texture, const std::shared_ptr<util::Sampler>& emission_texture);
     DiffuseMaterial(const std::shared_ptr<util::Sampler>& albedo);
     DiffuseMaterial(const util::Vec3& color);
     bool scatter();
@@ -17,7 +17,7 @@ public:
     util::Vec3 scattered_d(const util::Vec3& d, const util::Vec3& n);
 
 private:
-    std::shared_ptr<util::Sampler> emission_;
-    std::shared_ptr<util::Sampler> albedo_;
+    std::shared_ptr<util::Sampler> emission_texture;
+    std::shared_ptr<util::Sampler> albedo_texture;
 };
 }

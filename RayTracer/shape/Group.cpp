@@ -16,7 +16,7 @@ Group::Group(const util::Mat4& matrix)
 
 std::shared_ptr<cam::Hit> Group::intersect(const cam::Ray& r)
 {
-    cam::Ray imagR(transform.fromWorld.transformPoint(r.x0_), transform.fromWorld.transformDir(r.d_), r.tmin_, r.tmax_, r.normalize_);
+    cam::Ray imagR(transform.fromWorld.transformPoint(r.x0), transform.fromWorld.transformDir(r.d), r.tmin, r.tmax, r.normalize);
 
     std::shared_ptr<cam::Hit> result;
 
@@ -25,13 +25,13 @@ std::shared_ptr<cam::Hit> Group::intersect(const cam::Ray& r)
         if (temp != nullptr) {
             if (result == nullptr) {
                 result = temp;
-            } else if (result->t_ > temp->t_) {
+            } else if (result->t > temp->t) {
                 result = temp;
             }
         }
     }
     if (result != nullptr) {
-        result = std::make_shared<cam::Hit>(cam::Hit(transform.toWorld.transformPoint(result->hit_), transform.toWorldN.transformDir(result->n_), result->t_, result->material_));
+        result = std::make_shared<cam::Hit>(cam::Hit(transform.toWorld.transformPoint(result->hit), transform.toWorldN.transformDir(result->n), result->t, result->material));
     }
     return result;
 }

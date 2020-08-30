@@ -14,9 +14,9 @@ public:
     bool scatter() const;
     //Attributes
     //TODO TexelPos
-    const util::Vec3 hit_, n_;
-    const float t_;
-    const std::shared_ptr<material::Material> material_;
+    const util::Vec3 hit, n;
+    const float t;
+    const std::shared_ptr<material::Material> material;
 };
 
 }

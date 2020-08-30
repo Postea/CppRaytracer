@@ -9,6 +9,6 @@ public:
     std::shared_ptr<cam::Hit> intersect(const cam::Ray& r);
 
 private:
-    std::shared_ptr<material::Material> material_;
+    std::shared_ptr<material::Material> material;
 };
 }

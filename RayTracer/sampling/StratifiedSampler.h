@@ -10,8 +10,8 @@ public:
     Vec3 color(float x, float y) const;
 
 private:
-    std::shared_ptr<Sampler> sampler_;
-    size_t n_;
+    std::shared_ptr<Sampler> sampler;
+    size_t n;
 };
 static std::random_device rd;
 static std::mt19937 gen(rd());

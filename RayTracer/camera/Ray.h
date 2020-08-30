@@ -12,8 +12,9 @@ public:
     //Methods
     bool in_range(float t) const;
 
-    util::Vec3 x0_, d_;
-    float tmin_, tmax_;
-    bool normalize_;
+    const util::Vec3 x0;
+    util::Vec3 d;
+    const float tmin, tmax;
+    const bool normalize;
 };
 }

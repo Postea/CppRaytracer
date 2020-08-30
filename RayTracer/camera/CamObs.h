@@ -11,10 +11,10 @@ public:
     //Methods
     Ray create(float x, float y) const;
     //Attributes
-    const int width_, height_;
+    const int width, height;
 
 private:
-    util::Mat4 mat_;
-    float theta_;
+    const util::Mat4 mat;
+    const float theta;
 };
 }

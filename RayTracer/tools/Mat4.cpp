@@ -3,17 +3,17 @@
 namespace util {
 //Constructor
 Mat4::Mat4(std::array<float, 16> arr)
-    : arr_(arr) {};
+    : arr(arr) {};
 Mat4::Mat4()
-    : arr_(identity().arr_) {};
+    : arr(identity().arr) {};
 //Operator
 float Mat4::operator[](std::array<int, 2> i) const
 {
-    return arr_[4 * i[0] + i[1]];
+    return arr[4 * i[0] + i[1]];
 }
 float& Mat4::operator[](std::array<int, 2> i)
 {
-    return arr_[4 * i[0] + i[1]];
+    return arr[4 * i[0] + i[1]];
 }
 Mat4 Mat4::operator*(const Mat4& rhs) const
 {
@@ -22,7 +22,7 @@ Mat4 Mat4::operator*(const Mat4& rhs) const
         for (int r = 0; r != 4; r++) {
             float v = 0;
             for (int k = 0; k != 4; k++)
-                v += arr_[4 * k + r] * rhs[{ c, k }];
+                v += arr[4 * k + r] * rhs[{ c, k }];
             n[{ c, r }] = v;
         }
     }
@@ -30,7 +30,7 @@ Mat4 Mat4::operator*(const Mat4& rhs) const
 }
 bool Mat4::operator==(const Mat4& rhs) const
 {
-    return arr_ == rhs.arr_;
+    return arr == rhs.arr;
 }
 bool Mat4::operator!=(const Mat4& rhs) const
 {
@@ -42,7 +42,7 @@ Mat4 Mat4::transpose() const
     Mat4 x;
     for (int c = 0; c != 4; c++) {
         for (int r = 0; r != 4; r++) {
-            x[{ c, r }] = arr_[4 * r + c];
+            x[{ c, r }] = arr[4 * r + c];
         }
     }
     return x;
@@ -71,8 +71,8 @@ Vec3 Mat4::position() const
 Mat4 Mat4::invertFull() const
 {
     Mat4 ret;
-    std::array<float, 16> mat(arr_);
-    std::array<float, 16> dst(ret.arr_);
+    std::array<float, 16> mat(arr);
+    std::array<float, 16> dst(ret.arr);
     std::array<float, 12> tmp;
 
     /* temparray for pairs */

@@ -30,11 +30,14 @@ public:
     bool operator==(const Vec3& rhs) const;
     bool operator!=(const Vec3& rhs) const;
     //Methods
+    float x() const;
+    float y() const;
+    float z() const;
     Vec3 normalize() const;
     float length() const;
 
 private:
-    std::array<float, 3> arr_;
+    std::array<float, 3> arr;
 };
 
 float dot(const Vec3 lhs, const Vec3 rhs);

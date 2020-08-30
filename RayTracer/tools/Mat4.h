@@ -27,7 +27,7 @@ public:
     Mat4 invertFull() const;
 
 private:
-    std::array<float, 16> arr_;
+    std::array<float, 16> arr;
 };
 
 Mat4 translate(Vec3 xyz);

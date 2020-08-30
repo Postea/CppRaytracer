@@ -4,20 +4,20 @@ namespace util {
 
 //Constructor
 Vec3::Vec3(std::array<float, 3> const& arr)
-    : arr_(arr)
+    : arr(arr)
 {
 }
 Vec3::Vec3(float x, float y, float z)
-    : arr_(std::array<float, 3>({ x, y, z }))
+    : arr(std::array<float, 3>({ x, y, z }))
 {
 }
 Vec3::Vec3()
-    : arr_(std::array<float, 3>({}))
+    : arr(std::array<float, 3>({}))
 {
 }
 //Operator
-float Vec3::operator[](int i) const { return arr_[i]; };
-float& Vec3::operator[](int i) { return arr_[i]; };
+float Vec3::operator[](int i) const { return arr[i]; };
+float& Vec3::operator[](int i) { return arr[i]; };
 Vec3 Vec3::operator-() const
 {
     Vec3 temp(*this);
@@ -63,38 +63,38 @@ Vec3 Vec3::operator/(const float div) const
 }
 void Vec3::operator-=(const Vec3& rhs)
 {
-    arr_[0] -= rhs[0];
-    arr_[1] -= rhs[1];
-    arr_[2] -= rhs[2];
+    arr[0] -= rhs[0];
+    arr[1] -= rhs[1];
+    arr[2] -= rhs[2];
 }
 void Vec3::operator+=(const Vec3& rhs)
 {
-    arr_[0] += rhs[0];
-    arr_[1] += rhs[1];
-    arr_[2] += rhs[2];
+    arr[0] += rhs[0];
+    arr[1] += rhs[1];
+    arr[2] += rhs[2];
 }
 void Vec3::operator*=(const Vec3& rhs)
 {
-    arr_[0] *= rhs[0];
-    arr_[1] *= rhs[1];
-    arr_[2] *= rhs[2];
+    arr[0] *= rhs[0];
+    arr[1] *= rhs[1];
+    arr[2] *= rhs[2];
 }
 void Vec3::operator*=(float s)
 {
-    arr_[0] *= s;
-    arr_[1] *= s;
-    arr_[2] *= s;
+    arr[0] *= s;
+    arr[1] *= s;
+    arr[2] *= s;
 }
 void Vec3::operator/=(const Vec3& rhs)
 {
-    arr_[0] /= rhs[0];
-    arr_[1] /= rhs[1];
-    arr_[2] /= rhs[2];
+    arr[0] /= rhs[0];
+    arr[1] /= rhs[1];
+    arr[2] /= rhs[2];
 }
 bool Vec3::operator==(const Vec3& rhs) const
 {
     for (int i = 0; i < 3; i++) {
-        if (arr_[i] != rhs[i]) {
+        if (arr[i] != rhs[i]) {
             return false;
         }
     }
@@ -112,7 +112,19 @@ Vec3 Vec3::normalize() const
 }
 float Vec3::length() const
 {
-    return sqrt(arr_[0] * arr_[0] + arr_[1] * arr_[1] + arr_[2] * arr_[2]);
+    return sqrt(arr[0] * arr[0] + arr[1] * arr[1] + arr[2] * arr[2]);
+}
+float Vec3::x() const
+{
+    return arr[0];
+}
+float Vec3::y() const
+{
+    return arr[1];
+}
+float Vec3::z() const
+{
+    return arr[2];
 }
 //Static
 float dot(const Vec3 lhs, const Vec3 rhs)

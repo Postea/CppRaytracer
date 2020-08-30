@@ -13,7 +13,7 @@ public:
     util::Vec3 calculateRadiance(const cam::Ray& r, size_t depth) const;
 
 private:
-    std::shared_ptr<shapes::Shape> group_;
-    cam::CamObs cam_;
-    size_t depth_;
+    std::shared_ptr<shapes::Shape> group;
+    cam::CamObs cam;
+    size_t depth;
 };

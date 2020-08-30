@@ -15,11 +15,11 @@ public:
     Vec3 operator[](const std::array<int, 2>& i) const; //int x, int y
     Vec3& operator[](const std::array<int, 2>& i);
 
-    const int width_;
-    const int height_;
+    const int width;
+    const int height;
 
 private:
-    std::vector<util::Vec3> vec_;
+    std::vector<util::Vec3> vec;
 };
 
 Image raytrace(const cam::CamObs& cam, const std::shared_ptr<Sampler>& sampler, size_t n);
