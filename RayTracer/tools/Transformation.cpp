@@ -2,9 +2,8 @@
 
 namespace util {
 util::Transformation::Transformation(Mat4 matrix)
-    : toWorld(matrix)
-    , fromWorld(matrix.invertFull())
-    , toWorldN(matrix.invertFull().transpose())
-{
+    : toWorld(matrix),
+      fromWorld(matrix.invertFull()),
+      toWorldN(matrix.invertFull().transpose()) {
 }
-}
+}  // namespace util

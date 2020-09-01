@@ -4,7 +4,7 @@
 
 namespace util {
 class Sampler {
-public:
-    virtual Vec3 color(float x, float y) const = 0;
+   public:
+	virtual Vec3 color(float x, float y) const = 0;
 };
-}
+}  // namespace util

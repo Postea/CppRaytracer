@@ -4,12 +4,12 @@
 
 namespace util {
 class GridSampler : public Sampler {
-public:
-    GridSampler(const std::shared_ptr<Sampler>& sampler, size_t n);
-    Vec3 color(float x, float y) const;
+   public:
+	GridSampler(const std::shared_ptr<Sampler>& sampler, size_t n);
+	Vec3 color(float x, float y) const;
 
-private:
-    std::shared_ptr<Sampler> sampler;
-    size_t n;
+   private:
+	std::shared_ptr<Sampler> sampler;
+	size_t n;
 };
-}
+}  // namespace util

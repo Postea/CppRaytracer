@@ -6,18 +6,19 @@
 
 namespace material {
 class DiffuseMaterial : public Material {
-public:
-    DiffuseMaterial(const std::shared_ptr<util::Sampler>& albedo_texture, const std::shared_ptr<util::Sampler>& emission_texture);
-    DiffuseMaterial(const std::shared_ptr<util::Sampler>& albedo);
-    DiffuseMaterial(const util::Vec3& color);
-    bool scatter();
+   public:
+	DiffuseMaterial(const std::shared_ptr<util::Sampler>& albedo_texture,
+	                const std::shared_ptr<util::Sampler>& emission_texture);
+	DiffuseMaterial(const std::shared_ptr<util::Sampler>& albedo);
+	DiffuseMaterial(const util::Vec3& color);
+	bool scatter();
 
-    util::Vec3 albedo(float texel_x, float texel_y);
-    util::Vec3 emission(float texel_x, float texel_y);
-    util::Vec3 scattered_d(const util::Vec3& d, const util::Vec3& n);
+	util::Vec3 albedo(float texel_x, float texel_y);
+	util::Vec3 emission(float texel_x, float texel_y);
+	util::Vec3 scattered_d(const util::Vec3& d, const util::Vec3& n);
 
-private:
-    std::shared_ptr<util::Sampler> emission_texture;
-    std::shared_ptr<util::Sampler> albedo_texture;
+   private:
+	std::shared_ptr<util::Sampler> emission_texture;
+	std::shared_ptr<util::Sampler> albedo_texture;
 };
-}
+}  // namespace material

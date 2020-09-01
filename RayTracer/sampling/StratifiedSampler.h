@@ -1,19 +1,20 @@
 #pragma once
 
-#include "Sampler.h"
 #include <random>
+
+#include "Sampler.h"
 
 namespace util {
 class StratifiedSampler : public Sampler {
-public:
-    StratifiedSampler(const std::shared_ptr<Sampler>& sampler, size_t n);
-    Vec3 color(float x, float y) const;
+   public:
+	StratifiedSampler(const std::shared_ptr<Sampler>& sampler, size_t n);
+	Vec3 color(float x, float y) const;
 
-private:
-    std::shared_ptr<Sampler> sampler;
-    size_t n;
+   private:
+	std::shared_ptr<Sampler> sampler;
+	size_t n;
 };
 static std::random_device rd;
 static std::mt19937 gen(rd());
 static std::uniform_real_distribution<> dis(0, 1.0);
-}
+}  // namespace util

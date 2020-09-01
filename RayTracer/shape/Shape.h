@@ -5,7 +5,7 @@
 
 namespace shapes {
 class Shape {
-public:
-    virtual std::shared_ptr<cam::Hit> intersect(const cam::Ray& r) = 0;
+   public:
+	virtual std::shared_ptr<cam::Hit> intersect(const cam::Ray& r) = 0;
 };
-}
+}  // namespace shapes
