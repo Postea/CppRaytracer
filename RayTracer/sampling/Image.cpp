@@ -1,5 +1,6 @@
 #include "Image.h"
 
+#include "../tools/Threadpool.h"
 #include "StratifiedSampler.h"
 
 namespace util {
@@ -9,10 +10,13 @@ Image::Image(int width, int height) : width(width), height(height) {
 		vec.insert(vec.end(), color);
 	}
 }
+void Image::setPixel(int x, int y, Vec3 color) {
+	vec[width * y + x] = color;
+}
 void Image::setPixels(std::shared_ptr<Sampler> sampler) {
 	for (int x = 0; x != width; x++) {
 		for (int y = 0; y != height; y++) {
-			vec[width * y + x] = sampler->color(x, y);
+			setPixel(x, y, sampler->color(x, y));
 		}
 	}
 }
