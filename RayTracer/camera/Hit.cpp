@@ -14,10 +14,10 @@ Ray Hit::scattered_ray(const Ray& inc_ray) const {
 	return Ray(hit, material->scattered_d(inc_ray.d, n),
 	           std::numeric_limits<float>::epsilon(), inc_ray.tmax, true);
 }
-util::Vec3 Hit::albedo() {
+util::Vec3 Hit::albedo() const {
 	return material->albedo(0, 0);
 }
-util::Vec3 Hit::emission() {
+util::Vec3 Hit::emission() const {
 	return material->emission(0, 0);
 }
 }  // namespace cam

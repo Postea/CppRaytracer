@@ -14,7 +14,7 @@ class Group : public Shape {
 	Group(const util::Transformation& trans);
 	Group(const util::Mat4& matrix);
 
-	std::shared_ptr<cam::Hit> intersect(const cam::Ray& r);
+	std::shared_ptr<cam::Hit> intersect(const cam::Ray& r) const override;
 	// protected:TODO
 	void add(const std::shared_ptr<shapes::Shape>& shape);
 

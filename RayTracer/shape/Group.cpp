@@ -12,7 +12,7 @@ Group::Group(const util::Mat4& matrix)
       transform(util::Transformation(matrix)) {
 }
 
-std::shared_ptr<cam::Hit> Group::intersect(const cam::Ray& r) {
+std::shared_ptr<cam::Hit> Group::intersect(const cam::Ray& r) const {
 	cam::Ray imagR(transform.fromWorld.transformPoint(r.x0),
 	               transform.fromWorld.transformDir(r.d), r.tmin, r.tmax,
 	               r.normalize);

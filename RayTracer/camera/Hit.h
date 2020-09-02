@@ -10,8 +10,8 @@ class Hit {
 	Hit(const util::Vec3& hit, const util::Vec3& n, float t,
 	    const std::shared_ptr<material::Material>& material);
 	Ray scattered_ray(const Ray& inc_ray) const;
-	util::Vec3 albedo();    // TODO TexelPos
-	util::Vec3 emission();  // TODO TexelPos
+	util::Vec3 albedo() const;    // TODO TexelPos
+	util::Vec3 emission() const;  // TODO TexelPos
 	bool scatter() const;
 	// Attributes
 	// TODO TexelPos

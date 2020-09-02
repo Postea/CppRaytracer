@@ -9,7 +9,7 @@ Sphere::Sphere(float radius,
                const std::shared_ptr<material::Material>& material)
     : radius(radius), material(material) {
 }
-std::shared_ptr<cam::Hit> Sphere::intersect(const cam::Ray& r) {
+std::shared_ptr<cam::Hit> Sphere::intersect(const cam::Ray& r) const {
 	util::Vec3 d = r.d;
 	util::Vec3 x0 = r.x0;
 	float a = util::dot(d, d);
