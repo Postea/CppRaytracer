@@ -6,7 +6,7 @@ Threadpool::Threadpool(size_t n) : alive(true) {
 	// Create the specified number of threads
 	threads.reserve(n);
 	for (int i = 0; i < n; ++i) {
-		threads.emplace_back(std::bind(&Threadpool::threading, this, i));
+		threads.emplace_back(std::bind(&Threadpool::threading, this));
 	}
 }
 
@@ -26,7 +26,7 @@ void Threadpool::queueTask(std::function<void(void)> task) {
 	cv.notify_one();
 }
 
-void Threadpool::threading(int i) {
+void Threadpool::threading() {
 	while (true) {
 		std::unique_lock<std::mutex> lock(m);
 		while (alive && q.empty()) {
