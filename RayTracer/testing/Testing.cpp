@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "../camera/Ray.h"
+#include "../tools/AxisAlignedBoundingBox.h"
 #include "../tools/Mat4.h"
 #include "../tools/Vec3.h"
 
@@ -304,5 +305,87 @@ void ray_test() {
 		std::cout << "passed." << std::endl;
 	}
 	std::cout << "all cam::Ray tests passed." << std::endl << std::endl;
+}
+void axisalignedboundingbox_test() {
+	std::cout << "======================" << std::endl;
+	std::cout << "     Testing AABB    " << std::endl;
+	std::cout << "======================" << std::endl;
+
+	{
+		// do not tolerate any memory overhead
+		std::cout << "  sizeof(AABB) == 24 bytes: ";
+		assert(sizeof(util::AxisAlignedBoundingBox));
+		std::cout << "passed." << std::endl;
+	}
+	{
+		std::cout << "  contains: ";
+		util::AxisAlignedBoundingBox bb(util::Vec3(10, 10, 10),
+		                                util::Vec3(20, 20, 20));
+		assert(!bb.contains(util::Vec3(10, 6, 13)));
+		assert(!bb.contains(util::Vec3(22, 15, 13)));
+		assert(bb.contains(util::Vec3(10, 10, 20)));
+		assert(!bb.contains(util::Vec3(9, 19, 20)));
+		assert(!bb.contains(util::Vec3(16, 13, 25)));
+		assert(bb.contains(util::Vec3(15, 10, 18)));
+		assert(bb.contains(util::Vec3(10, 15, 20)));
+		assert(bb.contains(util::Vec3(10, 10, 10)));
+		std::cout << "passed." << std::endl;
+	}
+	{
+		std::cout << "  expand: ";
+		util::AxisAlignedBoundingBox bb(util::Vec3(10, 10, 10),
+		                                util::Vec3(20, 20, 20));
+
+		util::AxisAlignedBoundingBox bb2(util::Vec3(15, 15, 15),
+		                                 util::Vec3(25, 25, 25));
+
+		auto result = bb + bb2;
+		assert(result.minBound() == util::Vec3(10, 10, 10));
+		assert(result.maxBound() == util::Vec3(25, 25, 25));
+
+		util::AxisAlignedBoundingBox bb3(util::Vec3(10, 10, 10),
+		                                 util::Vec3(20, 20, 20));
+
+		util::AxisAlignedBoundingBox bb4(util::Vec3(15, 9, -1),
+		                                 util::Vec3(18, 10, 25));
+		auto result2 = bb3 + bb4;
+		assert(result2.minBound() == util::Vec3(10, 9, -1));
+		assert(result2.maxBound() == util::Vec3(20, 20, 25));
+
+		util::AxisAlignedBoundingBox bb5(util::Vec3(-45, 40, 0),
+		                                 util::Vec3(0, 40, 20));
+
+		util::AxisAlignedBoundingBox bb6(util::Vec3(-70, -5, -1),
+		                                 util::Vec3(-60, 90, 0));
+		auto result3 = bb5 + bb6;
+
+		assert(result3.minBound() == util::Vec3(-70, -5, -1));
+		assert(result3.maxBound() == util::Vec3(0, 90, 20));
+
+		std::cout << "passed." << std::endl;
+	}
+	{
+		std::cout << "  intersect: ";
+		util::AxisAlignedBoundingBox bb(util::Vec3(10, 10, 10),
+		                                util::Vec3(20, 20, 20));
+
+		assert(bb.intersects(cam::Ray(util::Vec3(1, 10, 10),
+		                              util::Vec3(1, 0.5, 0.3), 0, 100, false)));
+		assert(bb.intersects(cam::Ray(
+		    util::Vec3(11, 11, 11), util::Vec3(0.5, 0.3, 0.5), 0, 100, false)));
+		assert(!bb.intersects(cam::Ray(
+		    util::Vec3(9, 9, 9), util::Vec3(1, -0.4, -0.5), 0, 100, false)));
+		assert(!bb.intersects(cam::Ray(
+		    util::Vec3(21, 21, 21), util::Vec3(1, -0.4, -0.5), 0, 100, false)));
+		assert(
+		    bb.intersects(cam::Ray(util::Vec3(21, 21, 21),
+		                           util::Vec3(-1, -0.4, -0.5), 0, 100, false)));
+		assert(bb.intersects(cam::Ray(util::Vec3(21, 21, 21),
+		                              util::Vec3(-1, -1, -2), 0, 100, false)));
+
+		std::cout << "passed." << std::endl;
+	}
+	std::cout << "all util::AxisAlignedBoundingBox tests passed." << std::endl
+	          << std::endl;
 }
 }  // namespace test
