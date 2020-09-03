@@ -7,6 +7,8 @@ Vec3::Vec3(std::array<float, 3> const& arr) : arr(arr) {
 }
 Vec3::Vec3(float x, float y, float z) : arr(std::array<float, 3>({x, y, z})) {
 }
+Vec3::Vec3(float xyz) : arr(std::array<float, 3>({xyz, xyz, xyz})) {
+}
 Vec3::Vec3() : arr(std::array<float, 3>({})) {
 }
 // Operator

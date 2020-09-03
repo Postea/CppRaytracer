@@ -10,6 +10,7 @@ class Vec3 {
 	// Constructor
 	Vec3(std::array<float, 3> const& arr);
 	Vec3(float x, float y, float z);
+	Vec3(float xyz);
 	Vec3();
 	// Operator
 	friend std::ostream& operator<<(std::ostream& os, const util::Vec3& rhs);
