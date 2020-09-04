@@ -3,6 +3,7 @@
 #include <array>
 #include <cassert>
 #include <iostream>
+#include <limits>
 
 #include "../camera/Ray.h"
 #include "../tools/AxisAlignedBoundingBox.h"
@@ -329,6 +330,16 @@ void axisalignedboundingbox_test() {
 		assert(bb.contains(util::Vec3(15, 10, 18)));
 		assert(bb.contains(util::Vec3(10, 15, 20)));
 		assert(bb.contains(util::Vec3(10, 10, 10)));
+
+		// Infinity contain test
+		util::AxisAlignedBoundingBox infbb;
+		assert(infbb.contains(util::Vec3(1243, 1341, -3151)));
+		assert(infbb.contains(
+		    util::Vec3(-std::numeric_limits<float>::infinity())));
+		assert(
+		    infbb.contains(util::Vec3(std::numeric_limits<float>::infinity())));
+		assert(infbb.contains(util::Vec3(0)));
+
 		std::cout << "passed." << std::endl;
 	}
 	{
@@ -362,6 +373,12 @@ void axisalignedboundingbox_test() {
 		assert(result3.minBound() == util::Vec3(-70, -5, -1));
 		assert(result3.maxBound() == util::Vec3(0, 90, 20));
 
+		// Infinity expanse test
+		util::AxisAlignedBoundingBox infbb;
+		auto result4 = infbb + result3 + result2 + result;
+		assert(result4.maxBound() == infbb.maxBound() &&
+		       result4.minBound() == infbb.minBound());
+
 		std::cout << "passed." << std::endl;
 	}
 	{
@@ -382,6 +399,12 @@ void axisalignedboundingbox_test() {
 		                           util::Vec3(-1, -0.4, -0.5), 0, 100, false)));
 		assert(bb.intersects(cam::Ray(util::Vec3(21, 21, 21),
 		                              util::Vec3(-1, -1, -2), 0, 100, false)));
+
+		// Infinity intersection test
+		util::AxisAlignedBoundingBox infbb;
+		assert(infbb.intersects(cam::Ray(
+		    util::Vec3(21341, -13421, 0), util::Vec3(-1315, -11324, 2135), 0,
+		    std::numeric_limits<float>::infinity(), false)));
 
 		std::cout << "passed." << std::endl;
 	}
