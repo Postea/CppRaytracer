@@ -6,6 +6,8 @@
 #include <limits>
 
 #include "../camera/Ray.h"
+#include "../material/DiffuseMaterial.h"
+#include "../shape/CirclePlane.h"
 #include "../tools/AxisAlignedBoundingBox.h"
 #include "../tools/Mat4.h"
 #include "../tools/Vec3.h"
@@ -226,7 +228,7 @@ void mat4_test() {
 		std::cout << "passed." << std::endl;
 	}
 	{
-		std::cout << " factory methods: ";
+		std::cout << "  factory methods: ";
 		util::Mat4 s = util::scale(util::Vec3(2, 3, 4));
 		assert((s[{0, 0}]) == 2 && (s[{1, 1}]) == 3 && (s[{2, 2}]) == 4);
 		util::Mat4 t = util::translate(util::Vec3(1, -3, 4));
@@ -246,7 +248,7 @@ void mat4_test() {
 		std::cout << "passed." << std::endl;
 	}
 	{
-		std::cout << " transform: ";
+		std::cout << "  transform: ";
 		auto round_to_5 = [](float x) {
 			int temp = x * 100000;
 			return temp / 100000.0;
@@ -263,7 +265,7 @@ void mat4_test() {
 		std::cout << "passed." << std::endl;
 	}
 	{
-		std::cout << " position: ";
+		std::cout << "  position: ";
 		util::Mat4 x({0, 0, 0, 3, 0, 0, 1, 5, 1, 2, 3, -4, 2, 2, 2, 2});
 		util::Vec3 vec = x.position();
 		assert(vec[0] == 3 && vec[1] == 5 && vec[2] == -4);
@@ -434,5 +436,35 @@ void axisalignedboundingbox_test() {
 	}
 	std::cout << "all util::AxisAlignedBoundingBox tests passed." << std::endl
 	          << std::endl;
+}
+
+void shape_test() {
+	std::cout << "======================" << std::endl;
+	std::cout << "     Testing Shapes   " << std::endl;
+	std::cout << "======================" << std::endl;
+	{
+		std::cout << "  CirclePlane: ";
+
+		auto red_material =
+		    std::make_shared<material::DiffuseMaterial>(util::Vec3(1, 0, 0));
+		shapes::CirclePlane circ_plane(5.0, red_material);
+		cam::Ray direct_ray(util::Vec3(0, 3, 0), util::Vec3(0.3, -1, 0.2), 0,
+		                    100, false);
+		cam::Ray bounding_ray(util::Vec3(4.6, -1, 4), util::Vec3(-0.1, 1, 0.5),
+		                      0, 100, false);
+		cam::Ray missing_ray(util::Vec3(4.6, -1, 4), util::Vec3(-0.1, -1, 0.5),
+		                     0, 100, false);
+
+		assert(circ_plane.bounds().intersects(direct_ray));
+		assert(circ_plane.bounds().intersects(bounding_ray));
+		assert(!circ_plane.bounds().intersects(missing_ray));
+
+		assert(circ_plane.intersect(direct_ray) != nullptr);
+		assert(circ_plane.intersect(bounding_ray) == nullptr);
+		assert(circ_plane.intersect(missing_ray) == nullptr);
+
+		std::cout << "passed." << std::endl;
+	}
+	std::cout << "all shapes::Shape tests passed." << std::endl;
 }
 }  // namespace test
