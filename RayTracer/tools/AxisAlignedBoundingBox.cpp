@@ -6,7 +6,9 @@
 namespace util {
 
 // Constructor
-AxisAlignedBoundingBox::AxisAlignedBoundingBox() : min(Vec3(0)), max(Vec3(0)) {
+AxisAlignedBoundingBox::AxisAlignedBoundingBox()
+    : min(Vec3(-std::numeric_limits<float>::infinity())),
+      max(Vec3(std::numeric_limits<float>::infinity())) {
 }
 
 AxisAlignedBoundingBox::AxisAlignedBoundingBox(Vec3& min, Vec3& max)
@@ -40,7 +42,7 @@ bool AxisAlignedBoundingBox::intersects(cam::Ray& r) const {
 	    std::min<float>({std::max<float>(t1x, t2x), std::max<float>(t1y, t2y),
 	                     std::max<float>(t1z, t2z)});
 
-	return tmax >= tmin && tmax > 0;
+	return tmax >= tmin && r.in_range(tmax);
 }
 
 bool AxisAlignedBoundingBox::contains(Vec3& v) const {
