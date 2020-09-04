@@ -28,4 +28,8 @@ std::shared_ptr<cam::Hit> CirclePlane::intersect(const cam::Ray& r) const {
 		}
 	}
 }
+util::AxisAlignedBoundingBox CirclePlane::bounds() const {
+	return util::AxisAlignedBoundingBox(util::Vec3(-radius, 0, -radius),
+	                                    util::Vec3(radius, 0, radius));
+}
 }  // namespace shapes
