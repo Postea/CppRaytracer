@@ -1,5 +1,9 @@
 #include "Mat4.h"
 
+#define _USE_MATH_DEFINES
+
+#include <math.h>
+
 namespace util {
 // Constructor
 Mat4::Mat4(std::array<float, 16> arr) : arr(arr){};

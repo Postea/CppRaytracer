@@ -1,8 +1,6 @@
 #pragma once
 
-#include "../sampling/Sampler.h"
 #include "Material.h"
-#include "texture/Constant.h"
 
 namespace material {
 class DiffuseMaterial : public Material {

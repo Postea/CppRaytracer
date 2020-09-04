@@ -1,6 +1,5 @@
 #include "DiffuseMaterial.h"
 
-#include "../tools/Vec3.h"
 #include "texture/Constant.h"
 
 namespace material {

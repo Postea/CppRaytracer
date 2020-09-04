@@ -1,9 +1,5 @@
 #pragma once
 
-#define _USE_MATH_DEFINES
-
-#include <math.h>
-
 #include <array>
 
 #include "Vec3.h"

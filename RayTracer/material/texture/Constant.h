@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../../sampling/Sampler.h"
-#include "../../tools/Vec3.h"
 
 namespace material {
 class Constant : public util::Sampler {

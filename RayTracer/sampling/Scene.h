@@ -1,9 +1,7 @@
 #pragma once
 
 #include "../camera/CamObs.h"
-#include "../camera/Ray.h"
-#include "../shape/Group.h"
-#include "../tools/Vec3.h"
+#include "../shape/Shape.h"
 #include "Sampler.h"
 
 class Scene : public util::Sampler {

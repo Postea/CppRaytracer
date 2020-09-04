@@ -2,6 +2,7 @@
 
 #include "../camera/Hit.h"
 #include "../camera/Ray.h"
+#include "../tools/AxisAlignedBoundingBox.h"
 
 namespace shapes {
 class Shape {

@@ -3,7 +3,6 @@
 #include <vector>
 
 #include "../camera/CamObs.h"
-#include "../tools/Vec3.h"
 #include "Sampler.h"
 
 namespace util {

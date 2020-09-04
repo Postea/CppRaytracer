@@ -3,7 +3,6 @@
 #include <random>
 
 #include "../sampling/Sampler.h"
-#include "../tools/Vec3.h"
 
 namespace material {
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../material/Material.h"
-#include "../tools/Vec3.h"
 #include "Ray.h"
 
 namespace cam {

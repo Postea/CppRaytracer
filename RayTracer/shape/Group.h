@@ -2,8 +2,6 @@
 
 #include <vector>
 
-#include "../camera/Hit.h"
-#include "../camera/Ray.h"
 #include "../tools/Mat4.h"
 #include "../tools/Transformation.h"
 #include "Shape.h"
