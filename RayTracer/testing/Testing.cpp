@@ -331,6 +331,18 @@ void axisalignedboundingbox_test() {
 		assert(bb.contains(util::Vec3(10, 15, 20)));
 		assert(bb.contains(util::Vec3(10, 10, 10)));
 
+		// 2-dimensional AABB contain test
+		util::AxisAlignedBoundingBox bb0(util::Vec3(0, 10, 10),
+		                                 util::Vec3(0, 20, 20));
+		assert(!bb0.contains(util::Vec3(10, 6, 13)));
+		assert(!bb0.contains(util::Vec3(22, 15, 13)));
+		assert(bb0.contains(util::Vec3(0, 10, 20)));
+		assert(bb0.contains(util::Vec3(0, 19, 20)));
+		assert(!bb0.contains(util::Vec3(0, 13, 25)));
+		assert(bb0.contains(util::Vec3(0, 10, 18)));
+		assert(!bb0.contains(util::Vec3(10, 15, 20)));
+		assert(bb0.contains(util::Vec3(0, 10, 10)));
+
 		// Infinity contain test
 		util::AxisAlignedBoundingBox infbb;
 		assert(infbb.contains(util::Vec3(1243, 1341, -3151)));
@@ -399,6 +411,18 @@ void axisalignedboundingbox_test() {
 		                           util::Vec3(-1, -0.4, -0.5), 0, 100, false)));
 		assert(bb.intersects(cam::Ray(util::Vec3(21, 21, 21),
 		                              util::Vec3(-1, -1, -2), 0, 100, false)));
+
+		// 2-dimensional AABB intersect test
+		util::AxisAlignedBoundingBox bb0(util::Vec3(0, 10, 10),
+		                                 util::Vec3(0, 20, 20));
+		assert(bb0.intersects(cam::Ray(util::Vec3(21, 10, 11),
+		                               util::Vec3(-1, 0, 0), 0, 100, false)));
+		assert(bb0.intersects(cam::Ray(util::Vec3(-1, 10, 9),
+		                               util::Vec3(1, 0, 2), 0, 100, false)));
+		assert(!bb0.intersects(cam::Ray(
+		    util::Vec3(0, 21, 21), util::Vec3(-1, -2, -2), 0, 100, false)));
+		assert(bb0.intersects(cam::Ray(util::Vec3(-1, 18, 18),
+		                               util::Vec3(1, -2, 2), 0, 100, false)));
 
 		// Infinity intersection test
 		util::AxisAlignedBoundingBox infbb;
