@@ -12,4 +12,7 @@ std::shared_ptr<cam::Hit> Background::intersect(const cam::Ray& r) const {
 	    cam::Hit(r(std::numeric_limits<float>::infinity()), util::Vec3(0, 0, 0),
 	             std::numeric_limits<float>::infinity(), material));
 }
+util::AxisAlignedBoundingBox Background::bounds() const {
+	return util::AxisAlignedBoundingBox();
+}
 }  // namespace shapes
