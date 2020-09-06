@@ -18,6 +18,6 @@ class AxisAlignedBoundingBox {
 	Vec3 maxBound() const;
 
    private:
-	const Vec3 min, max;
+	Vec3 min, max;
 };
 }  // namespace util
