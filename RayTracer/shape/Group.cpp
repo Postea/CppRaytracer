@@ -42,6 +42,7 @@ util::AxisAlignedBoundingBox Group::bounds() const {
 }
 void Group::add(const std::shared_ptr<Shape>& shape) {
 	shapeList.push_back(shape);
+	rebuildBoundingVolume();
 }
 void Group::rebuildBoundingVolume() {
 	util::AxisAlignedBoundingBox bb = shapeList[0]->bounds();
