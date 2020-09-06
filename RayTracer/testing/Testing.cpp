@@ -8,6 +8,7 @@
 #include "../camera/Ray.h"
 #include "../material/DiffuseMaterial.h"
 #include "../shape/CirclePlane.h"
+#include "../shape/Sphere.h"
 #include "../tools/AxisAlignedBoundingBox.h"
 #include "../tools/Mat4.h"
 #include "../tools/Vec3.h"
@@ -442,11 +443,12 @@ void shape_test() {
 	std::cout << "======================" << std::endl;
 	std::cout << "     Testing Shapes   " << std::endl;
 	std::cout << "======================" << std::endl;
+
+	auto red_material =
+	    std::make_shared<material::DiffuseMaterial>(util::Vec3(1, 0, 0));
 	{
 		std::cout << "  CirclePlane: ";
 
-		auto red_material =
-		    std::make_shared<material::DiffuseMaterial>(util::Vec3(1, 0, 0));
 		shapes::CirclePlane circ_plane(5.0, red_material);
 		cam::Ray direct_ray(util::Vec3(0, 3, 0), util::Vec3(0.3, -1, 0.2), 0,
 		                    100, false);
@@ -462,6 +464,27 @@ void shape_test() {
 		assert(circ_plane.intersect(direct_ray) != nullptr);
 		assert(circ_plane.intersect(bounding_ray) == nullptr);
 		assert(circ_plane.intersect(missing_ray) == nullptr);
+
+		std::cout << "passed." << std::endl;
+	}
+	{
+		std::cout << "  Sphere: ";
+
+		shapes::Sphere sphere(5.0, red_material);
+		cam::Ray direct_ray(util::Vec3(3, 6, 3), util::Vec3(-0.3, -2, 0.2), 0,
+		                    100, false);
+		cam::Ray bounding_ray(util::Vec3(4.5, 5.3, 4),
+		                      util::Vec3(-0.5, -0.5, 0.4), 0, 100, false);
+		cam::Ray missing_ray(util::Vec3(5.5, 5.5, 5.5), util::Vec3(1, 1, 1), 0,
+		                     100, false);
+
+		assert(sphere.bounds().intersects(direct_ray));
+		assert(sphere.bounds().intersects(bounding_ray));
+		assert(!sphere.bounds().intersects(missing_ray));
+
+		assert(sphere.intersect(direct_ray) != nullptr);
+		assert(sphere.intersect(bounding_ray) == nullptr);
+		assert(sphere.intersect(missing_ray) == nullptr);
 
 		std::cout << "passed." << std::endl;
 	}
