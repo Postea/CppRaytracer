@@ -15,10 +15,8 @@ class Threadpool {
 	// Add a task to the queue
 	void queueTask(std::function<void(void)> task);
 
-   protected:
-	void threading();
-
    private:
+	void threading();
 	std::vector<std::thread> threads;
 	bool alive;
 	std::queue<std::function<void(void)>> q;
