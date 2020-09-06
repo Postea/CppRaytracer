@@ -37,7 +37,18 @@ std::shared_ptr<cam::Hit> Group::intersect(const cam::Ray& r) const {
 	}
 	return result;
 }
+util::AxisAlignedBoundingBox Group::bounds() const {
+	return util::AxisAlignedBoundingBox();
+}
 void Group::add(const std::shared_ptr<Shape>& shape) {
 	shapeList.push_back(shape);
 }
+void Group::rebuildBoundingVolume() {
+	util::AxisAlignedBoundingBox bb = shapeList[0]->bounds();
+	for (auto shape_bb : shapeList) {
+		bb = bb + shape_bb->bounds();
+	}
+	boundingVolume = bb;
+}
+
 }  // namespace shapes

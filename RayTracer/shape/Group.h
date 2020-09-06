@@ -13,10 +13,14 @@ class Group : public Shape {
 	Group(const util::Mat4& matrix);
 
 	std::shared_ptr<cam::Hit> intersect(const cam::Ray& r) const override;
+	util::AxisAlignedBoundingBox bounds() const override;
 	// protected:TODO
 	void add(const std::shared_ptr<shapes::Shape>& shape);
 
    private:
+	void rebuildBoundingVolume();
+
+	util::AxisAlignedBoundingBox boundingVolume;
 	std::vector<std::shared_ptr<Shape>> shapeList;
 	util::Transformation transform;
 };
