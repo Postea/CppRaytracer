@@ -20,12 +20,14 @@ std::shared_ptr<cam::Hit> Group::intersect(const cam::Ray& r) const {
 	std::shared_ptr<cam::Hit> result;
 
 	for (std::shared_ptr<Shape> s : shapeList) {
-		std::shared_ptr<cam::Hit> temp = s->intersect(imagR);
-		if (temp != nullptr) {
-			if (result == nullptr) {
-				result = temp;
-			} else if (result->t > temp->t) {
-				result = temp;
+		if (s->bounds().intersects(imagR)) {
+			std::shared_ptr<cam::Hit> temp = s->intersect(imagR);
+			if (temp != nullptr) {
+				if (result == nullptr) {
+					result = temp;
+				} else if (result->t > temp->t) {
+					result = temp;
+				}
 			}
 		}
 	}
@@ -38,7 +40,7 @@ std::shared_ptr<cam::Hit> Group::intersect(const cam::Ray& r) const {
 	return result;
 }
 util::AxisAlignedBoundingBox Group::bounds() const {
-	return util::AxisAlignedBoundingBox();
+	return boundingVolume;
 }
 void Group::add(const std::shared_ptr<Shape>& shape) {
 	shapeList.push_back(shape);
