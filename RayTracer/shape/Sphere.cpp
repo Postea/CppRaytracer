@@ -42,4 +42,8 @@ std::shared_ptr<cam::Hit> Sphere::intersect(const cam::Ray& r) const {
 		return nullptr;
 	}
 }
+util::AxisAlignedBoundingBox Sphere::bounds() const {
+	return util::AxisAlignedBoundingBox(util::Vec3(-radius),
+	                                    util::Vec3(radius));
+}
 }  // namespace shapes
