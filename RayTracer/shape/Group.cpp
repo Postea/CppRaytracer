@@ -31,6 +31,7 @@ std::shared_ptr<cam::Hit> Group::intersect(const cam::Ray& r) const {
 			}
 		}
 	}
+
 	if (result != nullptr) {
 		result = std::make_shared<cam::Hit>(
 		    cam::Hit(transform.toWorld.transformPoint(result->hit),
@@ -42,16 +43,26 @@ std::shared_ptr<cam::Hit> Group::intersect(const cam::Ray& r) const {
 util::AxisAlignedBoundingBox Group::bounds() const {
 	return boundingVolume;
 }
+void Group::add(const Group& group) {
+	shapeList.push_back(std::make_shared<Group>(group));
+	rebuildBoundingVolume();
+}
 void Group::add(const std::shared_ptr<Shape>& shape) {
 	shapeList.push_back(shape);
 	rebuildBoundingVolume();
 }
+
 void Group::rebuildBoundingVolume() {
 	util::AxisAlignedBoundingBox bb = shapeList[0]->bounds();
 	for (auto shape_bb : shapeList) {
 		bb = bb + shape_bb->bounds();
 	}
 	boundingVolume = bb;
+}
+Group shapeGroup(util::Mat4& matrix, std::shared_ptr<Shape> shape) {
+	Group g(matrix);
+	g.add(shape);
+	return g;
 }
 
 }  // namespace shapes
