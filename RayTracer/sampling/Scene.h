@@ -1,17 +1,20 @@
 #pragma once
 
 #include "../camera/CamObs.h"
-#include "../shape/Shape.h"
+#include "../shape/Background.h"
+#include "../shape/Group.h"
 #include "Sampler.h"
 
 class Scene : public util::Sampler {
    public:
-	Scene(std::shared_ptr<shapes::Shape> group, cam::CamObs cam, size_t depth);
+	Scene(const shapes::Group& group, const shapes::Background& bg,
+	      const cam::CamObs& cam, size_t depth);
 	util::Vec3 color(float x, float y) const override;
 	util::Vec3 calculateRadiance(const cam::Ray& r, size_t depth) const;
 
    private:
-	std::shared_ptr<shapes::Shape> group;
+	shapes::Background bg;
+	shapes::Group group;
 	cam::CamObs cam;
 	size_t depth;
 };

@@ -1,8 +1,8 @@
 #include "Scene.h"
 
-Scene::Scene(std::shared_ptr<shapes::Shape> group, cam::CamObs cam,
-             size_t depth)
-    : group(group), cam(cam), depth(depth) {
+Scene::Scene(const shapes::Group& group, const shapes::Background& bg,
+             const cam::CamObs& cam, size_t depth)
+    : group(group), bg(bg), cam(cam), depth(depth) {
 }
 
 util::Vec3 Scene::color(float x, float y) const {
@@ -14,7 +14,10 @@ util::Vec3 Scene::calculateRadiance(const cam::Ray& r, size_t depth) const {
 	if (depth == 0) {
 		return util::Vec3(0, 0, 0);
 	}
-	std::shared_ptr<cam::Hit> h = group->intersect(r);
+	std::shared_ptr<cam::Hit> h = group.intersect(r);
+	if (h == nullptr) {
+		h = bg.intersect(r);
+	}
 	util::Vec3 result;
 	if (h->scatter()) {
 		result =
