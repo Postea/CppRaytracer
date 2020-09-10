@@ -25,7 +25,7 @@ std::optional<cam::Hit> Sphere::intersect(const cam::Ray& r) const {
 			float theta = acos(t1HitPoint.y() / radius);
 			float phi = M_PI + atan2(t1HitPoint.x(), t1HitPoint.z());
 			return std::optional<cam::Hit>(
-			    cam::Hit(t1HitPoint, t1HitPoint, t1, material));
+			    {t1HitPoint, t1HitPoint, t1, material});
 		} else {
 			float t2 = (-b + sqrt(b * b - 4 * a * c)) / (2 * a);
 			if (r.in_range(t2)) {
@@ -33,7 +33,7 @@ std::optional<cam::Hit> Sphere::intersect(const cam::Ray& r) const {
 				float theta = acos(t2HitPoint.y() / radius);
 				float phi = M_PI + atan2(t2HitPoint.x(), t2HitPoint.z());
 				return std::optional<cam::Hit>(
-				    cam::Hit(t2HitPoint, t2HitPoint, t2, material));
+				    {t2HitPoint, t2HitPoint, t2, material});
 			} else {
 				return std::nullopt;
 			}
