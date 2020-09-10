@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../camera/Ray.h"
+#include "Mat4.h"
 #include "Vec3.h"
 
 namespace util {
@@ -8,12 +9,13 @@ namespace util {
 class AxisAlignedBoundingBox {
    public:
 	AxisAlignedBoundingBox();
-	AxisAlignedBoundingBox(Vec3& min, Vec3& max);
+	AxisAlignedBoundingBox(const Vec3& min, const Vec3& max);
 	// Operator
-	AxisAlignedBoundingBox operator+(AxisAlignedBoundingBox& rhs) const;
+	AxisAlignedBoundingBox operator+(const AxisAlignedBoundingBox& rhs) const;
+	AxisAlignedBoundingBox operator*(const Mat4& rhs) const;
 	// Methods
-	bool intersects(cam::Ray& r) const;
-	bool contains(Vec3& v) const;
+	bool intersects(const cam::Ray& r) const;
+	bool contains(const Vec3& v) const;
 	Vec3 minBound() const;
 	Vec3 maxBound() const;
 

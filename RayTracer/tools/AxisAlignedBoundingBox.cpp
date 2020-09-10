@@ -11,12 +11,12 @@ AxisAlignedBoundingBox::AxisAlignedBoundingBox()
       max(Vec3(std::numeric_limits<float>::infinity())) {
 }
 
-AxisAlignedBoundingBox::AxisAlignedBoundingBox(Vec3& min, Vec3& max)
+AxisAlignedBoundingBox::AxisAlignedBoundingBox(const Vec3& min, const Vec3& max)
     : min(min), max(max) {
 }
 // Operator
 AxisAlignedBoundingBox AxisAlignedBoundingBox::operator+(
-    AxisAlignedBoundingBox& rhs) const {
+    const AxisAlignedBoundingBox& rhs) const {
 	Vec3 min(std::min<float>(min.x(), rhs.min.x()),
 	         std::min<float>(min.y(), rhs.min.y()),
 	         std::min<float>(min.z(), rhs.min.z()));
@@ -28,7 +28,7 @@ AxisAlignedBoundingBox AxisAlignedBoundingBox::operator+(
 }
 // Methods
 // https://education.siggraph.org/static/HyperGraph/raytrace/rtinter3.htm
-bool AxisAlignedBoundingBox::intersects(cam::Ray& r) const {
+bool AxisAlignedBoundingBox::intersects(const cam::Ray& r) const {
 	float t1x = (min.x() - r.x0.x()) / r.d.x();
 	float t2x = (max.x() - r.x0.x()) / r.d.x();
 	float t1y = (min.y() - r.x0.y()) / r.d.y();
@@ -45,7 +45,7 @@ bool AxisAlignedBoundingBox::intersects(cam::Ray& r) const {
 	return tmax >= tmin && r.in_range(tmax);
 }
 
-bool AxisAlignedBoundingBox::contains(Vec3& v) const {
+bool AxisAlignedBoundingBox::contains(const Vec3& v) const {
 	bool x = min.x() <= v.x() && v.x() <= max.x();
 	bool y = min.y() <= v.y() && v.y() <= max.y();
 	bool z = min.z() <= v.z() && v.z() <= max.z();
