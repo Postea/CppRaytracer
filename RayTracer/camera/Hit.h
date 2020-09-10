@@ -18,10 +18,11 @@ class Hit {
 	float scalar() const;
 	// Attributes
 	// TODO TexelPos
+	std::shared_ptr<material::Material> material;
+
    private:
 	util::Vec3 hit, n;
 	float t;
-	std::shared_ptr<material::Material> material;
 };
 
 }  // namespace cam
