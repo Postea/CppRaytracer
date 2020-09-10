@@ -489,27 +489,6 @@ void shape_test() {
 
 		std::cout << "passed." << std::endl;
 	}
-	{
-		std::cout << "  Transform intersect: ";
-
-		auto matrix = util::translate(util::Vec3(-2, 0, 0));
-		auto transform = util::Transformation(matrix);
-		auto group = shapes::shapeGroup(
-		    matrix, std::make_shared<shapes::Sphere>(0.5, red_material));
-		cam::Ray direct_ray(util::Vec3(-2, 0, 0), util::Vec3(0.4, 0, 0), 0, 100,
-		                    false);
-		cam::Ray bounding_ray(util::Vec3(4.5, 5.3, 4),
-		                      util::Vec3(-0.5, -0.5, 0.4), 0, 100, false);
-		cam::Ray missing_ray(util::Vec3(5.5, 5.5, 5.5), util::Vec3(1, 1, 1), 0,
-		                     100, false);
-		std::cout << "Direct Ray: " << direct_ray << std::endl;
-		std::cout << "Transposed direct Ray: "
-		          << cam::Ray(transform.fromWorld.transformPoint(direct_ray.x0),
-		                      transform.fromWorld.transformDir(direct_ray.d),
-		                      direct_ray.tmin, direct_ray.tmax,
-		                      direct_ray.normalize);
-		assert(group.intersect(direct_ray));
-	}
 	std::cout << "all shapes::Shape tests passed." << std::endl;
 }
 }  // namespace test
