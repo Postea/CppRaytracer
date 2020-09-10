@@ -26,6 +26,35 @@ AxisAlignedBoundingBox AxisAlignedBoundingBox::operator+(
 
 	return AxisAlignedBoundingBox(min, max);
 }
+AxisAlignedBoundingBox AxisAlignedBoundingBox::operator*(
+    const Mat4& rhs) const {
+	AxisAlignedBoundingBox result(
+	    Vec3(std::numeric_limits<float>::infinity()),
+	    Vec3(-std::numeric_limits<float>::infinity()));
+	Vec3 v1 = rhs.transformPoint(Vec3(min.x(), min.y(), min.z()));
+	Vec3 v2 = rhs.transformPoint(Vec3(min.x(), min.y(), max.z()));
+	Vec3 v3 = rhs.transformPoint(Vec3(min.x(), max.y(), min.z()));
+	Vec3 v4 = rhs.transformPoint(Vec3(min.x(), min.y(), max.z()));
+	Vec3 v5 = rhs.transformPoint(Vec3(max.x(), min.y(), min.z()));
+	Vec3 v6 = rhs.transformPoint(Vec3(min.x(), min.y(), max.z()));
+	Vec3 v7 = rhs.transformPoint(Vec3(min.x(), max.y(), min.z()));
+	Vec3 v8 = rhs.transformPoint(Vec3(min.x(), max.y(), max.z()));
+	float minX = std::min<float>(
+	    {v1.x(), v2.x(), v3.x(), v4.x(), v5.x(), v6.x(), v7.x(), v8.x()});
+	float minY = std::min<float>(
+	    {v1.y(), v2.y(), v3.y(), v4.y(), v5.y(), v6.y(), v7.y(), v8.y()});
+	float minZ = std::min<float>(
+	    {v1.z(), v2.z(), v3.z(), v4.z(), v5.z(), v6.z(), v7.z(), v8.z()});
+	float maxX = std::max<float>(
+	    {v1.x(), v2.x(), v3.x(), v4.x(), v5.x(), v6.x(), v7.x(), v8.x()});
+	float maxY = std::max<float>(
+	    {v1.y(), v2.y(), v3.y(), v4.y(), v5.y(), v6.y(), v7.y(), v8.y()});
+	float maxZ = std::max<float>(
+	    {v1.z(), v2.z(), v3.z(), v4.z(), v5.z(), v6.z(), v7.z(), v8.z()});
+
+	return AxisAlignedBoundingBox(Vec3(minX, minY, minZ),
+	                              Vec3(maxX, maxY, maxZ));
+}
 // Methods
 // https://education.siggraph.org/static/HyperGraph/raytrace/rtinter3.htm
 bool AxisAlignedBoundingBox::intersects(const cam::Ray& r) const {
