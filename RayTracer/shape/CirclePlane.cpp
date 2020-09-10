@@ -5,7 +5,7 @@ CirclePlane::CirclePlane(float radius,
                          const std::shared_ptr<material::Material>& material)
     : radius(radius), material(material) {
 }
-std::shared_ptr<cam::Hit> CirclePlane::intersect(const cam::Ray& r) const {
+std::optional<cam::Hit> CirclePlane::intersect(const cam::Ray& r) const {
 	util::Vec3 n(0, 1, 0);
 	util::Vec3 x0 = r.x0;
 	util::Vec3 d = r.d;
@@ -15,16 +15,15 @@ std::shared_ptr<cam::Hit> CirclePlane::intersect(const cam::Ray& r) const {
 	}
 	float a = util::dot(d, n);
 	if (a == 0) {
-		return nullptr;
+		return std::nullopt;
 	} else {
 		float t = -x0[1] / d[1];
 		util::Vec3 t_hitpoint = r(t);
 
 		if (r.in_range(t) && t_hitpoint.length() <= radius) {
-			return std::make_shared<cam::Hit>(
-			    cam::Hit(t_hitpoint, n, t, material));
+			return std::optional<cam::Hit>({t_hitpoint, n, t, material});
 		} else {
-			return nullptr;
+			return std::nullopt;
 		}
 	}
 }

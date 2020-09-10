@@ -12,31 +12,31 @@ Group::Group(const util::Mat4& matrix)
       transform(util::Transformation(matrix)) {
 }
 
-std::shared_ptr<cam::Hit> Group::intersect(const cam::Ray& r) const {
+std::optional<cam::Hit> Group::intersect(const cam::Ray& r) const {
 	cam::Ray imagR(transform.fromWorld.transformPoint(r.x0),
 	               transform.fromWorld.transformDir(r.d), r.tmin, r.tmax,
 	               r.normalize);
 
-	std::shared_ptr<cam::Hit> result;
+	std::optional<cam::Hit> result = std::nullopt;
 
 	for (std::shared_ptr<Shape> s : shapeList) {
 		if (s->bounds().intersects(imagR)) {
-			std::shared_ptr<cam::Hit> temp = s->intersect(imagR);
-			if (temp != nullptr) {
-				if (result == nullptr) {
+			std::optional<cam::Hit> temp = s->intersect(imagR);
+			if (temp) {
+				if (!result) {
 					result = temp;
-				} else if (result->t > temp->t) {
+				} else if (result->scalar() > temp->scalar()) {
 					result = temp;
 				}
 			}
 		}
 	}
 
-	if (result != nullptr) {
-		result = std::make_shared<cam::Hit>(
-		    cam::Hit(transform.toWorld.transformPoint(result->hit),
-		             transform.toWorldN.transformDir(result->n), result->t,
-		             result->material));
+	if (result) {
+		result = std::optional<cam::Hit>(
+		    {transform.toWorld.transformPoint(result->hitpoint()),
+		     transform.toWorldN.transformDir(result->normal()),
+		     result->scalar(), result->material});
 	}
 	return result;
 }

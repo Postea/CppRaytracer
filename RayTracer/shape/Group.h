@@ -12,7 +12,7 @@ class Group : public Shape {
 	Group(const util::Transformation& trans);
 	Group(const util::Mat4& matrix);
 
-	std::shared_ptr<cam::Hit> intersect(const cam::Ray& r) const override;
+	std::optional<cam::Hit> intersect(const cam::Ray& r) const override;
 	util::AxisAlignedBoundingBox bounds() const override;
 	void add(const Group& group);
 	friend Group shapeGroup(util::Mat4& matrix, std::shared_ptr<Shape> shape);

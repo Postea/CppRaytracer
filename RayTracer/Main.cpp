@@ -1,16 +1,18 @@
+
+#define _USE_MATH_DEFINES
 #include <math.h>
+#include <time.h>
 
 #include <fstream>
 #include <iostream>
 
-#include "camera/Ray.h"
 #include "material/BackgroundMaterial.h"
 #include "material/DiffuseMaterial.h"
-#include "material/texture/Constant.h"
 #include "sampling/Image.h"
 #include "sampling/Scene.h"
 #include "shape/Background.h"
 #include "shape/CirclePlane.h"
+#include "shape/Group.h"
 #include "shape/Sphere.h"
 #include "testing/Testing.h"
 #include "tools/Mat4.h"
@@ -119,6 +121,11 @@ void printBits(void const* const ptr, size_t const size) {
 	puts("");
 }
 
+void print_AABB(string x, shared_ptr<Shape> shape) {
+	cout << x << shape->bounds().minBound() << shape->bounds().maxBound()
+	     << endl;
+}
+
 int main() {
 	cout << "Start" << endl;
 	// Image img = Image (100, 100);
@@ -127,32 +134,45 @@ int main() {
 	Mat4 camm = translate(Vec3(0, 1, 3));
 	// Mat4 group22Mat = rotate (Vec3 (1, 0, 0), 0);
 	CamObs obs(camm, M_PI / 2, 500, 500);
-	shared_ptr<Group> group = make_shared<Group>(ident);
 
-	BackgroundMaterial bg_colo(Vec3(1, 1, 1));
-	Background bg(make_shared<BackgroundMaterial>(bg_colo));
+	auto bg_colo = make_shared<BackgroundMaterial>(Vec3(1, 1, 1));
+	auto circ_colo = make_shared<DiffuseMaterial>(Vec3(0, 1, 0.5));
+	auto sphere_colo = make_shared<DiffuseMaterial>(Vec3(1, 0, 0));
 
-	shared_ptr<Group> circplane_group = make_shared<Group>(ident);
-	DiffuseMaterial circ_colo(Vec3(0, 1, 0.5));
-	CirclePlane circ(10, make_shared<DiffuseMaterial>(circ_colo));
-	circplane_group->add(make_shared<CirclePlane>(circ));
+	Group group(ident);
+	Group shape_group(ident);
 
-	shared_ptr<Group> sphere_group =
-	    make_shared<Group>(translate(Vec3(0, 1, 0)));
-	DiffuseMaterial sphere_colo(Vec3(1, 0, 0));
-	Sphere sphere(0.5, make_shared<DiffuseMaterial>(sphere_colo));
-	sphere_group->add(make_shared<Sphere>(sphere));
+	auto background = shapeGroup(ident, make_shared<Background>(bg_colo));
+	auto circ = shapeGroup(translate(Vec3(0, 2, 0)),
+	                       make_shared<CirclePlane>((float)10, circ_colo));
+	auto sphere = shapeGroup(translate(Vec3(0, 3, 0)),
+	                         make_shared<Sphere>((float)0.5, sphere_colo));
 
-	group->add(make_shared<Background>(bg));
-	group->add(circplane_group);
-	group->add(sphere_group);
+	shape_group.add(sphere);
+	shape_group.add(circ);
+	print_AABB("ShapeGroup: ", make_shared<Group>(shape_group));
+	print_AABB("Sphere: ", make_shared<Group>(sphere));
 
-	auto sc = std::make_shared<Scene>(Scene(group, obs, 3));
+	group.add(shape_group);
 
-	size_t n = 20;
+	auto sc =
+	    std::make_shared<Scene>(Scene(group, Background(bg_colo), obs, 3));
+
+	size_t n = 4;
+
+	clock_t clkStart;
+	clock_t clkFinish;
 	cout << "Start render" << endl;
-	Image img = raytrace(obs, sc, n * n);
+	clkStart = clock();
+	Image img = raytrace(4, obs, sc, n * n);
+	clkFinish = clock();
 	cout << "Start imaging" << endl;
 	writeBmp("results/test.bmp", img);
 	cout << "End" << endl;
+	std::cout << clkFinish - clkStart;
+
+	test::vec3_test();
+	test::mat4_test();
+	test::ray_test();
+	test::shape_test();
 };

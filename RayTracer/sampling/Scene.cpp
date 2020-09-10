@@ -14,8 +14,8 @@ util::Vec3 Scene::calculateRadiance(const cam::Ray& r, size_t depth) const {
 	if (depth == 0) {
 		return util::Vec3(0, 0, 0);
 	}
-	std::shared_ptr<cam::Hit> h = group.intersect(r);
-	if (h == nullptr) {
+	std::optional<cam::Hit> h = group.intersect(r);
+	if (!h) {
 		h = bg.intersect(r);
 	}
 	util::Vec3 result;
