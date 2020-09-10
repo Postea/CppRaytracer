@@ -57,7 +57,7 @@ void Group::rebuildBoundingVolume() {
 	for (auto shape_bb : shapeList) {
 		bb = bb + shape_bb->bounds();
 	}
-	boundingVolume = bb;
+	boundingVolume = bb * transform.toWorld;
 }
 Group shapeGroup(util::Mat4& matrix, std::shared_ptr<Shape> shape) {
 	Group g(matrix);
