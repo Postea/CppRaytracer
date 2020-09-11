@@ -18,10 +18,10 @@ Threadpool::~Threadpool() {
 	alive = false;
 	cv.notify_all();
 
-	for (auto &thread : threads) thread.join();
+	for (auto& thread : threads) thread.join();
 }
 
-void Threadpool::queueTask(std::function<void(void)> task) {
+void Threadpool::queueTask(const std::function<void(void)>& task) {
 	std::unique_lock<std::mutex> lock(m);
 	q.emplace(task);
 	lock.unlock();
