@@ -15,6 +15,11 @@ AxisAlignedBoundingBox::AxisAlignedBoundingBox(const Vec3& min, const Vec3& max)
     : min(min), max(max) {
 }
 // Operator
+
+std::ostream& operator<<(std::ostream& os, const AxisAlignedBoundingBox& rhs) {
+	os << rhs.min << " | " << rhs.max;
+	return os;
+}
 AxisAlignedBoundingBox AxisAlignedBoundingBox::operator+(
     const AxisAlignedBoundingBox& rhs) const {
 	Vec3 min(std::min<float>(min.x(), rhs.min.x()),

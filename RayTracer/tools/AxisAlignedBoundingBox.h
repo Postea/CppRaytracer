@@ -11,6 +11,8 @@ class AxisAlignedBoundingBox {
 	AxisAlignedBoundingBox();
 	AxisAlignedBoundingBox(const Vec3& min, const Vec3& max);
 	// Operator
+	friend std::ostream& operator<<(std::ostream& os,
+	                                const AxisAlignedBoundingBox& rhs);
 	AxisAlignedBoundingBox operator+(const AxisAlignedBoundingBox& rhs) const;
 	AxisAlignedBoundingBox operator*(const Mat4& rhs) const;
 	// Methods
