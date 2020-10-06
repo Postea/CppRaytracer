@@ -1,5 +1,6 @@
 #include "DiffuseMaterial.h"
 
+#include "../tools/Random.h"
 #include "texture/Constant.h"
 
 namespace material {
@@ -27,7 +28,7 @@ util::Vec3 DiffuseMaterial::emission(float texel_x, float texel_y) const {
 }
 util::Vec3 DiffuseMaterial::scattered_d(const util::Vec3& d,
                                         const util::Vec3& n) const {
-	return n + rand_vec3_in_circle(1);
+	return n + util::rand_vec3_in_circle(1);
 }
 bool DiffuseMaterial::scatter() const {
 	return true;
