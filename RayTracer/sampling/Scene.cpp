@@ -15,16 +15,16 @@ util::Vec3 Scene::calculateRadiance(const cam::Ray& r, size_t depth) const {
 		return util::Vec3(0, 0, 0);
 	}
 	std::optional<cam::Hit> h = group.intersect(r);
+	util::Vec3 result;
 	if (!h) {
 		h = bg.intersect(r);
+		return h->emission();
 	}
-	util::Vec3 result;
 	if (h->scatter()) {
 		result =
-		    h->emission() +
-		    (h->albedo() * calculateRadiance(h->scattered_ray(r), depth - 1));
+		    h->albedo() * calculateRadiance(h->scattered_ray(r), depth - 1);
 	} else {
-		result = h->emission();
+		result = util::Vec3(0, 0, 0);
 	}
 	return result;
 }
