@@ -1,9 +1,9 @@
 #pragma once
-#include "../camera/Ray.h"
+#include "../camera/Hit.h"
 
 namespace shapes {
 class Light {
    public:
-	virtual cam::Ray shadowRay() const = 0;
+	virtual cam::Hit sampleLight() const = 0;
 };
 }  // namespace shapes
