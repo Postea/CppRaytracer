@@ -9,10 +9,10 @@ Vec3 StratifiedSampler::color(float x, float y) const {
 	Vec3 color(0, 0, 0);
 	for (int xi = 0; xi < n; xi++) {
 		for (int yi = 0; yi < n; yi++) {
-			double rx = dis(gen);
-			double ry = dis(gen);
-			double xs = x + (xi + rx) / n;
-			double ys = y + (yi + ry) / n;
+			float rx = dis(gen);
+			float ry = dis(gen);
+			float xs = x + (xi + rx) / n;
+			float ys = y + (yi + ry) / n;
 			color = color + sampler->color(xs, ys);
 		}
 	}
