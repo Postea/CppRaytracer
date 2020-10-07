@@ -34,7 +34,7 @@ std::optional<cam::Hit> Group::intersect(const cam::Ray& r) const {
 
 	if (result) {
 		result = std::optional<cam::Hit>(
-		    {transform.toWorld.transformPoint(result->hitpoint()),
+		    {transform.toWorld.transformPoint(result->point()),
 		     transform.toWorldN.transformDir(result->normal()),
 		     result->scalar(), result->material});
 	}
