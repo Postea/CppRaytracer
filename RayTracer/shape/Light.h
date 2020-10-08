@@ -1,9 +1,9 @@
 #pragma once
-#include "../camera/Hit.h"
+#include "../tools/SurfacePoint.h"
 
 namespace shapes {
 class Light {
    public:
-	virtual cam::Hit sampleLight() const = 0;
+	virtual util::SurfacePoint sampleLight() const = 0;
 };
 }  // namespace shapes
