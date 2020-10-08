@@ -5,6 +5,7 @@
 #include "../tools/Mat4.h"
 #include "../tools/Transformation.h"
 #include "Shape.h"
+#include "SingleGroup.h"
 
 namespace shapes {
 class Group : public Shape {
@@ -15,7 +16,7 @@ class Group : public Shape {
 	std::optional<cam::Hit> intersect(const cam::Ray& r) const override;
 	util::AxisAlignedBoundingBox bounds() const override;
 	void add(const Group& group);
-	friend Group shapeGroup(util::Mat4& matrix, std::shared_ptr<Shape> shape);
+	void add(const SingleGroup& group);
 
    protected:
 	void add(const std::shared_ptr<shapes::Shape>& shape);

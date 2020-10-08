@@ -44,8 +44,10 @@ util::AxisAlignedBoundingBox Group::bounds() const {
 	return boundingVolume;
 }
 void Group::add(const Group& group) {
-	shapeList.push_back(std::make_shared<Group>(group));
-	rebuildBoundingVolume();
+	add(std::make_shared<Group>(group));
+}
+void Group::add(const SingleGroup& group) {
+	add(std::make_shared<SingleGroup>(group));
 }
 void Group::add(const std::shared_ptr<Shape>& shape) {
 	shapeList.push_back(shape);
@@ -58,11 +60,6 @@ void Group::rebuildBoundingVolume() {
 		bb = bb + shape_bb->bounds();
 	}
 	boundingVolume = bb * transform.toWorld;
-}
-Group shapeGroup(util::Mat4& matrix, std::shared_ptr<Shape> shape) {
-	Group g(matrix);
-	g.add(shape);
-	return g;
 }
 
 }  // namespace shapes
