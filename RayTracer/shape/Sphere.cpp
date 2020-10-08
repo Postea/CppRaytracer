@@ -2,6 +2,7 @@
 
 #include "Sphere.h"
 
+#include "../tools/Random.h"
 #include "math.h"
 
 namespace shapes {
@@ -45,5 +46,15 @@ std::optional<cam::Hit> Sphere::intersect(const cam::Ray& r) const {
 util::AxisAlignedBoundingBox Sphere::bounds() const {
 	return util::AxisAlignedBoundingBox(util::Vec3(-radius),
 	                                    util::Vec3(radius));
+}
+// TODO: Rework this function to be yours. THIS IS COPIED!!!! HIT IS A WRONG
+// RETURN VALUE hit's n is wrong and bad
+util::SurfacePoint Sphere::sampleLight() const {
+	float u[2] = {(float)util::dis(util::gen), (float)util::dis(util::gen)};
+	float z = u[0];
+	float r = std::sqrt(std::max((float)0, (float)1. - z * z));
+	float phi = 2 * M_PI * u[1];
+	util::Vec3 point(r * std::cos(phi), r * std::sin(phi), z);
+	return util::SurfacePoint(point, point, material);
 }
 }  // namespace shapes
