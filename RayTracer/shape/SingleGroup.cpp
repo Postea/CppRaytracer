@@ -5,11 +5,12 @@
 
 namespace shapes {
 SingleGroup::SingleGroup(const util::Transformation& transform,
-                         std::shared_ptr<Shape> shape)
+                         std::shared_ptr<LightShape> shape)
     : shape(shape), transform(transform) {
 	boundingVolume = shape->bounds() * transform.toWorld;
 }
-SingleGroup::SingleGroup(const util::Mat4& matrix, std::shared_ptr<Shape> shape)
+SingleGroup::SingleGroup(const util::Mat4& matrix,
+                         std::shared_ptr<LightShape> shape)
     : shape(shape), transform(util::Transformation(matrix)) {
 	boundingVolume = shape->bounds() * transform.toWorld;
 }
@@ -35,6 +36,10 @@ std::optional<cam::Hit> SingleGroup::intersect(const cam::Ray& r) const {
 }
 util::AxisAlignedBoundingBox SingleGroup::bounds() const {
 	return boundingVolume;
+}
+
+util::SurfacePoint SingleGroup::sampleLight() const {
+	return shape->sampleLight();
 }
 
 }  // namespace shapes
