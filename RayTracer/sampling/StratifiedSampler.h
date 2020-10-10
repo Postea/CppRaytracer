@@ -1,7 +1,6 @@
 #pragma once
 
-#include <random>
-
+#include "../tools/Random.h"
 #include "Sampler.h"
 
 namespace util {
@@ -14,7 +13,4 @@ class StratifiedSampler : public Sampler {
 	std::shared_ptr<Sampler> sampler;
 	size_t n;
 };
-static std::random_device rd;
-static std::mt19937 gen(rd());
-static std::uniform_real_distribution<> dis(0, 1.0);
 }  // namespace util
