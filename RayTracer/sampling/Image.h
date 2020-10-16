@@ -18,6 +18,7 @@ class Image {
 
 	const int width;
 	const int height;
+	void gammaCorrect(float gamma);
 
    protected:
 	void setPixelsTask(int x, int y, std::shared_ptr<Sampler> sampler);

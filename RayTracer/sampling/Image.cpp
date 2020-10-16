@@ -35,7 +35,18 @@ void Image::setPixels(size_t threadcount, std::shared_ptr<Sampler> sampler) {
 }
 
 void Image::setPixelsTask(int x, int y, std::shared_ptr<Sampler> sampler) {
-	setPixel(x, y, sampler->color(x, y));
+	Vec3 v = sampler->color(x, y);
+	setPixel(x, y, v);
+}
+
+void Image::gammaCorrect(float gamma) {
+	// correct the whole data-array with the given gamma
+	std::transform(vec.begin(), vec.end(), vec.begin(),
+	               [gamma](util::Vec3 v) -> util::Vec3 {
+		               return util::Vec3(std::powf(v.x(), 1 / gamma),
+		                                 std::powf(v.y(), 1 / gamma),
+		                                 std::powf(v.z(), 1 / gamma));
+	               });
 }
 Vec3 Image::operator[](const std::array<int, 2>& i) const {
 	return vec[width * i[1] + i[0]];
@@ -51,6 +62,7 @@ Image raytrace(size_t threadcount, const cam::CamObs& cam,
 	                                  StratifiedSampler(sampler, n))
 	                 // sampler
 	);
+	result.gammaCorrect(2.2);
 	return result;
 }
 }  // namespace util
