@@ -46,8 +46,8 @@ util::AxisAlignedBoundingBox Group::bounds() const {
 void Group::add(const Group& group) {
 	add(std::make_shared<Group>(group));
 }
-void Group::add(const SingleGroup& group) {
-	add(std::make_shared<SingleGroup>(group));
+void Group::add(const ShapeSingleGroup& group) {
+	add(std::make_shared<ShapeSingleGroup>(group));
 }
 void Group::add(const std::shared_ptr<Shape>& shape) {
 	shapeList.push_back(shape);
