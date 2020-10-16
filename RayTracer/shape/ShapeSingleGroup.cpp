@@ -1,21 +1,20 @@
-#include "SingleGroup.h"
+#include "ShapeSingleGroup.h"
 
 #include "../material/Material.h"
 #include "../tools/Vec3.h"
 
 namespace shapes {
-SingleGroup::SingleGroup(const util::Transformation& transform,
-                         std::shared_ptr<LightShape> shape)
+ShapeSingleGroup::ShapeSingleGroup(const util::Transformation& transform,
+                                   std::shared_ptr<Shape> shape)
     : shape(shape), transform(transform) {
 	boundingVolume = shape->bounds() * transform.toWorld;
 }
-SingleGroup::SingleGroup(const util::Mat4& matrix,
-                         std::shared_ptr<LightShape> shape)
+ShapeSingleGroup::ShapeSingleGroup(const util::Mat4& matrix,
+                                   std::shared_ptr<Shape> shape)
     : shape(shape), transform(util::Transformation(matrix)) {
 	boundingVolume = shape->bounds() * transform.toWorld;
 }
-
-std::optional<cam::Hit> SingleGroup::intersect(const cam::Ray& r) const {
+std::optional<cam::Hit> ShapeSingleGroup::intersect(const cam::Ray& r) const {
 	cam::Ray imagR(transform.fromWorld.transformPoint(r.x0),
 	               transform.fromWorld.transformDir(r.d), r.tmin, r.tmax,
 	               r.normalize);
@@ -34,12 +33,8 @@ std::optional<cam::Hit> SingleGroup::intersect(const cam::Ray& r) const {
 	}
 	return result;
 }
-util::AxisAlignedBoundingBox SingleGroup::bounds() const {
+util::AxisAlignedBoundingBox ShapeSingleGroup::bounds() const {
 	return boundingVolume;
-}
-
-util::SurfacePoint SingleGroup::sampleLight() const {
-	return shape->sampleLight();
 }
 
 }  // namespace shapes
