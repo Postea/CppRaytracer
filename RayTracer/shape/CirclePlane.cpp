@@ -1,4 +1,9 @@
+#define _USE_MATH_DEFINES
+
 #include "CirclePlane.h"
+
+#include "../tools/Random.h"
+#include "math.h"
 
 namespace shapes {
 CirclePlane::CirclePlane(float radius,
@@ -30,5 +35,21 @@ std::optional<cam::Hit> CirclePlane::intersect(const cam::Ray& r) const {
 util::AxisAlignedBoundingBox CirclePlane::bounds() const {
 	return util::AxisAlignedBoundingBox(util::Vec3(-radius, 0, -radius),
 	                                    util::Vec3(radius, 0, radius));
+}
+// THIS IS COPIED AND BAD TODO!!!!
+util::SurfacePoint CirclePlane::sampleLight() const {
+	float u[2] = {(float)util::dis0to1(util::gen),
+	              (float)util::dis0to1(util::gen)};
+	float r = std::sqrt(u[0]) * radius;
+	float theta = 2 * M_PI * u[1];
+	return util::SurfacePoint(
+	    util::Vec3(r * std::cos(theta), 0, r * std::sin(theta)),
+	    util::Vec3(0, -1, 0), material);
+}
+util::Vec3 CirclePlane::calculateLightEmission(const util::SurfacePoint& p,
+                                               const util::Vec3& d) const {
+	// Diffus ist hier im dot-product eingebettet
+	return p.albedo() * (p.emission() * util::dot(p.normal(), d.normalize())) /
+	       std::pow(d.length(), 2);
 }
 }  // namespace shapes
