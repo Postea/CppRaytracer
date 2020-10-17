@@ -20,7 +20,15 @@ util::Vec3 BackgroundMaterial::scattered_d(const util::Vec3& d,
                                            const util::Vec3& n) const {
 	return util::Vec3(0, 0, 0);
 }
-bool BackgroundMaterial::scatter() const {
+bool BackgroundMaterial::scatter(const util::Vec3& d,
+                                 const util::Vec3& n) const {
 	return false;
+}
+
+float BackgroundMaterial::calculateLightMultiplier(const util::Vec3& d_in,
+                                                   const util::Vec3& d_out,
+                                                   const util::Vec3& n) const {
+	// Background should not be able to receive any light
+	return 0;
 }
 }  // namespace material
