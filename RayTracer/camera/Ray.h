@@ -18,4 +18,5 @@ class Ray {
 	const float tmin, tmax;
 	const bool normalize;
 };
+const float epsilon = pow(10, -4);
 }  // namespace cam
