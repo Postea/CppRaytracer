@@ -11,6 +11,8 @@ class Hit : public util::SurfacePoint {
 	    const std::shared_ptr<material::Material>& material);
 
 	float scalar() const;
+	// Operator
+	friend std::ostream& operator<<(std::ostream& os, const cam::Hit& rhs);
 
    private:
 	float t;

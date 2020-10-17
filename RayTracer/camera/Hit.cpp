@@ -11,4 +11,9 @@ Hit::Hit(const util::Vec3& hit, const util::Vec3& n, float t,
 float Hit::scalar() const {
 	return t;
 }
+std::ostream& operator<<(std::ostream& os, const cam::Hit& rhs) {
+	os << "(" << rhs.point() << " " << rhs.normal() << " " << rhs.scalar()
+	   << ")";
+	return os;
+}
 }  // namespace cam
