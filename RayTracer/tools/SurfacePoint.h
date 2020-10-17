@@ -12,7 +12,7 @@ class SurfacePoint {
 	cam::Ray scattered_ray(const cam::Ray& inc_ray) const;
 	util::Vec3 albedo() const;    // TODO TexelPos
 	util::Vec3 emission() const;  // TODO TexelPos
-	bool scatter() const;
+	bool scatter(const util::Vec3& d, const util::Vec3& n) const;
 	util::Vec3 point() const;
 	util::Vec3 normal() const;
 	// Attributes
