@@ -15,9 +15,6 @@ std::optional<cam::Hit> CirclePlane::intersect(const cam::Ray& r) const {
 	util::Vec3 x0 = r.x0;
 	util::Vec3 d = r.d;
 
-	if (util::dot(d, n) > 0) {
-		n = n * -1;
-	}
 	float a = util::dot(d, n);
 	if (a == 0) {
 		return std::nullopt;
