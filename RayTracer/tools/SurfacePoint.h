@@ -15,6 +15,9 @@ class SurfacePoint {
 	bool scatter(const util::Vec3& d, const util::Vec3& n) const;
 	util::Vec3 point() const;
 	util::Vec3 normal() const;
+	float calculateLightMultiplier(const util::Vec3& d_in,
+	                               const util::Vec3& d_out,
+	                               const util::Vec3& n) const;
 	// Attributes
 	// TODO TexelPos
 	std::shared_ptr<material::Material> material;
