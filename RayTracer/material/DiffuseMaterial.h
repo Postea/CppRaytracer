@@ -14,10 +14,14 @@ class DiffuseMaterial : public Material {
 	util::Vec3 emission(float texel_x, float texel_y) const override;
 	util::Vec3 scattered_d(const util::Vec3& d,
 	                       const util::Vec3& n) const override;
-	bool scatter() const override;
+	bool scatter(const util::Vec3& d, const util::Vec3& n) const override;
+
+	float calculateLightMultiplier(const util::Vec3& d_in,
+	                               const util::Vec3& d_out,
+	                               const util::Vec3& n) const override;
 
    private:
-	std::shared_ptr<util::Sampler> emission_texture;
 	std::shared_ptr<util::Sampler> albedo_texture;
+	std::shared_ptr<util::Sampler> emission_texture;
 };
 }  // namespace material

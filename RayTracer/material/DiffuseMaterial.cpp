@@ -1,5 +1,7 @@
 #include "DiffuseMaterial.h"
 
+#include <cassert>
+
 #include "../tools/Random.h"
 #include "texture/Constant.h"
 
@@ -28,9 +30,20 @@ util::Vec3 DiffuseMaterial::emission(float texel_x, float texel_y) const {
 }
 util::Vec3 DiffuseMaterial::scattered_d(const util::Vec3& d,
                                         const util::Vec3& n) const {
-	return n + util::rand_vec3_in_circle(1);
+	util::Vec3 rand = util::rand_vec3_in_circle(1);
+	util::Vec3 result = n + rand;
+	/*if (util::dot(n, result) <= 0) {
+	    std::cout << n << " " << rand << std::endl;
+	    assert(false);
+	}*/
+	return result;
 }
-bool DiffuseMaterial::scatter() const {
+bool DiffuseMaterial::scatter(const util::Vec3& d, const util::Vec3& n) const {
 	return true;
+}
+float DiffuseMaterial::calculateLightMultiplier(const util::Vec3& d_in,
+                                                const util::Vec3& d_out,
+                                                const util::Vec3& n) const {
+	return util::dot(n, d_in);
 }
 }  // namespace material
