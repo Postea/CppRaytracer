@@ -93,6 +93,9 @@ bool Vec3::operator!=(const Vec3& rhs) const {
 Vec3 Vec3::normalize() const {
 	Vec3 x(*this);
 	float l = x.length();
+	if (l == 0) {
+		return x;
+	}
 	return Vec3(x[0] / l, x[1] / l, x[2] / l);
 }
 float Vec3::length() const {
@@ -122,5 +125,9 @@ Vec3 cross(const Vec3& lhs, const Vec3& rhs) {
 std::ostream& operator<<(std::ostream& os, const util::Vec3& rhs) {
 	os << "(" << rhs[0] << " ," << rhs[1] << " ," << rhs[2] << ")";
 	return os;
+}
+
+Vec3 operator*(float s, const Vec3& rhs) {
+	return rhs * s;
 }
 }  // namespace util
