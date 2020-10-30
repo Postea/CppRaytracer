@@ -18,4 +18,5 @@ class Material {
 	                                       const util::Vec3& d_out,
 	                                       const util::Vec3& n) const = 0;
 };
+util::Vec3 reflection(const util::Vec3& d, const util::Vec3& n);
 }  // namespace material
