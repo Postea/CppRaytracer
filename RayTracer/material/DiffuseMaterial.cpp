@@ -1,4 +1,7 @@
+#define _USE_MATH_DEFINES
 #include "DiffuseMaterial.h"
+
+#include <math.h>
 
 #include <cassert>
 
@@ -32,10 +35,7 @@ util::Vec3 DiffuseMaterial::scattered_d(const util::Vec3& d,
                                         const util::Vec3& n) const {
 	util::Vec3 rand = util::rand_vec3_in_circle(1);
 	util::Vec3 result = n + rand;
-	/*if (util::dot(n, result) <= 0) {
-	    std::cout << n << " " << rand << std::endl;
-	    assert(false);
-	}*/
+
 	return result;
 }
 bool DiffuseMaterial::scatter(const util::Vec3& d, const util::Vec3& n) const {
@@ -44,6 +44,6 @@ bool DiffuseMaterial::scatter(const util::Vec3& d, const util::Vec3& n) const {
 float DiffuseMaterial::calculateLightMultiplier(const util::Vec3& d_in,
                                                 const util::Vec3& d_out,
                                                 const util::Vec3& n) const {
-	return util::dot(n, d_in);
+	return M_1_PI;
 }
 }  // namespace material
