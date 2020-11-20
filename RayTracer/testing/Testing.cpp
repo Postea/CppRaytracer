@@ -450,7 +450,7 @@ void shape_test() {
 	{
 		std::cout << "  CirclePlane: ";
 
-		shapes::CirclePlane circ_plane(5.0, red_material);
+		shapes::CirclePlane circ_plane(5.0, false, red_material);
 		cam::Ray direct_ray(util::Vec3(0, 3, 0), util::Vec3(0.3, -1, 0.2), 0,
 		                    100, false);
 		cam::Ray bounding_ray(util::Vec3(4.6, -1, 4), util::Vec3(-0.1, 1, 0.5),
