@@ -6,7 +6,7 @@
 namespace shapes {
 class CirclePlane : public Light, public Shape {
    public:
-	CirclePlane(float radius,
+	CirclePlane(float radius, bool twofaced,
 	            const std::shared_ptr<material::Material>& material);
 	std::optional<cam::Hit> intersect(const cam::Ray& r) const override;
 	util::AxisAlignedBoundingBox bounds() const override;
@@ -18,5 +18,6 @@ class CirclePlane : public Light, public Shape {
    private:
 	std::shared_ptr<material::Material> material;
 	const float radius;
+	const bool twofaced;
 };
 }  // namespace shapes

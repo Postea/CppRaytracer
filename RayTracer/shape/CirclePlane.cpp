@@ -6,9 +6,9 @@
 #include "math.h"
 
 namespace shapes {
-CirclePlane::CirclePlane(float radius,
+CirclePlane::CirclePlane(float radius, bool twofaced,
                          const std::shared_ptr<material::Material>& material)
-    : radius(radius), material(material) {
+    : radius(radius), twofaced(twofaced), material(material) {
 }
 std::optional<cam::Hit> CirclePlane::intersect(const cam::Ray& r) const {
 	util::Vec3 n(0, 1, 0);
@@ -18,15 +18,17 @@ std::optional<cam::Hit> CirclePlane::intersect(const cam::Ray& r) const {
 	float a = util::dot(d, n);
 	if (a == 0) {
 		return std::nullopt;
-	} else if (a < 0) {
-		float t = -x0[1] / d[1];
-		util::Vec3 t_hitpoint = r(t);
-
-		if (r.in_range(t) && t_hitpoint.length() <= radius) {
-			return std::optional<cam::Hit>({t_hitpoint, n, t, material});
-		} else {
+	} else if (a > 0) {
+		if (twofaced)
+			n = -n;
+		else
 			return std::nullopt;
-		}
+	}
+	float t = -x0[1] / d[1];
+	util::Vec3 t_hitpoint = r(t);
+
+	if (r.in_range(t) && t_hitpoint.length() <= radius) {
+		return std::optional<cam::Hit>({t_hitpoint, n, t, material});
 	} else {
 		return std::nullopt;
 	}
