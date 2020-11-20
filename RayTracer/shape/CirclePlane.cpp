@@ -18,7 +18,7 @@ std::optional<cam::Hit> CirclePlane::intersect(const cam::Ray& r) const {
 	float a = util::dot(d, n);
 	if (a == 0) {
 		return std::nullopt;
-	} else {
+	} else if (a < 0) {
 		float t = -x0[1] / d[1];
 		util::Vec3 t_hitpoint = r(t);
 
@@ -27,26 +27,33 @@ std::optional<cam::Hit> CirclePlane::intersect(const cam::Ray& r) const {
 		} else {
 			return std::nullopt;
 		}
+	} else {
+		return std::nullopt;
 	}
 }
 util::AxisAlignedBoundingBox CirclePlane::bounds() const {
 	return util::AxisAlignedBoundingBox(util::Vec3(-radius, 0, -radius),
 	                                    util::Vec3(radius, 0, radius));
 }
-// THIS IS COPIED AND BAD TODO!!!!
 util::SurfacePoint CirclePlane::sampleLight() const {
-	float u[2] = {(float)util::dis0to1(util::gen),
-	              (float)util::dis0to1(util::gen)};
-	float r = std::sqrt(u[0]) * radius;
-	float theta = 2 * M_PI * u[1];
+	// Radius of the sampled point
+	float r = std::sqrt(util::dis0to1(util::gen)) * radius;
+	// Degreee of the sampled point
+	float theta = 2 * M_PI * util::dis0to1(util::gen);
+	// Polar coordinates have to be converted to cartesian
 	return util::SurfacePoint(
 	    util::Vec3(r * std::cos(theta), 0, r * std::sin(theta)),
-	    util::Vec3(0, -1, 0), material);
+	    util::Vec3(0, 1, 0), material);
+	// The sampled point will be in local coordinates.
 }
 util::Vec3 CirclePlane::calculateLightEmission(const util::SurfacePoint& p,
                                                const util::Vec3& d) const {
-	// Diffus ist hier im dot-product eingebettet
-	return p.albedo() * (p.emission() * util::dot(p.normal(), d.normalize())) /
-	       std::pow(d.length(), 2);
+	// Basically this is just the emission at a surface point. And the pdf dimms
+	// the light in regard to the angle
+	auto emission = p.emission();
+	auto dot = std::max<float>(util::dot(p.normal(), d.normalize()), 0);
+	auto area = M_PI * std::pow(radius, 2);
+	auto pdf = std::pow(d.length(), 2) / (dot * area);
+	return emission / pdf;
 }
 }  // namespace shapes
