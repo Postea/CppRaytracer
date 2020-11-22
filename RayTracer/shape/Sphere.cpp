@@ -47,14 +47,27 @@ util::AxisAlignedBoundingBox Sphere::bounds() const {
 	return util::AxisAlignedBoundingBox(util::Vec3(-radius),
 	                                    util::Vec3(radius));
 }
-// TODO: Rework this function to be yours. THIS IS COPIED!!!! HIT IS A WRONG
-// RETURN VALUE hit's n is wrong and bad
 util::SurfacePoint Sphere::sampleLight() const {
-	float u[2] = {(float)util::dis(util::gen), (float)util::dis(util::gen)};
-	float z = u[0];
-	float r = std::sqrt(std::max((float)0, (float)1. - z * z));
-	float phi = 2 * M_PI * u[1];
-	util::Vec3 point(r * std::cos(phi), r * std::sin(phi), z);
-	return util::SurfacePoint(point, point, material);
+	// Theta of sampled point.
+	float theta = 2 * M_PI * util::dis0to1(util::gen);
+	// Phi of the sampled point.
+	float phi = std::acos((2 * util::dis0to1(util::gen) - 1));
+	// Convert from polar coordinates to cartesian.
+	util::Vec3 point(radius * std::cos(theta) * std::sin(phi),
+	                 radius * std::sin(theta) * std::sin(phi),
+	                 radius * std::cos(phi));
+	return util::SurfacePoint(point, point.normalize(), material);
+}
+util::Vec3 Sphere::calculateLightEmission(const util::SurfacePoint& p,
+                                          const util::Vec3& d) const {
+	// Basically this is just the emission at a surface point. And the pdf dimms
+	// the light in regard to the angle.
+	// Uniform pdf of shape is 1/area, converting to pdf over solid angle is
+	// pdf/(dot/length^2).
+	auto emission = p.emission();
+	auto dot = std::max<float>(util::dot(p.normal(), d.normalize()), 0);
+	auto area = 4 * M_PI * std::pow(radius, 2);
+	auto pdf = std::pow(d.length(), 2) / (dot * area);
+	return emission / pdf;
 }
 }  // namespace shapes
