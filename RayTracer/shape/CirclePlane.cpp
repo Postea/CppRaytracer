@@ -38,11 +38,11 @@ util::AxisAlignedBoundingBox CirclePlane::bounds() const {
 	                                    util::Vec3(radius, 0, radius));
 }
 util::SurfacePoint CirclePlane::sampleLight() const {
-	// Radius of the sampled point
+	// Radius of the sampled point.
 	float r = std::sqrt(util::dis0to1(util::gen)) * radius;
-	// Degreee of the sampled point
+	// Degreee of the sampled point.
 	float theta = 2 * M_PI * util::dis0to1(util::gen);
-	// Polar coordinates have to be converted to cartesian
+	// Polar coordinates have to be converted to cartesian.
 	return util::SurfacePoint(
 	    util::Vec3(r * std::cos(theta), 0, r * std::sin(theta)),
 	    util::Vec3(0, 1, 0), material);
@@ -51,7 +51,9 @@ util::SurfacePoint CirclePlane::sampleLight() const {
 util::Vec3 CirclePlane::calculateLightEmission(const util::SurfacePoint& p,
                                                const util::Vec3& d) const {
 	// Basically this is just the emission at a surface point. And the pdf dimms
-	// the light in regard to the angle
+	// the light in regard to the angle.
+	// Uniform pdf of shape is 1/area, converting to pdf over solid angle is
+	// pdf/(dot/length^2).
 	auto emission = p.emission();
 	auto dot = std::max<float>(util::dot(p.normal(), d.normalize()), 0);
 	auto area = M_PI * std::pow(radius, 2);
