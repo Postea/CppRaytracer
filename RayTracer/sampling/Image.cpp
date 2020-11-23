@@ -1,5 +1,8 @@
 #include "Image.h"
 
+#include <fstream>
+#include <iostream>
+
 #include "../tools/Threadpool.h"
 #include "StratifiedSampler.h"
 
@@ -64,5 +67,87 @@ Image raytrace(size_t threadcount, const cam::CamObs& cam,
 	);
 	result.gammaCorrect(2.2);
 	return result;
+}
+void writeBmp(const char* filename, Image img) {
+	int width = img.width;    // Width of the image
+	int height = img.height;  // Height of the image
+
+	int horizontalBytes;  // Horizontal bytes to add, so the pixelarrays width
+	                      // is a multiple of 4
+	horizontalBytes = 4 - ((width * 3) % 4);
+	if (horizontalBytes == 4) horizontalBytes = 0;
+
+	int pixelArraySize;  // The size of the pixelArray
+	pixelArraySize = ((width * 3) + horizontalBytes) * height;
+
+	// Headers
+	int header[12];
+	// Bitmap file header
+	char bb = 'B';  // bfType
+	char mm = 'M';
+	header[0] = pixelArraySize + 54;  // bfSize
+	header[1] = 0;                    // bfReserved
+	header[2] = 54;                   // bfOffbits
+	// Bitmap information header
+	header[3] = 40;              // biSize
+	header[4] = width;           // biWidth
+	header[5] = height;          // biHeight
+	short biPLanes = 1;          // biPlanes
+	short biBitCount = 24;       // biBitCount
+	header[6] = 0;               // biCompression
+	header[7] = pixelArraySize;  // biSizeImage
+	header[8] = 0;               // biXPelsPerMeter
+	header[9] = 0;               // biYPelsPerMeter
+	header[10] = 0;              // biClrUsed
+	header[11] = 0;              // biClrImportant
+
+	std::ofstream ofile(filename, std::ios::binary);
+
+	// Write the header in the right order
+	// bfType, ...
+	ofile.write(&bb, sizeof(bb));
+	ofile.write(&mm, sizeof(mm));
+	// ... bfSize, BfReserved, bfOffbits, biSize, biWidth, bitHeight, ...
+	for (int i = 0; i < 6; i++) {
+		ofile.write((char*)&header[i], sizeof(header[i]));
+	}
+	// ... biPlanes, bitBitCount, ...
+	ofile.write((char*)&biPLanes, sizeof(biPLanes));
+	ofile.write((char*)&biBitCount, sizeof(biBitCount));
+	// ... biCompression, biSizeImage, biXPelsPerMeter, biYPelsPerMeter,
+	// biClrUsed, biClrImportant
+	for (int i = 6; i < 12; i++) {
+		ofile.write((char*)&header[i], sizeof(header[i]));
+	}
+	// The colors can only have a value from 0 to 255, so a char is enough to
+	// store them
+	char blue, green, red;
+	// Bmp is written from top to bottom
+	for (int y = height - 1; y >= 0; y--) {
+		for (int x = 0; x <= width - 1; x++) {
+			red = std::clamp<float>((img[{x, y}][0]), 0, 1) * 255;
+			green = std::clamp<float>((img[{x, y}][1]), 0, 1) * 255;
+			blue = std::clamp<float>((img[{x, y}][2]), 0, 1) * 255;
+
+			// bmp colors are bgr not rgb
+			char bgr[3] = {blue, green, red};
+			for (int i = 0; i < 3; i++) {
+				char c0 = (bgr[i] & 0x00FF);
+				// char c8 = ((bgr[i] & (unsigned int)0xFF00) >> 8);
+
+				ofile.write(&c0, sizeof(c0));
+				// ofile.write (&c8, sizeof (c8));
+			}
+		}
+		// If needed add extra bytes after each row
+		if (horizontalBytes != 0) {
+			char null;
+			for (int n = 0; n < horizontalBytes; n++) {
+				ofile.write(&null, sizeof(null));
+			}
+		}
+	}
+
+	ofile.close();
 }
 }  // namespace util
