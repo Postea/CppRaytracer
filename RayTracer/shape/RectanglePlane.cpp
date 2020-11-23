@@ -43,7 +43,7 @@ util::SurfacePoint RectanglePlane::sampleLight() const {
 	// X coord of the sampled point.
 	float x = util::disMinus1To1(util::gen) * width / 2;
 	// Z coord of the sampled point.
-	float z = util::disMinus1To1(util::gen) * width / 2;
+	float z = util::disMinus1To1(util::gen) * depth / 2;
 	return util::SurfacePoint(util::Vec3(x, 0, z), util::Vec3(0, 1, 0),
 	                          material);
 	// The sampled point will be in local coordinates.
