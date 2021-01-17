@@ -1,6 +1,7 @@
 #include "AxisAlignedBoundingBox.h"
 
 #include <algorithm>
+#include <array>
 #include <limits>
 
 namespace util {
@@ -13,6 +14,7 @@ AxisAlignedBoundingBox::AxisAlignedBoundingBox()
 
 AxisAlignedBoundingBox::AxisAlignedBoundingBox(const Vec3& min, const Vec3& max)
     : min(min), max(max) {
+	orientate();
 }
 // Operator
 
@@ -63,6 +65,9 @@ AxisAlignedBoundingBox AxisAlignedBoundingBox::operator*(
 // Methods
 // https://education.siggraph.org/static/HyperGraph/raytrace/rtinter3.htm
 bool AxisAlignedBoundingBox::intersects(const cam::Ray& r) const {
+	if (contains(r(r.tmin))) return true;
+	if (contains(r(r.tmax))) return true;
+
 	float t1x = (min.x() - r.x0.x()) / r.d.x();
 	float t2x = (max.x() - r.x0.x()) / r.d.x();
 	float t1y = (min.y() - r.x0.y()) / r.d.y();
@@ -86,10 +91,73 @@ bool AxisAlignedBoundingBox::contains(const Vec3& v) const {
 
 	return x && y && z;
 }
+// This Method is not entirely correct. It only checks if the corners of this bb
+// is inside the arguments bb. This should be enough for the splitting algorithm
+// to create a hierarchy. Theoretically there are overlapping bbs, where no
+// corner is inside the others.
+bool AxisAlignedBoundingBox::partiallyContains(
+    const AxisAlignedBoundingBox bb) {
+	std::array<Vec3, 8> vertices = {
+	    Vec3(min.x(), min.y(), min.z()), Vec3(min.x(), min.y(), max.z()),
+	    Vec3(min.x(), max.y(), min.z()), Vec3(min.x(), min.y(), max.z()),
+	    Vec3(max.x(), min.y(), min.z()), Vec3(min.x(), min.y(), max.z()),
+	    Vec3(min.x(), max.y(), min.z()), Vec3(min.x(), max.y(), max.z())};
+	for (Vec3 v : vertices)
+		if (bb.contains(v)) return true;
+	return false;
+}
+Vec3 AxisAlignedBoundingBox::center() const {
+	return (max + min) / 2;
+}
 Vec3 AxisAlignedBoundingBox::minBound() const {
 	return min;
 }
 Vec3 AxisAlignedBoundingBox::maxBound() const {
 	return max;
+}
+void AxisAlignedBoundingBox::orientate() {
+	min = util::Vec3(std::min<float>(min.x(), max.x()),
+	                 std::min<float>(min.y(), max.y()),
+	                 std::min<float>(min.z(), max.z()));
+	max = util::Vec3(std::max<float>(min.x(), max.x()),
+	                 std::max<float>(min.y(), max.y()),
+	                 std::max<float>(min.z(), max.z()));
+}
+
+std::array<AxisAlignedBoundingBox, 2> splitAABB(AxisAlignedBoundingBox box) {
+	util::Vec3 size2 = (box.maxBound() - box.minBound()) / 2;
+	AxisAlignedBoundingBox left;
+	if (size2.x() >= size2.y() && size2.x() >= size2.z()) {
+		left = AxisAlignedBoundingBox(
+		    box.minBound(), util::Vec3(box.minBound().x() + size2.x(),
+		                               box.maxBound().y(), box.maxBound().z()));
+	} else if (size2.y() >= size2.x() && size2.y() >= size2.z()) {
+		left = AxisAlignedBoundingBox(
+		    box.minBound(),
+		    util::Vec3(box.maxBound().x(), box.minBound().y() + size2.y(),
+		               box.maxBound().z()));
+	} else {
+		left = AxisAlignedBoundingBox(
+		    box.minBound(), util::Vec3(box.maxBound().x(), box.maxBound().y(),
+		                               box.minBound().z() + size2.z()));
+	}
+	AxisAlignedBoundingBox right;
+	if (size2.x() >= size2.y() && size2.x() >= size2.z()) {
+		right = AxisAlignedBoundingBox(
+		    util::Vec3(box.minBound().x() + size2.x(), box.minBound().y(),
+		               box.minBound().z()),
+		    box.maxBound());
+	} else if (size2.y() >= size2.x() && size2.y() >= size2.z()) {
+		right = AxisAlignedBoundingBox(
+		    util::Vec3(box.minBound().x(), box.minBound().y() + size2.y(),
+		               box.minBound().z()),
+		    box.maxBound());
+	} else {
+		right = AxisAlignedBoundingBox(
+		    util::Vec3(box.minBound().x(), box.minBound().y(),
+		               box.minBound().z() + size2.z()),
+		    box.maxBound());
+	}
+	return {left, right};
 }
 }  // namespace util
