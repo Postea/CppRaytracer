@@ -10,6 +10,8 @@
 #include "../shape/CirclePlane.h"
 #include "../shape/Group.h"
 #include "../shape/Sphere.h"
+#include "../shape/Triangle.h"
+#include "../shape/TriangleMesh.h"
 #include "../tools/AxisAlignedBoundingBox.h"
 #include "../tools/Mat4.h"
 #include "../tools/Vec3.h"
@@ -436,6 +438,40 @@ void axisalignedboundingbox_test() {
 
 		std::cout << "passed." << std::endl;
 	}
+	{
+		// Center tests
+		std::cout << "  center: ";
+		util::AxisAlignedBoundingBox bb(util::Vec3(-1), util::Vec3(1));
+		assert(bb.center() == util::Vec3(0));
+		util::AxisAlignedBoundingBox bb2(util::Vec3(1), util::Vec3(2));
+		assert(bb2.center() == util::Vec3(1.5));
+
+		std::cout << "passed." << std::endl;
+	}
+	{
+		// Split function tests
+		std::cout << "  split: ";
+		util::AxisAlignedBoundingBox bb(util::Vec3(-1), util::Vec3(1));
+		auto arr = util::splitAABB(bb);
+		assert(arr[0].minBound() == bb.minBound());
+		assert(arr[0].maxBound() == util::Vec3(0, 1, 1));
+		assert(arr[0].center() == util::Vec3(-0.5, 0, 0));
+		assert(arr[1].maxBound() == bb.maxBound());
+		assert(arr[1].minBound() == util::Vec3(0, -1, -1));
+		assert(arr[1].center() == util::Vec3(0.5, 0, 0));
+
+		util::AxisAlignedBoundingBox bb2(util::Vec3(0, 1, 2),
+		                                 util::Vec3(3, 2, 3));
+		arr = util::splitAABB(bb2);
+		assert(arr[0].minBound() == bb2.minBound());
+		assert(arr[0].maxBound() == util::Vec3(1.5, 2, 3));
+		assert(arr[0].center() == util::Vec3(0.75, 1.5, 2.5));
+		assert(arr[1].maxBound() == bb2.maxBound());
+		assert(arr[1].minBound() == util::Vec3(1.5, 1, 2));
+		assert(arr[1].center() == util::Vec3(2.25, 1.5, 2.5));
+
+		std::cout << "passed." << std::endl;
+	}
 	std::cout << "all util::AxisAlignedBoundingBox tests passed." << std::endl
 	          << std::endl;
 }
@@ -488,6 +524,42 @@ void shape_test() {
 		assert(!sphere.intersect(missing_ray));
 
 		std::cout << "passed." << std::endl;
+	}
+	{
+		std::cout << "  Triangle: ";
+
+		std::vector<util::Vertex> vertices;
+		auto verte0 = util::Vertex();
+		verte0.position = util::Vec3(-1, 0, 1);
+		auto verte1 = util::Vertex();
+		verte1.position = util::Vec3(0, 0, -1);
+		auto verte2 = util::Vertex();
+		verte2.position = util::Vec3(1, 0, 1);
+		vertices.push_back(verte0);
+		vertices.push_back(verte1);
+		vertices.push_back(verte2);
+		std::vector<shapes::Triangle> triangles(
+		    {{verte0, verte1, verte2, nullptr}});
+		shapes::TriangleMesh mesh(triangles);
+		/*shapes::Triangle tri(mesh, 0, nullptr);
+		assert(tri.intersect(cam::Ray(util::Vec3(0, -2, 0), util::Vec3(0, 1, 0),
+		                              cam::epsilon,
+		                              std::numeric_limits<float>().infinity(),
+		                              false))
+		           .value()
+		           .point() == util::Vec3(0));
+
+		assert(tri.intersect(cam::Ray(util::Vec3(0, -2, -0.9),
+		                              util::Vec3(0, 1, 0.9), cam::epsilon,
+		                              std::numeric_limits<float>().infinity(),
+		                              false))
+		           .value()
+		           .point() == util::Vec3(0, 0, 0.9));
+
+		assert(!tri.intersect(cam::Ray(
+		    util::Vec3(0, -2, -1.1), util::Vec3(0, 1, -1.1), cam::epsilon,
+		    std::numeric_limits<float>().infinity(), false)));
+		std::cout << "passed." << std::endl;*/
 	}
 	std::cout << "all shapes::Shape tests passed." << std::endl;
 }
