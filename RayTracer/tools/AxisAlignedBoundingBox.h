@@ -18,10 +18,16 @@ class AxisAlignedBoundingBox {
 	// Methods
 	bool intersects(const cam::Ray& r) const;
 	bool contains(const Vec3& v) const;
+	bool partiallyContains(const AxisAlignedBoundingBox bb);
+	Vec3 center() const;
 	Vec3 minBound() const;
 	Vec3 maxBound() const;
 
    private:
 	Vec3 min, max;
+	void orientate();
 };
+
+// From cgg Abgaben of Prof. Tramberend
+std::array<AxisAlignedBoundingBox, 2> splitAABB(AxisAlignedBoundingBox box);
 }  // namespace util
