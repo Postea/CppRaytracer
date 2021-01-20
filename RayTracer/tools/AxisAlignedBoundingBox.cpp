@@ -99,9 +99,9 @@ bool AxisAlignedBoundingBox::partiallyContains(
     const AxisAlignedBoundingBox bb) {
 	std::array<Vec3, 8> vertices = {
 	    Vec3(min.x(), min.y(), min.z()), Vec3(min.x(), min.y(), max.z()),
-	    Vec3(min.x(), max.y(), min.z()), Vec3(min.x(), min.y(), max.z()),
-	    Vec3(max.x(), min.y(), min.z()), Vec3(min.x(), min.y(), max.z()),
-	    Vec3(min.x(), max.y(), min.z()), Vec3(min.x(), max.y(), max.z())};
+	    Vec3(min.x(), max.y(), min.z()), Vec3(min.x(), max.y(), max.z()),
+	    Vec3(max.x(), min.y(), min.z()), Vec3(max.x(), min.y(), max.z()),
+	    Vec3(max.x(), max.y(), min.z()), Vec3(max.x(), max.y(), max.z())};
 	for (Vec3 v : vertices)
 		if (bb.contains(v)) return true;
 	return false;
