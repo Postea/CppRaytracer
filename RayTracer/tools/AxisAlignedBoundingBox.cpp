@@ -91,17 +91,37 @@ bool AxisAlignedBoundingBox::contains(const Vec3& v) const {
 
 	return x && y && z;
 }
+
+bool AxisAlignedBoundingBox::contains(const AxisAlignedBoundingBox& bb) const {
+	std::array<Vec3, 8> vertices = {
+	    Vec3(bb.minBound().x(), bb.minBound().y(), bb.minBound().z()),
+	    Vec3(bb.minBound().x(), bb.minBound().y(), bb.maxBound().z()),
+	    Vec3(bb.minBound().x(), bb.maxBound().y(), bb.minBound().z()),
+	    Vec3(bb.minBound().x(), bb.maxBound().y(), bb.maxBound().z()),
+	    Vec3(bb.maxBound().x(), bb.minBound().y(), bb.minBound().z()),
+	    Vec3(bb.maxBound().x(), bb.minBound().y(), bb.maxBound().z()),
+	    Vec3(bb.maxBound().x(), bb.maxBound().y(), bb.minBound().z()),
+	    Vec3(bb.maxBound().x(), bb.maxBound().y(), bb.maxBound().z())};
+	for (Vec3 v : vertices)
+		if (!contains(v)) return false;
+	return true;
+}
 // This Method is not entirely correct. It only checks if the corners of this bb
 // is inside the arguments bb. This should be enough for the splitting algorithm
 // to create a hierarchy. Theoretically there are overlapping bbs, where no
 // corner is inside the others.
+
 bool AxisAlignedBoundingBox::partiallyContains(
-    const AxisAlignedBoundingBox bb) {
+    const AxisAlignedBoundingBox& bb) const {
 	std::array<Vec3, 8> vertices = {
-	    Vec3(min.x(), min.y(), min.z()), Vec3(min.x(), min.y(), max.z()),
-	    Vec3(min.x(), max.y(), min.z()), Vec3(min.x(), max.y(), max.z()),
-	    Vec3(max.x(), min.y(), min.z()), Vec3(max.x(), min.y(), max.z()),
-	    Vec3(max.x(), max.y(), min.z()), Vec3(max.x(), max.y(), max.z())};
+	    Vec3(bb.minBound().x(), bb.minBound().y(), bb.minBound().z()),
+	    Vec3(bb.minBound().x(), bb.minBound().y(), bb.maxBound().z()),
+	    Vec3(bb.minBound().x(), bb.maxBound().y(), bb.minBound().z()),
+	    Vec3(bb.minBound().x(), bb.maxBound().y(), bb.maxBound().z()),
+	    Vec3(bb.maxBound().x(), bb.minBound().y(), bb.minBound().z()),
+	    Vec3(bb.maxBound().x(), bb.minBound().y(), bb.maxBound().z()),
+	    Vec3(bb.maxBound().x(), bb.maxBound().y(), bb.minBound().z()),
+	    Vec3(bb.maxBound().x(), bb.maxBound().y(), bb.maxBound().z())};
 	for (Vec3 v : vertices)
 		if (bb.contains(v)) return true;
 	return false;
@@ -123,7 +143,7 @@ void AxisAlignedBoundingBox::orientate() {
 	                 std::max<float>(min.y(), max.y()),
 	                 std::max<float>(min.z(), max.z()));
 }
-
+// Pair is 0->Left 1->Right
 std::array<AxisAlignedBoundingBox, 2> splitAABB(AxisAlignedBoundingBox box) {
 	util::Vec3 size2 = (box.maxBound() - box.minBound()) / 2;
 	AxisAlignedBoundingBox left;

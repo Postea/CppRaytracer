@@ -18,7 +18,8 @@ class AxisAlignedBoundingBox {
 	// Methods
 	bool intersects(const cam::Ray& r) const;
 	bool contains(const Vec3& v) const;
-	bool partiallyContains(const AxisAlignedBoundingBox bb);
+	bool contains(const AxisAlignedBoundingBox& bb) const;
+	bool partiallyContains(const AxisAlignedBoundingBox& bb) const;
 	Vec3 center() const;
 	Vec3 minBound() const;
 	Vec3 maxBound() const;
