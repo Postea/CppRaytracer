@@ -123,7 +123,7 @@ bool AxisAlignedBoundingBox::partiallyContains(
 	    Vec3(bb.maxBound().x(), bb.maxBound().y(), bb.minBound().z()),
 	    Vec3(bb.maxBound().x(), bb.maxBound().y(), bb.maxBound().z())};
 	for (Vec3 v : vertices)
-		if (bb.contains(v)) return true;
+		if (contains(v)) return true;
 	return false;
 }
 Vec3 AxisAlignedBoundingBox::center() const {
