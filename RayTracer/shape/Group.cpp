@@ -4,12 +4,15 @@
 #include "../tools/Vec3.h"
 
 namespace shapes {
-Group::Group(const util::Transformation& transform)
-    : shapeList(std::vector<std::shared_ptr<Shape>>()), transform(transform) {
-}
-Group::Group(const util::Mat4& matrix)
+Group::Group(const util::Transformation& transform, bool rebuildBB)
     : shapeList(std::vector<std::shared_ptr<Shape>>()),
-      transform(util::Transformation(matrix)) {
+      transform(transform),
+      rebuildBB(rebuildBB) {
+}
+Group::Group(const util::Mat4& matrix, bool rebuildBB)
+    : shapeList(std::vector<std::shared_ptr<Shape>>()),
+      transform(util::Transformation(matrix)),
+      rebuildBB(rebuildBB) {
 }
 
 std::optional<cam::Hit> Group::intersect(const cam::Ray& r) const {
@@ -23,10 +26,12 @@ std::optional<cam::Hit> Group::intersect(const cam::Ray& r) const {
 		if (s->bounds().intersects(imagR)) {
 			std::optional<cam::Hit> temp = s->intersect(imagR);
 			if (temp) {
-				if (!result) {
-					result = temp;
-				} else if (result->scalar() > temp->scalar()) {
-					result = temp;
+				if (imagR.in_range(temp->scalar())) {
+					if (!result) {
+						result = temp;
+					} else if (result->scalar() > temp->scalar()) {
+						result = temp;
+					}
 				}
 			}
 		}
@@ -43,6 +48,9 @@ std::optional<cam::Hit> Group::intersect(const cam::Ray& r) const {
 util::AxisAlignedBoundingBox Group::bounds() const {
 	return boundingVolume;
 }
+void Group::setBounds(const util::AxisAlignedBoundingBox& bb) {
+	boundingVolume = bb;
+}
 void Group::add(const Group& group) {
 	add(std::make_shared<Group>(group));
 }
@@ -51,7 +59,7 @@ void Group::add(const ShapeSingleGroup& group) {
 }
 void Group::add(const std::shared_ptr<Shape>& shape) {
 	shapeList.push_back(shape);
-	rebuildBoundingVolume();
+	if (rebuildBB) rebuildBoundingVolume();
 }
 
 void Group::rebuildBoundingVolume() {
