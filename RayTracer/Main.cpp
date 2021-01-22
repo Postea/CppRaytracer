@@ -36,7 +36,7 @@ using namespace shapes;
 using namespace std;
 
 int main() {
-	if (true) {
+	if (false) {
 		cout << "Start" << endl;
 		// Image img = Image (100, 100);
 
@@ -112,5 +112,14 @@ int main() {
 		// test::shape_test();
 		test::axisalignedboundingbox_test();
 	} else {
+		std::ifstream is("Cube.obj");
+		TriangleMesh mesh(is, nullptr);
+		cout << "triangles: " << mesh.triangles.size() << endl;
+		cout << "leaves: " << mesh.leaves.size() << endl;
+		cout << "hierarchy: " << mesh.hierarchy.size() << endl;
+		for (auto hier : mesh.hierarchy) {
+			cout << "{" << hier.left << " " << hier.right << " "
+			     << hier.leaves_i << " " << hier.leaves_size << "}" << endl;
+		}
 	}
 };

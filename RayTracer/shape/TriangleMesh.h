@@ -9,6 +9,14 @@
 #include "Triangle.h"
 
 namespace shapes {
+
+struct TriMeshNode {
+	util::AxisAlignedBoundingBox bb;
+	int_fast16_t left;
+	int_fast16_t right;
+	int_fast16_t leaves_i;
+	int_fast16_t leaves_size;
+};
 class TriangleMesh : public Light, public Shape {
    public:
 	TriangleMesh(std::vector<Triangle> triangles);
@@ -24,11 +32,11 @@ class TriangleMesh : public Light, public Shape {
    public:
 	std::shared_ptr<material::Material> material;
 	std::vector<Triangle> triangles;
-	Group hierarchy;
+	std::vector<Triangle> leaves;
+	std::vector<TriMeshNode> hierarchy;
 
    private:
 	util::AxisAlignedBoundingBox initBB();
+	void hierarch(size_t i, const std::vector<std::shared_ptr<Triangle>> v);
 };
-void hierarch(Group& group, std::vector<std::shared_ptr<Shape>>& v,
-              size_t depth = 5);
 }  // namespace shapes

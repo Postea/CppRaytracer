@@ -11,29 +11,22 @@
 namespace shapes {
 // Only a test constructor. Can not be used for actual rendering
 TriangleMesh::TriangleMesh(std::vector<Triangle> triangles)
-    : triangles(triangles),
-      material(nullptr),
-      hierarchy(Group(util::identity(), false)) {
+    : triangles(triangles), material(nullptr), hierarchy({}) {
 }
 TriangleMesh::TriangleMesh(std::istream& in,
                            const std::shared_ptr<material::Material>& mat)
-    : material(mat), hierarchy(Group(util::identity(), false)) {
+    : material(mat), hierarchy({}) {
 	triangles = util::loadObj(in, material);
-	hierarchy.setBounds(initBB());
-	std::vector<std::shared_ptr<Shape>> v;
+	hierarchy.push_back({initBB(), -1, -1, -1, -1});
+	std::vector<std::shared_ptr<Triangle>> v;
 	for (auto tri : triangles) v.push_back(std::make_shared<Triangle>(tri));
-	hierarch(hierarchy, v, 100);
+	hierarch(0, v);
 }
 std::optional<cam::Hit> TriangleMesh::intersect(const cam::Ray& r) const {
-	if (hierarchy.bounds().intersects(r)) {
-		// std::cout << "In Intersect" << std::endl;
-		auto hit = hierarchy.intersect(r);
-		return hit;
-	} else
-		return std::nullopt;
+	return std::nullopt;
 }
 util::AxisAlignedBoundingBox TriangleMesh::bounds() const {
-	return hierarchy.bounds();
+	return hierarchy[0].bb;
 }
 
 util::SurfacePoint TriangleMesh::sampleLight() const {
@@ -49,44 +42,55 @@ util::AxisAlignedBoundingBox TriangleMesh::initBB() {
 	return init;
 }
 
-void hierarch(Group& group, std::vector<std::shared_ptr<Shape>>& v,
-              size_t depth) {
-	for (auto tri_ptr : v) assert(group.bounds().contains(tri_ptr->bounds()));
-
-	if (depth == 0) return;
-
-	auto bb_pair = util::splitAABB(group.bounds());
-	Group left(util::identity(), false);
-	left.setBounds(bb_pair[0]);
-	Group right(util::identity(), false);
-	right.setBounds(bb_pair[1]);
-	std::vector<std::shared_ptr<Shape>> left_non_leaves;
-	std::vector<std::shared_ptr<Shape>> right_non_leaves;
+void TriangleMesh::hierarch(size_t i,
+                            std::vector<std::shared_ptr<Triangle>> v) {
+	if (v.empty()) return;
+	auto bb_pair = util::splitAABB(hierarchy[i].bb);
+	TriMeshNode left({bb_pair[0], -1, -1, -1, -1});
+	TriMeshNode right({bb_pair[1], -1, -1, -1, -1});
+	std::vector<std::shared_ptr<Triangle>> left_non_leaves;
+	std::vector<std::shared_ptr<Triangle>> right_non_leaves;
+	std::vector<std::shared_ptr<Triangle>> middle;
 	for (auto tri_ptr : v) {
-		if (left.bounds().contains(tri_ptr->bounds())) {
-			left.add(tri_ptr);
+		if (left.bb.contains(tri_ptr->bounds())) {
 			left_non_leaves.push_back(tri_ptr);
-		} else if (right.bounds().contains(tri_ptr->bounds())) {
-			right.add(tri_ptr);
+		} else if (right.bb.contains(tri_ptr->bounds())) {
 			right_non_leaves.push_back(tri_ptr);
 		} else {
-			assert(left.bounds().partiallyContains(tri_ptr->bounds()));
-			assert(right.bounds().partiallyContains(tri_ptr->bounds()));
-			group.add(tri_ptr);
+			assert(left.bb.partiallyContains(tri_ptr->bounds()));
+			assert(right.bb.partiallyContains(tri_ptr->bounds()));
+			middle.push_back(tri_ptr);
 		}
 	}
-	v.clear();
-	std::cout << depth << " Left: " << left.shapeList.size() << std::endl;
-	std::cout << depth << " Right: " << right.shapeList.size() << std::endl;
-	std::cout << depth << " Middle: " << group.shapeList.size() << std::endl;
-	size_t hierarch_min_cluster_size = 1;
+	// std::cout << depth << " Left: " << left.shapeList.size() << std::endl;
+	// std::cout << depth << " Right: " << right.shapeList.size() << std::endl;
+	// std::cout << depth << " Middle: " << group.shapeList.size() << std::endl;
+
+	// Handle middle leaves
+	hierarchy[i].leaves_i = leaves.size();
+	hierarchy[i].leaves_size = middle.size();
+	for (auto tri_ptr : middle) leaves.push_back(*tri_ptr);
+
+	// Handle left box
+	hierarchy.push_back(left);
+	std::cout << i << std::endl;
+	hierarchy[i].left = hierarchy.size();
+	// Handle right box
+	hierarchy.push_back(right);
+	hierarchy[i].right = hierarchy.size();
+
+	// Handle recursion
+	hierarch(hierarchy.size() - 2, left_non_leaves);
+	hierarch(hierarchy.size() - 1, right_non_leaves);
+
+	/*size_t hierarch_min_cluster_size = 1;
 	if (left.shapeList.size() >= hierarch_min_cluster_size) {
-		group.add(left);
-		hierarch(left, left_non_leaves, depth - 1);
+	    group.add(left);
+	    hierarch(left, left_non_leaves, depth - 1);
 	}
 	if (right.shapeList.size() >= hierarch_min_cluster_size) {
-		group.add(right);
-		hierarch(right, right_non_leaves, depth - 1);
-	}
+	    group.add(right);
+	    hierarch(right, right_non_leaves, depth - 1);
+	}*/
 }
 }  // namespace shapes
