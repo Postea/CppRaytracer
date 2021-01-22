@@ -104,6 +104,7 @@ bool AxisAlignedBoundingBox::contains(const AxisAlignedBoundingBox& bb) const {
 	    Vec3(bb.maxBound().x(), bb.maxBound().y(), bb.maxBound().z())};
 	for (Vec3 v : vertices)
 		if (!contains(v)) return false;
+
 	return true;
 }
 // This Method is not entirely correct. It only checks if the corners of this bb
