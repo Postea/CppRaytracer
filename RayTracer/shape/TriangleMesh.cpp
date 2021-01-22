@@ -31,7 +31,6 @@ TriangleMesh::TriangleMesh(std::istream& in,
 }
 std::optional<cam::Hit> TriangleMesh::intersect(const cam::Ray& r) const {
 	std::optional<cam::Hit> result = std::nullopt;
-	std::optional<cam::Hit> mid_hit = std::nullopt;
 	for (auto hier : hierarchy) {
 		int_fast16_t bound = hier.leaves_i + hier.leaves_size - 1;
 		// assert(!(hier.leaves_i == -1 ^ hier.leaves_size == -1));
@@ -40,10 +39,10 @@ std::optional<cam::Hit> TriangleMesh::intersect(const cam::Ray& r) const {
 			std::optional<cam::Hit> temp = tri.intersect(r);
 			if (temp) {
 				if (r.in_range(temp->scalar())) {
-					if (!mid_hit) {
-						mid_hit = temp;
-					} else if (mid_hit->scalar() > temp->scalar()) {
-						mid_hit = temp;
+					if (!result) {
+						result = temp;
+					} else if (result->scalar() > temp->scalar()) {
+						result = temp;
 					}
 				}
 			}
