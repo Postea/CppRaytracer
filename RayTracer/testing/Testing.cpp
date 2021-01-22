@@ -358,6 +358,19 @@ void axisalignedboundingbox_test() {
 		    infbb.contains(util::Vec3(std::numeric_limits<float>::infinity())));
 		assert(infbb.contains(util::Vec3(0)));
 
+		// contains bounding box
+		bb = util::AxisAlignedBoundingBox(util::Vec3(-1), util::Vec3(1.5));
+		util::AxisAlignedBoundingBox bb2(util::Vec3(1), util::Vec3(2));
+		assert(!bb.contains(bb2));
+		assert(!bb2.contains(bb));
+		assert(bb2.contains(bb2));
+		bb = util::AxisAlignedBoundingBox(util::Vec3(-1, -1, -2),
+		                                  util::Vec3(1, 1, 2));
+		bb2 = util::AxisAlignedBoundingBox(util::Vec3(-10, -10, -10),
+		                                   util::Vec3(2, 2, 2));
+		assert(!bb.contains(bb2));
+		assert(bb2.contains(bb));
+
 		std::cout << "passed." << std::endl;
 	}
 	{
@@ -469,6 +482,30 @@ void axisalignedboundingbox_test() {
 		assert(arr[1].maxBound() == bb2.maxBound());
 		assert(arr[1].minBound() == util::Vec3(1.5, 1, 2));
 		assert(arr[1].center() == util::Vec3(2.25, 1.5, 2.5));
+
+		std::cout << "passed." << std::endl;
+	}
+	{
+		// Partially contains tests
+		std::cout << "  partially contains: ";
+		util::AxisAlignedBoundingBox bb(util::Vec3(-1), util::Vec3(1.5));
+		util::AxisAlignedBoundingBox bb2(util::Vec3(1), util::Vec3(2));
+		assert(bb.partiallyContains(bb2));
+		assert(bb2.partiallyContains(bb));
+		assert(bb2.partiallyContains(bb2));
+		bb = util::AxisAlignedBoundingBox(util::Vec3(-1, -1, -2),
+		                                  util::Vec3(1, 1, 2));
+		bb2 = util::AxisAlignedBoundingBox(util::Vec3(-10, -10, -10),
+		                                   util::Vec3(0, 0, 0));
+		assert(bb.partiallyContains(bb2));
+		assert(bb2.partiallyContains(bb));
+		assert(bb2.partiallyContains(bb2));
+		bb = util::AxisAlignedBoundingBox(util::Vec3(-1, -1, -2),
+		                                  util::Vec3(1, 1, 2));
+		bb2 = util::AxisAlignedBoundingBox(util::Vec3(-1, -2, -1),
+		                                   util::Vec3(1, 2, 1));
+		assert(!bb.partiallyContains(bb2));
+		assert(!bb2.partiallyContains(bb));
 
 		std::cout << "passed." << std::endl;
 	}
