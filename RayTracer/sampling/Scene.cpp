@@ -46,23 +46,28 @@ util::Vec3 Scene::calculateRadiance(const cam::Ray& r, size_t depth,
 		    }*/
 #if true
 		for (auto light : lights) {
-			int nn = 10;
+			int nn = 5;
+			nn = nn * nn;
 			util::Vec3 lightPart;
 			for (int i = 0; i < nn; i++) {
 				auto samplePoint = light->sampleLight();
 				auto shadowRay = cam::Ray(samplePoint.point(),
-				                          h->point() - samplePoint.point(),
-				                          cam::epsilon, 1, false);
-				auto lightEmission =
-				    light->calculateLightEmission(samplePoint, shadowRay.d);
-				auto lightMultiplier = h->calculateLightMultiplier(
-				    shadowRay.d.normalize(), -r.d, h->normal());
+				                          h->point() - samplePoint.point(), 0,
+				                          1 - cam::epsilon, false);
+				auto shadowHit = group.intersect(shadowRay);
+				if (!shadowHit) {
+					auto lightEmission =
+					    light->calculateLightEmission(samplePoint, shadowRay.d);
+					auto lightMultiplier = h->calculateLightMultiplier(
+					    shadowRay.d.normalize(), -r.d, h->normal());
 
-				util::Vec3 scatterFunction =
-				    lightMultiplier * lightEmission *
-				    std::max<float>(
-				        util::dot(-shadowRay.d.normalize(), h->normal()), 0);
-				lightPart = lightPart + (scatterFunction);
+					util::Vec3 scatterFunction =
+					    lightMultiplier * lightEmission *
+					    std::max<float>(
+					        util::dot(-shadowRay.d.normalize(), h->normal()),
+					        0);
+					lightPart = lightPart + (scatterFunction);
+				}
 			}
 			result = result + (h->albedo() * (lightPart / nn));
 		}
@@ -72,4 +77,5 @@ util::Vec3 Scene::calculateRadiance(const cam::Ray& r, size_t depth,
 		result = h->emission();
 	}
 	return result;
+	// return h->normal();
 }
