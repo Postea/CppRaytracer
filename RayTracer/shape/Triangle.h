@@ -6,9 +6,11 @@
 #include "../camera/Hit.h"
 #include "../tools/AxisAlignedBoundingBox.h"
 #include "../tools/Vertex.h"
+#include "Light.h"
+#include "Shape.h"
 
 namespace shapes {
-class Triangle {
+class Triangle : public Light, public Shape {
    public:
 	Triangle(util::Vertex p1, util::Vertex p2, util::Vertex p3,
 	         const std::shared_ptr<material::Material>& material);
