@@ -37,6 +37,8 @@ class TriangleMesh : public Light, public Shape {
 
    private:
 	util::AxisAlignedBoundingBox initBB();
+	std::optional<cam::Hit> TriangleMesh::intersect(size_t i,
+	                                                const cam::Ray& r) const;
 	void hierarch(size_t i, const std::vector<std::shared_ptr<Triangle>> v);
 };
 }  // namespace shapes
