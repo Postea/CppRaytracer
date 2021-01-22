@@ -36,7 +36,7 @@ using namespace shapes;
 using namespace std;
 
 int main() {
-	if (false) {
+	if (true) {
 		cout << "Start" << endl;
 		// Image img = Image (100, 100);
 
@@ -78,6 +78,14 @@ int main() {
 		std::ifstream is("Tower_Base.obj");
 		auto mesh = make_shared<TriangleMesh>(is, sphere_colo);
 
+		cout << "triangles: " << mesh->triangles.size() << endl;
+		cout << "leaves: " << mesh->leaves.size() << endl;
+		cout << "hierarchy: " << mesh->hierarchy.size() << endl;
+		for (auto hier : mesh->hierarchy) {
+			cout << "{" << hier.left << " " << hier.right << " "
+			     << hier.leaves_i << " " << hier.leaves_size << "}" << endl;
+		}
+
 		shape_group.add(ShapeSingleGroup(ident, mesh));
 		/*for (auto pos : mesh->vertices) {
 		        std::cout << pos.position << std::endl;
@@ -92,13 +100,13 @@ int main() {
 		std::vector<std::shared_ptr<Light>> lights = {lightGroup};
 		auto sc = std::make_shared<Scene>(Scene(group, lights, obs, 8));
 
-		size_t n = 3;
+		size_t n = 1;
 
 		clock_t clkStart;
 		clock_t clkFinish;
 		cout << "Start render" << endl;
 		clkStart = clock();
-		Image img = raytrace(4, obs, sc, n * n);
+		Image img = raytrace(1, obs, sc, n * n);
 		clkFinish = clock();
 		cout << "Start imaging" << endl;
 		writeBmp("results/aaa.bmp", img);
@@ -112,7 +120,7 @@ int main() {
 		// test::shape_test();
 		test::axisalignedboundingbox_test();
 	} else {
-		std::ifstream is("Cube.obj");
+		std::ifstream is("Tower_Top.obj");
 		TriangleMesh mesh(is, nullptr);
 		cout << "triangles: " << mesh.triangles.size() << endl;
 		cout << "leaves: " << mesh.leaves.size() << endl;
