@@ -13,7 +13,7 @@ class TriangleMesh : public Light, public Shape {
    public:
 	TriangleMesh(std::vector<Triangle> triangles);
 	TriangleMesh(std::istream& in,
-	             const std::shared_ptr<material::Material>& material);
+	             const std::shared_ptr<material::Material>& mat);
 	std::optional<cam::Hit> intersect(const cam::Ray& r) const override;
 	util::AxisAlignedBoundingBox bounds() const override;
 
@@ -24,9 +24,11 @@ class TriangleMesh : public Light, public Shape {
    public:
 	std::shared_ptr<material::Material> material;
 	std::vector<Triangle> triangles;
+	Group hierarchy;
 
    private:
-	Group hierarchy;
 	util::AxisAlignedBoundingBox initBB();
 };
+void hierarch(Group& group, std::vector<std::shared_ptr<Shape>>& v,
+              size_t depth = 5);
 }  // namespace shapes
