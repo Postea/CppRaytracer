@@ -22,9 +22,34 @@ TriangleMesh::TriangleMesh(std::istream& in,
 	std::vector<std::shared_ptr<Triangle>> v;
 	for (auto tri : triangles) v.push_back(std::make_shared<Triangle>(tri));
 	hierarch(0, v);
+	/*hierarchy.erase(
+	    std::remove_if(hierarchy.begin(), hierarchy.end(),
+	                   [](TriMeshNode hier) {
+	                       return (hier.leaves_i + hier.leaves_size - 1) < 0;
+	                   }),
+	    hierarchy.end());*/
 }
 std::optional<cam::Hit> TriangleMesh::intersect(const cam::Ray& r) const {
-	return intersect(0, r);
+	std::optional<cam::Hit> result = std::nullopt;
+	std::optional<cam::Hit> mid_hit = std::nullopt;
+	for (auto hier : hierarchy) {
+		int_fast16_t bound = hier.leaves_i + hier.leaves_size - 1;
+		// assert(!(hier.leaves_i == -1 ^ hier.leaves_size == -1));
+		for (size_t tri_i = hier.leaves_i; tri_i <= bound; tri_i++) {
+			auto tri = leaves[tri_i];
+			std::optional<cam::Hit> temp = tri.intersect(r);
+			if (temp) {
+				if (r.in_range(temp->scalar())) {
+					if (!mid_hit) {
+						mid_hit = temp;
+					} else if (mid_hit->scalar() > temp->scalar()) {
+						mid_hit = temp;
+					}
+				}
+			}
+		}
+	}
+	return result;
 }
 std::optional<cam::Hit> TriangleMesh::intersect(size_t i,
                                                 const cam::Ray& r) const {

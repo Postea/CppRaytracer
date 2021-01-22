@@ -106,7 +106,7 @@ int main() {
 		clock_t clkFinish;
 		cout << "Start render" << endl;
 		clkStart = clock();
-		Image img = raytrace(1, obs, sc, n * n);
+		Image img = raytrace(4, obs, sc, n * n);
 		clkFinish = clock();
 		cout << "Start imaging" << endl;
 		writeBmp("results/aaa.bmp", img);
