@@ -22,12 +22,12 @@ TriangleMesh::TriangleMesh(std::istream& in,
 	std::vector<std::shared_ptr<Triangle>> v;
 	for (auto tri : triangles) v.push_back(std::make_shared<Triangle>(tri));
 	hierarch(0, v);
-	/*hierarchy.erase(
+	hierarchy.erase(
 	    std::remove_if(hierarchy.begin(), hierarchy.end(),
 	                   [](TriMeshNode hier) {
-	                       return (hier.leaves_i + hier.leaves_size - 1) < 0;
+		                   return (hier.leaves_i + hier.leaves_size - 1) < 0;
 	                   }),
-	    hierarchy.end());*/
+	    hierarchy.end());
 }
 std::optional<cam::Hit> TriangleMesh::intersect(const cam::Ray& r) const {
 	std::optional<cam::Hit> result = std::nullopt;
