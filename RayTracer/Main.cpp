@@ -84,9 +84,9 @@ int main() {
 
 		float s = 0;
 		for (auto hier : mesh->hierarchy) {
-			cout << "{" << hier.left << " " << hier.right << " "
+			/*cout << "{" << hier.left << " " << hier.right << " "
 			     << hier.leaves_i << " " << hier.leaves_size << " "
-			     << hier.bb.size() << "}" << endl;
+			     << hier.bb.size() << "}" << endl;*/
 			s += hier.bb.size();
 		}
 		cout << "Size: " << s << endl;
