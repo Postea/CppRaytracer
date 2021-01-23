@@ -81,10 +81,15 @@ int main() {
 		cout << "triangles: " << mesh->triangles.size() << endl;
 		cout << "leaves: " << mesh->leaves.size() << endl;
 		cout << "hierarchy: " << mesh->hierarchy.size() << endl;
+
+		float s = 0;
 		for (auto hier : mesh->hierarchy) {
 			cout << "{" << hier.left << " " << hier.right << " "
-			     << hier.leaves_i << " " << hier.leaves_size << "}" << endl;
+			     << hier.leaves_i << " " << hier.leaves_size << " "
+			     << hier.bb.size() << "}" << endl;
+			s += hier.bb.size();
 		}
+		cout << "Size: " << s << endl;
 
 		shape_group.add(ShapeSingleGroup(ident, mesh));
 		/*for (auto pos : mesh->vertices) {
