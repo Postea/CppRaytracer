@@ -2,6 +2,7 @@
 
 #include "TriangleMesh.h"
 
+#include <algorithm>
 #include <cassert>
 #include <limits>
 #include <sstream>
@@ -22,27 +23,46 @@ TriangleMesh::TriangleMesh(std::istream& in,
 	std::vector<std::shared_ptr<Triangle>> v;
 	for (auto tri : triangles) v.push_back(std::make_shared<Triangle>(tri));
 	hierarch(0, v);
+#if true
 	hierarchy.erase(
 	    std::remove_if(hierarchy.begin(), hierarchy.end(),
 	                   [](TriMeshNode hier) {
 		                   return (hier.leaves_i + hier.leaves_size - 1) < 0;
 	                   }),
 	    hierarchy.end());
+#if false
+	std::transform(
+	    hierarchy.begin(), hierarchy.end(), hierarchy.begin(),
+	    [this](TriMeshNode hier) {
+		    auto init = leaves[hier.leaves_i].bounds();
+		    int_fast16_t bound = hier.leaves_i + hier.leaves_size - 1;
+		    assert(bound > 0);
+		    for (size_t tri_i = hier.leaves_i; tri_i <= bound; tri_i++) {
+			    init = init + triangles[tri_i].bounds();
+		    }
+		    hier.bb = init;
+		    return hier;
+	    });
+#endif
+#endif
+	triangles.clear();
 }
 std::optional<cam::Hit> TriangleMesh::intersect(const cam::Ray& r) const {
 	std::optional<cam::Hit> result = std::nullopt;
 	for (auto hier : hierarchy) {
-		int_fast16_t bound = hier.leaves_i + hier.leaves_size - 1;
-		// assert(!(hier.leaves_i == -1 ^ hier.leaves_size == -1));
-		for (size_t tri_i = hier.leaves_i; tri_i <= bound; tri_i++) {
-			auto tri = leaves[tri_i];
-			std::optional<cam::Hit> temp = tri.intersect(r);
-			if (temp) {
-				if (r.in_range(temp->scalar())) {
-					if (!result) {
-						result = temp;
-					} else if (result->scalar() > temp->scalar()) {
-						result = temp;
+		if (hier.bb.intersects(r)) {
+			int_fast16_t bound = hier.leaves_i + hier.leaves_size - 1;
+			// assert(!(hier.leaves_i == -1 ^ hier.leaves_size == -1));
+			for (size_t tri_i = hier.leaves_i; tri_i <= bound; tri_i++) {
+				auto tri = leaves[tri_i];
+				std::optional<cam::Hit> temp = tri.intersect(r);
+				if (temp) {
+					if (r.in_range(temp->scalar())) {
+						if (!result) {
+							result = temp;
+						} else if (result->scalar() > temp->scalar()) {
+							result = temp;
+						}
 					}
 				}
 			}
