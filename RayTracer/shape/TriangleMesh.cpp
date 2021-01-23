@@ -28,6 +28,7 @@ std::optional<cam::Hit> TriangleMesh::intersect(const cam::Ray& r) const {
 }
 std::optional<cam::Hit> TriangleMesh::intersect(size_t i,
                                                 const cam::Ray& r) const {
+	if (!hierarchy[i].bb.intersects(r)) return std::nullopt;
 	std::array<cam::Hit, 3> hits = {
 	    cam::Hit(util::Vec3(0), util::Vec3(0),
 	             std::numeric_limits<float>::infinity(), nullptr),
