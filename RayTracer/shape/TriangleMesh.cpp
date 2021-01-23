@@ -53,7 +53,7 @@ std::optional<cam::Hit> TriangleMesh::intersect(size_t i,
 	std::optional<cam::Hit> temp = std::nullopt;
 	std::optional<cam::Hit> mid_hit = std::nullopt;
 	int_fast16_t bound = hierarchy[i].leaves_i + hierarchy[i].leaves_size - 1;
-	assert(!(hierarchy[i].leaves_i == -1 ^ hierarchy[i].leaves_size == -1));
+	// assert(!(hierarchy[i].leaves_i == -1 ^ hierarchy[i].leaves_size == -1));
 	for (size_t tri_i = hierarchy[i].leaves_i; tri_i <= bound; tri_i++) {
 		auto tri = leaves[tri_i];
 		std::optional<cam::Hit> temp = tri.intersect(r);
