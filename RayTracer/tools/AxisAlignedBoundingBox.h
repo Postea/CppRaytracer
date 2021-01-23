@@ -20,6 +20,7 @@ class AxisAlignedBoundingBox {
 	bool contains(const Vec3& v) const;
 	bool contains(const AxisAlignedBoundingBox& bb) const;
 	bool partiallyContains(const AxisAlignedBoundingBox& bb) const;
+	float size() const;
 	Vec3 center() const;
 	Vec3 minBound() const;
 	Vec3 maxBound() const;

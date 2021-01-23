@@ -127,6 +127,9 @@ bool AxisAlignedBoundingBox::partiallyContains(
 		if (contains(v)) return true;
 	return false;
 }
+float AxisAlignedBoundingBox::size() const {
+	return (maxBound() - minBound()).length();
+}
 Vec3 AxisAlignedBoundingBox::center() const {
 	return (max + min) / 2;
 }
