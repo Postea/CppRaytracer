@@ -22,6 +22,7 @@ TriangleMesh::TriangleMesh(std::istream& in,
 	std::vector<std::shared_ptr<Triangle>> v;
 	for (auto tri : triangles) v.push_back(std::make_shared<Triangle>(tri));
 	hierarch(0, v);
+	triangles.clear();
 }
 std::optional<cam::Hit> TriangleMesh::intersect(const cam::Ray& r) const {
 	return intersect(0, r);
