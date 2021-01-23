@@ -30,20 +30,22 @@ TriangleMesh::TriangleMesh(std::istream& in,
 		                   return (hier.leaves_i + hier.leaves_size - 1) < 0;
 	                   }),
 	    hierarchy.end());
+#endif
+// Fitting currently does not give correct results
 #if false
 	std::transform(
 	    hierarchy.begin(), hierarchy.end(), hierarchy.begin(),
 	    [this](TriMeshNode hier) {
-		    auto init = leaves[hier.leaves_i].bounds();
-		    int_fast16_t bound = hier.leaves_i + hier.leaves_size - 1;
-		    assert(bound > 0);
-		    for (size_t tri_i = hier.leaves_i; tri_i <= bound; tri_i++) {
-			    init = init + triangles[tri_i].bounds();
+		    if (hier.leaves_i != -1 && hier.leaves_size != -1) {
+			    int_fast16_t bound = hier.leaves_i + hier.leaves_size - 1;
+			    auto init = leaves[hier.leaves_i].bounds();
+			    for (size_t tri_i = hier.leaves_i; tri_i <= bound; tri_i++) {
+				    init = init + leaves[tri_i].bounds();
+			    }
+			    hier.bb = init;
 		    }
-		    hier.bb = init;
 		    return hier;
 	    });
-#endif
 #endif
 	triangles.clear();
 }
