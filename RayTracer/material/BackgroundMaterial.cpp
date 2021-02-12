@@ -14,7 +14,7 @@ util::Vec3 BackgroundMaterial::albedo(float texel_x, float texel_y) const {
 	return util::Vec3(1, 1, 1);
 }
 util::Vec3 BackgroundMaterial::emission(float texel_x, float texel_y) const {
-	return texture->color(texel_x, -texel_y);
+	return texture->color(texel_x, texel_y);
 }
 util::Vec3 BackgroundMaterial::scattered_d(const util::Vec3& d,
                                            const util::Vec3& n) const {
