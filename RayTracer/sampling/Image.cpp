@@ -5,6 +5,8 @@
 
 #include "../tools/Threadpool.h"
 #include "StratifiedSampler.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "../tools/stb_image.h"
 
 namespace util {
 Image::Image(int width, int height) : width(width), height(height) {
@@ -149,5 +151,24 @@ void writeBmp(const char* filename, Image img) {
 	}
 
 	ofile.close();
+}
+
+Image readImage(const char* filename) {
+	int width, height, channels;
+	unsigned char* img = stbi_load(filename, &width, &height, &channels, 0);
+	Image result(width, height);
+	if (channels != 3)
+		std::cout << "Careful! Loaded image has " << channels << " channels"
+		          << std::endl;
+	size_t img_size = width * height * channels;
+	int i = 0;
+	for (unsigned char* p = img; p != img + img_size; p += channels) {
+		float x = (float)*(p + 0) / 255;
+		float y = (float)*(p + 1) / 255;
+		float z = (float)*(p + 2) / 255;
+		result[{i, 0}] = Vec3(x, y, z);
+		i++;
+	}
+	return result;
 }
 }  // namespace util

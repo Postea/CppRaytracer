@@ -30,5 +30,6 @@ class Image {
 Image raytrace(size_t threadcount, const cam::CamObs& cam,
                const std::shared_ptr<Sampler>& sampler, size_t n);
 void writeBmp(const char* filename, Image img);
+Image readImage(const char* filename);
 
 }  // namespace util
