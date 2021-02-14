@@ -25,16 +25,18 @@ std::optional<cam::Hit> Sphere::intersect(const cam::Ray& r) const {
 			util::Vec3 t1HitPoint = r(t1);
 			float theta = acos(t1HitPoint.y() / radius);
 			float phi = M_PI + atan2(t1HitPoint.x(), t1HitPoint.z());
-			return std::optional<cam::Hit>(
-			    {t1HitPoint, t1HitPoint, t1, material});
+			return std::optional<cam::Hit>({t1HitPoint, t1HitPoint,
+			                                texture_coordinates(t1HitPoint), t1,
+			                                material});
 		} else {
 			float t2 = (-b + sqrt(b * b - 4 * a * c)) / (2 * a);
 			if (r.in_range(t2)) {
 				util::Vec3 t2HitPoint = r(t2);
 				float theta = acos(t2HitPoint.y() / radius);
 				float phi = M_PI + atan2(t2HitPoint.x(), t2HitPoint.z());
-				return std::optional<cam::Hit>(
-				    {t2HitPoint, t2HitPoint, t2, material});
+				return std::optional<cam::Hit>({t2HitPoint, t2HitPoint,
+				                                texture_coordinates(t2HitPoint),
+				                                t2, material});
 			} else {
 				return std::nullopt;
 			}
@@ -42,6 +44,12 @@ std::optional<cam::Hit> Sphere::intersect(const cam::Ray& r) const {
 	} else {
 		return std::nullopt;
 	}
+}
+std::pair<float, float> Sphere::texture_coordinates(
+    const util::Vec3& pos) const {
+	float theta = std::acos(pos.y() / radius);
+	float phi = M_PI + std::atan2(pos.x(), pos.z());
+	return std::pair<float, float>({phi / (2 * M_PI), theta / M_PI});
 }
 util::AxisAlignedBoundingBox Sphere::bounds() const {
 	return util::AxisAlignedBoundingBox(util::Vec3(-radius),
@@ -56,7 +64,8 @@ util::SurfacePoint Sphere::sampleLight() const {
 	util::Vec3 point(radius * std::cos(theta) * std::sin(phi),
 	                 radius * std::sin(theta) * std::sin(phi),
 	                 radius * std::cos(phi));
-	return util::SurfacePoint(point, point.normalize(), material);
+	return util::SurfacePoint(point, point.normalize(),
+	                          texture_coordinates(point), material);
 }
 util::Vec3 Sphere::calculateLightEmission(const util::SurfacePoint& p,
                                           const util::Vec3& d) const {
