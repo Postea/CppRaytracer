@@ -6,7 +6,7 @@
 #include "Sampler.h"
 
 namespace util {
-class Image {
+class Image : public Sampler {
    public:
 	Image(int width, int height);
 
@@ -15,6 +15,8 @@ class Image {
 
 	Vec3 operator[](const std::array<int, 2>& i) const;  // int x, int y
 	Vec3& operator[](const std::array<int, 2>& i);
+
+	Vec3 color(float x, float y) const override;
 
 	const int width;
 	const int height;
