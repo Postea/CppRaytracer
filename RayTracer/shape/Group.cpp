@@ -40,10 +40,15 @@ std::optional<cam::Hit> Group::intersect(const cam::Ray& r) const {
 	if (result) {
 		result = std::optional<cam::Hit>(
 		    {transform.toWorld.transformPoint(result->point()),
-		     transform.toWorldN.transformDir(result->normal()),
+		     transform.toWorldN.transformDir(result->normal()), result->texel(),
 		     result->scalar(), result->material});
 	}
 	return result;
+}
+// Not used
+std::pair<float, float> Group::texture_coordinates(
+    const util::Vec3& pos) const {
+	return std::pair<float, float>({0, 0});
 }
 util::AxisAlignedBoundingBox Group::bounds() const {
 	return boundingVolume;

@@ -14,6 +14,8 @@ class Group : public Shape {
 	Group(const util::Mat4& matrix, bool rebuildBB = true);
 
 	std::optional<cam::Hit> intersect(const cam::Ray& r) const override;
+	virtual std::pair<float, float> texture_coordinates(
+	    const util::Vec3& pos) const override;
 	util::AxisAlignedBoundingBox bounds() const override;
 	void setBounds(const util::AxisAlignedBoundingBox& bb);
 	void add(const Group& group);
