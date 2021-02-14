@@ -30,10 +30,17 @@ std::optional<cam::Hit> RectanglePlane::intersect(const cam::Ray& r) const {
 
 	if (r.in_range(t) && std::abs(t_hitpoint.x()) <= width / 2 &&
 	    std::abs(t_hitpoint.z()) <= depth / 2) {
-		return std::optional<cam::Hit>({t_hitpoint, n, t, material});
+		return std::optional<cam::Hit>(
+		    {t_hitpoint, n, texture_coordinates(t_hitpoint), t, material});
 	} else {
 		return std::nullopt;
 	}
+}
+
+std::pair<float, float> RectanglePlane::texture_coordinates(
+    const util::Vec3& pos) const {
+	return std::pair<float, float>(
+	    {pos.x() / width + 0.5, pos.z() / depth + 0.5});
 }
 util::AxisAlignedBoundingBox RectanglePlane::bounds() const {
 	return util::AxisAlignedBoundingBox(util::Vec3(-width / 2, 0, -depth / 2),
@@ -44,8 +51,9 @@ util::SurfacePoint RectanglePlane::sampleLight() const {
 	float x = util::disMinus1To1(util::gen) * width / 2;
 	// Z coord of the sampled point.
 	float z = util::disMinus1To1(util::gen) * depth / 2;
-	return util::SurfacePoint(util::Vec3(x, 0, z), util::Vec3(0, 1, 0),
-	                          material);
+	util::Vec3 pos(x, 0, z);
+	return util::SurfacePoint(pos, util::Vec3(0, 1, 0),
+	                          texture_coordinates(pos), material);
 	// The sampled point will be in local coordinates.
 }
 util::Vec3 RectanglePlane::calculateLightEmission(const util::SurfacePoint& p,
