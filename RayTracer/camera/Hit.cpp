@@ -3,9 +3,10 @@
 #include <limits>
 
 namespace cam {
-Hit::Hit(const util::Vec3& hit, const util::Vec3& n, float t,
+Hit::Hit(const util::Vec3& hit, const util::Vec3& n,
+         const std::pair<float, float>& uv, float t,
          const std::shared_ptr<material::Material>& material)
-    : util::SurfacePoint(hit, n, material), t(t) {
+    : util::SurfacePoint(hit, n, uv, material), t(t) {
 }
 
 float Hit::scalar() const {

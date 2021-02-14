@@ -7,7 +7,8 @@
 namespace cam {
 class Hit : public util::SurfacePoint {
    public:
-	Hit(const util::Vec3& hit, const util::Vec3& n, float t,
+	Hit(const util::Vec3& hit, const util::Vec3& n,
+	    const std::pair<float, float>& uv, float t,
 	    const std::shared_ptr<material::Material>& material);
 
 	float scalar() const;
