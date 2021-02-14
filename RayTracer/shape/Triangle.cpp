@@ -51,7 +51,7 @@ std::optional<cam::Hit> Triangle::intersect(const cam::Ray& r) const {
 // TODO
 std::pair<float, float> Triangle::texture_coordinates(
     const util::Vec3& pos) const {
-	return std::pair<float, float>({0, 0});
+	return std::pair<float, float>({});
 }
 util::AxisAlignedBoundingBox Triangle::bounds() const {
 	// std::cout << "In tri bounds" << std::endl;

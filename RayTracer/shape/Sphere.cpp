@@ -49,7 +49,8 @@ std::pair<float, float> Sphere::texture_coordinates(
     const util::Vec3& pos) const {
 	float theta = std::acos(pos.y() / radius);
 	float phi = M_PI + std::atan2(pos.x(), pos.z());
-	return std::pair<float, float>({phi / (2 * M_PI), theta / M_PI});
+	return std::pair<float, float>(
+	    {(float)(phi / (2 * M_PI)), (float)(theta / M_PI)});
 }
 util::AxisAlignedBoundingBox Sphere::bounds() const {
 	return util::AxisAlignedBoundingBox(util::Vec3(-radius),

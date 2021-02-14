@@ -37,7 +37,7 @@ std::optional<cam::Hit> CirclePlane::intersect(const cam::Ray& r) const {
 std::pair<float, float> CirclePlane::texture_coordinates(
     const util::Vec3& pos) const {
 	return std::pair<float, float>(
-	    {pos.x() / radius + 0.5, pos.z() / radius + 0.5});
+	    {pos.x() / radius + 0.5f, pos.z() / radius + 0.5f});
 }
 
 util::AxisAlignedBoundingBox CirclePlane::bounds() const {

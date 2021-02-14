@@ -48,7 +48,7 @@ std::optional<cam::Hit> Group::intersect(const cam::Ray& r) const {
 // Not used
 std::pair<float, float> Group::texture_coordinates(
     const util::Vec3& pos) const {
-	return std::pair<float, float>({0, 0});
+	return std::pair<float, float>({});
 }
 util::AxisAlignedBoundingBox Group::bounds() const {
 	return boundingVolume;

@@ -40,7 +40,7 @@ std::optional<cam::Hit> RectanglePlane::intersect(const cam::Ray& r) const {
 std::pair<float, float> RectanglePlane::texture_coordinates(
     const util::Vec3& pos) const {
 	return std::pair<float, float>(
-	    {pos.x() / width + 0.5, pos.z() / depth + 0.5});
+	    {pos.x() / width + 0.5f, pos.z() / depth + 0.5f});
 }
 util::AxisAlignedBoundingBox RectanglePlane::bounds() const {
 	return util::AxisAlignedBoundingBox(util::Vec3(-width / 2, 0, -depth / 2),

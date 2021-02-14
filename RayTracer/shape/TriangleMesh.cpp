@@ -31,25 +31,25 @@ std::optional<cam::Hit> TriangleMesh::intersect(size_t i,
                                                 const cam::Ray& r) const {
 	if (!hierarchy[i].bb.intersects(r)) return std::nullopt;
 	std::array<cam::Hit, 3> hits = {
-	    cam::Hit(util::Vec3(0), util::Vec3(0), {0.0, 0.0},
+	    cam::Hit(util::Vec3({}), util::Vec3({}), {},
 	             std::numeric_limits<float>::infinity(), nullptr),
-	    cam::Hit(util::Vec3(0), util::Vec3(0), {0.0, 0.0},
+	    cam::Hit(util::Vec3({}), util::Vec3({}), {},
 	             std::numeric_limits<float>::infinity(), nullptr),
-	    cam::Hit(util::Vec3(0), util::Vec3(0), {0.0, 0.0},
+	    cam::Hit(util::Vec3({}), util::Vec3({}), {},
 	             std::numeric_limits<float>::infinity(), nullptr)};
 	// Check left
 	size_t left_i = hierarchy[i].left;
 	std::optional<cam::Hit> left_hit = std::nullopt;
 	if (left_i != -1) left_hit = intersect(left_i, r);
-	hits[0] = left_hit.value_or(
-	    cam::Hit(util::Vec3(0), util::Vec3(0), {0.0, 0.0},
-	             std::numeric_limits<float>::infinity(), nullptr));
+	hits[0] = left_hit.value_or(cam::Hit(util::Vec3({}), util::Vec3({}), {},
+	                                     std::numeric_limits<float>::infinity(),
+	                                     nullptr));
 	// Check right
 	size_t right_i = hierarchy[i].right;
 	std::optional<cam::Hit> right_hit = std::nullopt;
 	if (right_i != -1) right_hit = intersect(right_i, r);
 	hits[1] = right_hit.value_or(
-	    cam::Hit(util::Vec3(0), util::Vec3(0), {0.0, 0.0},
+	    cam::Hit(util::Vec3({}), util::Vec3({}), {},
 	             std::numeric_limits<float>::infinity(), nullptr));
 
 	std::optional<cam::Hit> temp = std::nullopt;
@@ -69,9 +69,9 @@ std::optional<cam::Hit> TriangleMesh::intersect(size_t i,
 			}
 		}
 	}
-	hits[2] = mid_hit.value_or(
-	    cam::Hit(util::Vec3(0), util::Vec3(0), {0.0, 0.0},
-	             std::numeric_limits<float>::infinity(), nullptr));
+	hits[2] = mid_hit.value_or(cam::Hit(util::Vec3({}), util::Vec3({}), {},
+	                                    std::numeric_limits<float>::infinity(),
+	                                    nullptr));
 	std::sort(hits.begin(), hits.end(),
 	          [](cam::Hit a, cam::Hit b) { return a.scalar() < b.scalar(); });
 	if (hits[0].material == nullptr) return std::nullopt;
@@ -81,14 +81,14 @@ std::optional<cam::Hit> TriangleMesh::intersect(size_t i,
 // TODO
 std::pair<float, float> TriangleMesh::texture_coordinates(
     const util::Vec3& pos) const {
-	return std::pair<float, float>({0.0, 0.0});
+	return std::pair<float, float>({});
 }
 util::AxisAlignedBoundingBox TriangleMesh::bounds() const {
 	return hierarchy[0].bb;
 }
 // TODO
 util::SurfacePoint TriangleMesh::sampleLight() const {
-	return util::SurfacePoint(util::Vec3(0), 0, {0.0, 0.0}, material);
+	return util::SurfacePoint(util::Vec3({}), 0, {}, material);
 }
 // TODO
 util::Vec3 TriangleMesh::calculateLightEmission(const util::SurfacePoint& p,

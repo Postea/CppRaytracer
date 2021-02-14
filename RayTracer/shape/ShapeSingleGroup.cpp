@@ -35,7 +35,7 @@ std::optional<cam::Hit> ShapeSingleGroup::intersect(const cam::Ray& r) const {
 }
 std::pair<float, float> ShapeSingleGroup::texture_coordinates(
     const util::Vec3& pos) const {
-	return std::pair<float, float>({0, 0});
+	return std::pair<float, float>({});
 }
 util::AxisAlignedBoundingBox ShapeSingleGroup::bounds() const {
 	return boundingVolume;
