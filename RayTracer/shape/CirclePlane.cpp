@@ -28,11 +28,18 @@ std::optional<cam::Hit> CirclePlane::intersect(const cam::Ray& r) const {
 	util::Vec3 t_hitpoint = r(t);
 
 	if (r.in_range(t) && t_hitpoint.length() <= radius) {
-		return std::optional<cam::Hit>({t_hitpoint, n, t, material});
+		return std::optional<cam::Hit>(
+		    {t_hitpoint, n, texture_coordinates(t_hitpoint), t, material});
 	} else {
 		return std::nullopt;
 	}
 }
+std::pair<float, float> CirclePlane::texture_coordinates(
+    const util::Vec3& pos) const {
+	return std::pair<float, float>(
+	    {pos.x() / radius + 0.5, pos.z() / radius + 0.5});
+}
+
 util::AxisAlignedBoundingBox CirclePlane::bounds() const {
 	return util::AxisAlignedBoundingBox(util::Vec3(-radius, 0, -radius),
 	                                    util::Vec3(radius, 0, radius));
@@ -43,9 +50,9 @@ util::SurfacePoint CirclePlane::sampleLight() const {
 	// Degreee of the sampled point.
 	float theta = 2 * M_PI * util::dis0to1(util::gen);
 	// Polar coordinates have to be converted to cartesian.
-	return util::SurfacePoint(
-	    util::Vec3(r * std::cos(theta), 0, r * std::sin(theta)),
-	    util::Vec3(0, 1, 0), material);
+	util::Vec3 pos(r * std::cos(theta), 0, r * std::sin(theta));
+	return util::SurfacePoint(pos, util::Vec3(0, 1, 0),
+	                          texture_coordinates(pos), material);
 	// The sampled point will be in local coordinates.
 }
 util::Vec3 CirclePlane::calculateLightEmission(const util::SurfacePoint& p,
