@@ -176,6 +176,8 @@ Image readImage(const char* filename) {
 		result[{i, 0}] = Vec3(x, y, z);
 		i++;
 	}
+	// Reverse the gamma correction on loaded images
+	result.gammaCorrect(0.454545);
 	return result;
 }
 }  // namespace util
