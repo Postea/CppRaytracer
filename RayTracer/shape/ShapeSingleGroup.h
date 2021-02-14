@@ -12,6 +12,8 @@ class ShapeSingleGroup : public Shape {
 	ShapeSingleGroup(const util::Mat4& matrix, std::shared_ptr<Shape> shape);
 
 	std::optional<cam::Hit> intersect(const cam::Ray& r) const override;
+	std::pair<float, float> texture_coordinates(
+	    const util::Vec3& pos) const override;
 	util::AxisAlignedBoundingBox bounds() const override;
 
    private:

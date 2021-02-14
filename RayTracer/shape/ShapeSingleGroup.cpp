@@ -28,10 +28,14 @@ std::optional<cam::Hit> ShapeSingleGroup::intersect(const cam::Ray& r) const {
 	if (result) {
 		result = std::optional<cam::Hit>(
 		    {transform.toWorld.transformPoint(result->point()),
-		     transform.toWorldN.transformDir(result->normal()),
+		     transform.toWorldN.transformDir(result->normal()), result->texel(),
 		     result->scalar(), result->material});
 	}
 	return result;
+}
+std::pair<float, float> ShapeSingleGroup::texture_coordinates(
+    const util::Vec3& pos) const {
+	return std::pair<float, float>({0, 0});
 }
 util::AxisAlignedBoundingBox ShapeSingleGroup::bounds() const {
 	return boundingVolume;
