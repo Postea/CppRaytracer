@@ -78,7 +78,7 @@ std::optional<cam::Hit> TriangleMesh::intersect(size_t i,
 	// for (auto hit : hits) std::cout << hit << std::endl;
 	return hits[0];
 }
-
+// TODO
 std::pair<float, float> TriangleMesh::texture_coordinates(
     const util::Vec3& pos) const {
 	return std::pair<float, float>({0.0, 0.0});
@@ -86,10 +86,11 @@ std::pair<float, float> TriangleMesh::texture_coordinates(
 util::AxisAlignedBoundingBox TriangleMesh::bounds() const {
 	return hierarchy[0].bb;
 }
-
+// TODO
 util::SurfacePoint TriangleMesh::sampleLight() const {
 	return util::SurfacePoint(util::Vec3(0), 0, {0.0, 0.0}, material);
 }
+// TODO
 util::Vec3 TriangleMesh::calculateLightEmission(const util::SurfacePoint& p,
                                                 const util::Vec3& d) const {
 	return util::Vec3();

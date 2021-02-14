@@ -48,7 +48,7 @@ std::optional<cam::Hit> Triangle::intersect(const cam::Ray& r) const {
 	return std::optional<cam::Hit>(
 	    cam::Hit(hit, cross_normal, texture_coordinates(hit), t, material));
 }
-
+// TODO
 std::pair<float, float> Triangle::texture_coordinates(
     const util::Vec3& pos) const {
 	return std::pair<float, float>({0, 0});
