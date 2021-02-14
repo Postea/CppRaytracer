@@ -59,6 +59,13 @@ Vec3 Image::operator[](const std::array<int, 2>& i) const {
 Vec3& Image::operator[](const std::array<int, 2>& i) {
 	return vec[width * i[1] + i[0]];
 }
+
+Vec3 Image::color(float x, float y) const {
+	int xx = (int)((x - std::floor(x)) * width);
+	int yy = (int)((y - std::floor(y)) * height);
+	Vec3 v = vec[width * yy + xx];
+	return v;
+}
 Image raytrace(size_t threadcount, const cam::CamObs& cam,
                const std::shared_ptr<Sampler>& sampler, size_t n) {
 	Image result(cam.width, cam.height);
