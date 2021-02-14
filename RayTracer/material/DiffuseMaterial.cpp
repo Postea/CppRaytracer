@@ -25,11 +25,11 @@ DiffuseMaterial::DiffuseMaterial(const util::Vec3& color)
       emission_texture(
           std::make_shared<Constant>(Constant(util::Vec3(0, 0, 0)))) {
 }
-util::Vec3 DiffuseMaterial::albedo(float texel_x, float texel_y) const {
-	return albedo_texture->color(texel_x, texel_y);
+util::Vec3 DiffuseMaterial::albedo(const std::pair<float, float>& uv) const {
+	return albedo_texture->color(uv.first, uv.second);
 }
-util::Vec3 DiffuseMaterial::emission(float texel_x, float texel_y) const {
-	return emission_texture->color(texel_x, texel_y);
+util::Vec3 DiffuseMaterial::emission(const std::pair<float, float>& uv) const {
+	return emission_texture->color(uv.first, uv.second);
 }
 util::Vec3 DiffuseMaterial::scattered_d(const util::Vec3& d,
                                         const util::Vec3& n) const {

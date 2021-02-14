@@ -27,11 +27,12 @@ ReflectiveMaterial::ReflectiveMaterial(const util::Vec3& color, float clearness)
           std::make_shared<Constant>(Constant(util::Vec3(0, 0, 0)))),
       clearness(clearness) {
 }
-util::Vec3 ReflectiveMaterial::albedo(float texel_x, float texel_y) const {
-	return albedo_texture->color(texel_x, texel_y);
+util::Vec3 ReflectiveMaterial::albedo(const std::pair<float, float>& uv) const {
+	return albedo_texture->color(uv.first, uv.second);
 }
-util::Vec3 ReflectiveMaterial::emission(float texel_x, float texel_y) const {
-	return emission_texture->color(texel_x, texel_y);
+util::Vec3 ReflectiveMaterial::emission(
+    const std::pair<float, float>& uv) const {
+	return emission_texture->color(uv.first, uv.second);
 }
 util::Vec3 ReflectiveMaterial::scattered_d(const util::Vec3& d,
                                            const util::Vec3& n) const {

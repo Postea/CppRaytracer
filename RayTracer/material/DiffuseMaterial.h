@@ -10,8 +10,8 @@ class DiffuseMaterial : public Material {
 	DiffuseMaterial(const std::shared_ptr<util::Sampler>& albedo);
 	DiffuseMaterial(const util::Vec3& color);
 
-	util::Vec3 albedo(float texel_x, float texel_y) const override;
-	util::Vec3 emission(float texel_x, float texel_y) const override;
+	util::Vec3 albedo(const std::pair<float, float>& uv) const override;
+	util::Vec3 emission(const std::pair<float, float>& uv) const override;
 	util::Vec3 scattered_d(const util::Vec3& d,
 	                       const util::Vec3& n) const override;
 	bool scatter(const util::Vec3& d, const util::Vec3& n) const override;
