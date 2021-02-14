@@ -45,9 +45,14 @@ std::optional<cam::Hit> Triangle::intersect(const cam::Ray& r) const {
 	        .normalize();
 	// if (util::dot(bary_normal, cross_normal) < 0)
 	//	std::cout << "Hm" << std::endl;
-	return std::optional<cam::Hit>(cam::Hit(hit, cross_normal, t, material));
+	return std::optional<cam::Hit>(
+	    cam::Hit(hit, cross_normal, texture_coordinates(hit), t, material));
 }
 
+std::pair<float, float> Triangle::texture_coordinates(
+    const util::Vec3& pos) const {
+	return std::pair<float, float>({0, 0});
+}
 util::AxisAlignedBoundingBox Triangle::bounds() const {
 	// std::cout << "In tri bounds" << std::endl;
 	return bb;
@@ -58,8 +63,9 @@ util::SurfacePoint Triangle::sampleLight() const {
 	float x = util::disMinus1To1(util::gen) * 1 / 2;
 	// Z coord of the sampled point.
 	float z = util::disMinus1To1(util::gen) * 1 / 2;
-	return util::SurfacePoint(util::Vec3(x, 0, z), util::Vec3(0, 1, 0),
-	                          material);
+	util::Vec3 pos(x, 0, z);
+	return util::SurfacePoint(pos, util::Vec3(0, 1, 0),
+	                          texture_coordinates(pos), material);
 	// The sampled point will be in local coordinates.
 }
 // TODO

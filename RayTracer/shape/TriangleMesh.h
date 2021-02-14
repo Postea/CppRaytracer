@@ -23,6 +23,8 @@ class TriangleMesh : public Light, public Shape {
 	TriangleMesh(std::istream& in,
 	             const std::shared_ptr<material::Material>& mat);
 	std::optional<cam::Hit> intersect(const cam::Ray& r) const override;
+	std::pair<float, float> texture_coordinates(
+	    const util::Vec3& pos) const override;
 	util::AxisAlignedBoundingBox bounds() const override;
 
 	util::SurfacePoint sampleLight() const override;

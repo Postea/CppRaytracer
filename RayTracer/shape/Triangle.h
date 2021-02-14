@@ -15,6 +15,7 @@ class Triangle : public Light, public Shape {
 	Triangle(util::Vertex p1, util::Vertex p2, util::Vertex p3,
 	         const std::shared_ptr<material::Material>& material);
 	std::optional<cam::Hit> intersect(const cam::Ray& r) const;
+	std::pair<float, float> texture_coordinates(const util::Vec3& pos) const;
 	util::AxisAlignedBoundingBox bounds() const;
 	void recalculateBB();
 
