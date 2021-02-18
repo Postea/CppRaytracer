@@ -27,7 +27,7 @@ class TriangleMesh : public Light, public Shape {
 	    const util::Vec3& pos) const override;
 	util::AxisAlignedBoundingBox bounds() const override;
 
-	util::SurfacePoint sampleLight() const override;
+	util::SurfacePoint sampleLight(const cam::Hit& h) const override;
 	util::Vec3 calculateLightEmission(const util::SurfacePoint& p,
 	                                  const util::Vec3& d) const override;
 

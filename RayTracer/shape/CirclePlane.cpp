@@ -44,7 +44,7 @@ util::AxisAlignedBoundingBox CirclePlane::bounds() const {
 	return util::AxisAlignedBoundingBox(util::Vec3(-radius, 0, -radius),
 	                                    util::Vec3(radius, 0, radius));
 }
-util::SurfacePoint CirclePlane::sampleLight() const {
+util::SurfacePoint CirclePlane::sampleLight(const cam::Hit& h) const {
 	// Radius of the sampled point.
 	float r = std::sqrt(util::dis0to1(util::gen)) * radius;
 	// Degreee of the sampled point.

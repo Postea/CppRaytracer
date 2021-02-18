@@ -46,7 +46,7 @@ util::AxisAlignedBoundingBox RectanglePlane::bounds() const {
 	return util::AxisAlignedBoundingBox(util::Vec3(-width / 2, 0, -depth / 2),
 	                                    util::Vec3(width / 2, 0, depth / 2));
 }
-util::SurfacePoint RectanglePlane::sampleLight() const {
+util::SurfacePoint RectanglePlane::sampleLight(const cam::Hit& h) const {
 	// X coord of the sampled point.
 	float x = util::disMinus1To1(util::gen) * width / 2;
 	// Z coord of the sampled point.

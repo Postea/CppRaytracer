@@ -56,7 +56,7 @@ util::AxisAlignedBoundingBox Sphere::bounds() const {
 	return util::AxisAlignedBoundingBox(util::Vec3(-radius),
 	                                    util::Vec3(radius));
 }
-util::SurfacePoint Sphere::sampleLight() const {
+util::SurfacePoint Sphere::sampleLight(const cam::Hit& h) const {
 	// Theta of sampled point.
 	float theta = 2 * M_PI * util::dis0to1(util::gen);
 	// Phi of the sampled point.

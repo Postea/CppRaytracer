@@ -58,7 +58,7 @@ util::AxisAlignedBoundingBox Triangle::bounds() const {
 	return bb;
 }
 // TODO
-util::SurfacePoint Triangle::sampleLight() const {
+util::SurfacePoint Triangle::sampleLight(const cam::Hit& h) const {
 	// X coord of the sampled point.
 	float x = util::disMinus1To1(util::gen) * 1 / 2;
 	// Z coord of the sampled point.

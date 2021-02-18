@@ -19,7 +19,7 @@ class Triangle : public Light, public Shape {
 	util::AxisAlignedBoundingBox bounds() const;
 	void recalculateBB();
 
-	util::SurfacePoint sampleLight() const;
+	util::SurfacePoint sampleLight(const cam::Hit& h) const;
 	util::Vec3 calculateLightEmission(const util::SurfacePoint& p,
 	                                  const util::Vec3& d) const;
 

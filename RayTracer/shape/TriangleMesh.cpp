@@ -87,7 +87,7 @@ util::AxisAlignedBoundingBox TriangleMesh::bounds() const {
 	return hierarchy[0].bb;
 }
 // TODO
-util::SurfacePoint TriangleMesh::sampleLight() const {
+util::SurfacePoint TriangleMesh::sampleLight(const cam::Hit& h) const {
 	return util::SurfacePoint(util::Vec3({}), 0, {}, material);
 }
 // TODO
