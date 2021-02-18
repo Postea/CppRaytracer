@@ -44,13 +44,13 @@ util::Vec3 Scene::calculateRadiance(const cam::Ray& r, size_t depth,
 		        std::cout << *h << std::endl;
 		        if (depth == 20) assert(false);
 		    }*/
-#if false
+#if true
 		for (auto light : lights) {
-			int nn = 5;
+			int nn = 1;
 			nn = nn * nn;
 			util::Vec3 lightPart;
 			for (int i = 0; i < nn; i++) {
-				auto samplePoint = light->sampleLight();
+				auto samplePoint = light->sampleLight(h.value());
 				auto shadowRay = cam::Ray(samplePoint.point(),
 				                          h->point() - samplePoint.point(), 0,
 				                          1 - cam::epsilon, false);
