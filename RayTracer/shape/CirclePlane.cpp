@@ -61,10 +61,12 @@ util::Vec3 CirclePlane::calculateLightEmission(const util::SurfacePoint& p,
 	// the light in regard to the angle.
 	// Uniform pdf of shape is 1/area, converting to pdf over solid angle is
 	// pdf/(dot/length^2).
+	// This is wrong. We just need the normal pdf, per area, as we do not sample
+	// with regard to a direction.
 	auto emission = p.emission();
 	auto dot = std::max<float>(util::dot(p.normal(), d.normalize()), 0);
 	auto area = M_PI * std::pow(radius, 2);
-	auto pdf = std::pow(d.length(), 2) / (dot * area);
+	auto pdf = 1 / area;
 	return emission / pdf;
 }
 }  // namespace shapes
