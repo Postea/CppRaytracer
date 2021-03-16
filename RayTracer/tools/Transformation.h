@@ -5,6 +5,6 @@ namespace util {
 class Transformation {
    public:
 	Transformation(const Mat4& matrix);
-	const Mat4 toWorld, fromWorld, toWorldN;
+	const Mat4 toWorld, fromWorld, toWorldN, fromWorldN;
 };
 }  // namespace util
