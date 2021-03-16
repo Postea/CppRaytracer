@@ -11,7 +11,7 @@ class LightSingleGroup : public Light {
 	                 std::shared_ptr<Light> shape);
 	LightSingleGroup(const util::Mat4& matrix, std::shared_ptr<Light> shape);
 
-	util::SurfacePoint sampleLight() const override;
+	util::SurfacePoint sampleLight(const cam::Hit& h) const override;
 	util::Vec3 calculateLightEmission(const util::SurfacePoint& p,
 	                                  const util::Vec3& d) const override;
 

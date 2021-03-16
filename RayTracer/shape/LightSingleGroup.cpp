@@ -13,8 +13,11 @@ LightSingleGroup::LightSingleGroup(const util::Mat4& matrix,
     : light(light), transform(util::Transformation(matrix)) {
 }
 
-util::SurfacePoint LightSingleGroup::sampleLight() const {
-	auto sample = light->sampleLight();
+util::SurfacePoint LightSingleGroup::sampleLight(const cam::Hit& h) const {
+	cam::Hit xx(transform.fromWorld.transformPoint(h.point()),
+	            transform.fromWorldN.transformDir(h.normal()), h.texel(),
+	            h.scalar(), h.material);
+	auto sample = light->sampleLight(xx);
 	auto result =
 	    util::SurfacePoint(transform.toWorld.transformPoint(sample.point()),
 	                       transform.toWorldN.transformDir(sample.normal()),
