@@ -1,24 +1,25 @@
 #include "Background.h"
-
+#define _USE_MATH_DEFINES
 #include <limits>
 
+#include "../material/BackgroundMaterial.h"
+#include "math.h"
+
 namespace shapes {
-Background::Background(const std::shared_ptr<material::Material>& material)
-    : material(material) {
+Background::Background(const std::shared_ptr<util::Sampler>& sampler)
+    : Sphere(100, std::make_shared<material::BackgroundMaterial>(sampler)) {
 }
-// TODO TEXELS
+// Thit intersect method rightly flips the normal.But the normal is never used
+// for non scatter materials, so we do not flip the normal
+/*
 std::optional<cam::Hit> Background::intersect(const cam::Ray& r) const {
-	return std::optional<cam::Hit>({r(std::numeric_limits<float>::infinity()),
-	                                util::Vec3({}),
-	                                {},
-	                                std::numeric_limits<float>::infinity(),
-	                                material});
-}
-// Not used
-std::pair<float, float> Background::texture_coordinates(
-    const util::Vec3& pos) const {
-	return std::pair<float, float>({});
-}
+    auto hit = Sphere::intersect(r);
+    if (hit)
+        hit = std::optional<cam::Hit>(
+            {{hit->point(), -hit->normal(), hit->texel(), hit->scalar(),
+              hit->material}});
+    return hit;
+}*/
 
 util::AxisAlignedBoundingBox Background::bounds() const {
 	return util::AxisAlignedBoundingBox();
