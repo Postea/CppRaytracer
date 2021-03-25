@@ -51,9 +51,9 @@ util::Vec3 Scene::calculateRadiance(const cam::Ray& r, size_t depth,
 			util::Vec3 lightPart;
 			for (int i = 0; i < nn; i++) {
 				auto samplePoint = light->sampleLight(h.value());
-				auto shadowRay = cam::Ray(samplePoint.point(),
-				                          h->point() - samplePoint.point(), 0,
-				                          1 - cam::epsilon, false);
+				auto shadowRay = cam::Ray(
+				    samplePoint.point(), h->point() - samplePoint.point(),
+				    cam::epsilon, 1 - cam::epsilon, false);
 				auto shadowHit = group.intersect(shadowRay);
 				if (!shadowHit) {
 					auto lightEmission =
