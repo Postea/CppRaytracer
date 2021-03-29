@@ -5,17 +5,29 @@
 namespace material {
 BackgroundMaterial::BackgroundMaterial(
     const std::shared_ptr<util::Sampler>& texture)
-    : texture(texture) {
+    : emission_profile({texture}) {
+}
+BackgroundMaterial::BackgroundMaterial(
+    const std::shared_ptr<util::Sampler>& texture,
+    const util::Image& distribution)
+    : emission_profile({texture, distribution}) {
 }
 BackgroundMaterial::BackgroundMaterial(const util::Vec3& albedo)
-    : texture(std::make_shared<Constant>(albedo)) {
+    : emission_profile({std::make_shared<Constant>(albedo)}) {
 }
 util::Vec3 BackgroundMaterial::albedo(const std::pair<float, float>& uv) const {
 	return util::Vec3(1, 1, 1);
 }
 util::Vec3 BackgroundMaterial::emission(
     const std::pair<float, float>& uv) const {
-	return texture->color(uv.first, uv.second);
+	return emission_profile.color(uv.first, uv.second);
+}
+std::pair<float, float> BackgroundMaterial::sampleEmissionProfile() const {
+	return emission_profile.sample();
+}
+
+std::optional<float> BackgroundMaterial::emission_pdf(float u, float v) const {
+	return emission_profile.pdf(u, v);
 }
 util::Vec3 BackgroundMaterial::scattered_d(const util::Vec3& d,
                                            const util::Vec3& n) const {
