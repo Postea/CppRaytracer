@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../tools/EmissionProfile.h"
 #include "Material.h"
 
 namespace material {
@@ -24,7 +25,7 @@ class ReflectiveMaterial : public Material {
 
    private:
 	std::shared_ptr<util::Sampler> albedo_texture;
-	std::shared_ptr<util::Sampler> emission_texture;
+	util::EmissionProfile emission_profile;
 	float clearness;
 };
 }  // namespace material

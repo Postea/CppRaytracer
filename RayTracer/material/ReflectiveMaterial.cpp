@@ -11,20 +11,20 @@ ReflectiveMaterial::ReflectiveMaterial(
     const std::shared_ptr<util::Sampler>& albedo_texture,
     const std::shared_ptr<util::Sampler>& emission_texture, float clearness)
     : albedo_texture(albedo_texture),
-      emission_texture(emission_texture),
+      emission_profile({emission_texture}),
       clearness(clearness) {
 }
 ReflectiveMaterial::ReflectiveMaterial(
     const std::shared_ptr<util::Sampler>& albedo_texture, float clearness)
     : albedo_texture(albedo_texture),
-      emission_texture(
-          std::make_shared<Constant>(Constant(util::Vec3(0, 0, 0)))),
+      emission_profile(
+          {std::make_shared<Constant>(Constant(util::Vec3(0, 0, 0)))}),
       clearness(clearness) {
 }
 ReflectiveMaterial::ReflectiveMaterial(const util::Vec3& color, float clearness)
     : albedo_texture(std::make_shared<Constant>(Constant(color))),
-      emission_texture(
-          std::make_shared<Constant>(Constant(util::Vec3(0, 0, 0)))),
+      emission_profile(
+          {std::make_shared<Constant>(Constant(util::Vec3(0, 0, 0)))}),
       clearness(clearness) {
 }
 util::Vec3 ReflectiveMaterial::albedo(const std::pair<float, float>& uv) const {
@@ -32,7 +32,7 @@ util::Vec3 ReflectiveMaterial::albedo(const std::pair<float, float>& uv) const {
 }
 util::Vec3 ReflectiveMaterial::emission(
     const std::pair<float, float>& uv) const {
-	return emission_texture->color(uv.first, uv.second);
+	return emission_profile.color(uv.first, uv.second);
 }
 util::Vec3 ReflectiveMaterial::scattered_d(const util::Vec3& d,
                                            const util::Vec3& n) const {
