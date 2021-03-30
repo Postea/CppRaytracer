@@ -24,9 +24,19 @@ util::SurfacePoint LightSingleGroup::sampleLight(const cam::Hit& h) const {
 	                       sample.texel(), sample.material);
 	return result;
 }
-util::Vec3 LightSingleGroup::calculateLightEmission(const util::SurfacePoint& p,
-                                                    const util::Vec3& d) const {
-	return light->calculateLightEmission(p, d);
+/*
+std::pair<util::Vec3, float> LightSingleGroup::calculateLightEmission(
+    const util::SurfacePoint& p, const util::Vec3& d) const {
+    return light->calculateLightEmission(p, d);
+}*/
+
+util::Vec3 LightSingleGroup::lightEmission(const util::SurfacePoint& p) const {
+	return light->lightEmission(p);
+}
+
+float LightSingleGroup::lightPdf(const util::SurfacePoint& p,
+                                 const util::Vec3& dl_out) const {
+	return light->lightPdf(p, dl_out);
 }
 
 }  // namespace shapes
