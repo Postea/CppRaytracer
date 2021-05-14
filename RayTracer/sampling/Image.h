@@ -20,6 +20,7 @@ class Image : public Sampler {
 
 	const int width;
 	const int height;
+	bool halfed;
 	void gammaCorrect(float gamma);
 
    protected:

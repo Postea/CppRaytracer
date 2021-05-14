@@ -9,7 +9,8 @@
 #include "../tools/stb_image.h"
 
 namespace util {
-Image::Image(int width, int height) : width(width), height(height) {
+Image::Image(int width, int height)
+    : width(width), height(height), halfed(false) {
 	Vec3 color({});
 	for (int i = 0; i < width * height; i++) {
 		vec.insert(vec.end(), color);
@@ -61,6 +62,7 @@ Vec3& Image::operator[](const std::array<int, 2>& i) {
 }
 
 Vec3 Image::color(float x, float y) const {
+	if (halfed && y > 0.5) return Vec3(0);
 	int xx = (int)((x - std::floor(x)) * width);
 	int yy = (int)((y - std::floor(y)) * height);
 	Vec3 v = vec[width * yy + xx];
