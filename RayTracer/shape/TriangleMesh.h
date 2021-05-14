@@ -28,8 +28,9 @@ class TriangleMesh : public Light, public Shape {
 	util::AxisAlignedBoundingBox bounds() const override;
 
 	util::SurfacePoint sampleLight(const cam::Hit& h) const override;
-	util::Vec3 calculateLightEmission(const util::SurfacePoint& p,
-	                                  const util::Vec3& d) const override;
+	util::Vec3 lightEmission(const util::SurfacePoint& p) const override;
+	float lightPdf(const util::SurfacePoint& p,
+	               const util::Vec3& dl_out) const override;
 
    public:
 	std::shared_ptr<material::Material> material;

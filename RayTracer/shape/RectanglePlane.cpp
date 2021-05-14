@@ -42,32 +42,51 @@ std::pair<float, float> RectanglePlane::texture_coordinates(
 	return std::pair<float, float>(
 	    {pos.x() / width + 0.5f, pos.z() / depth + 0.5f});
 }
+util::Vec3 RectanglePlane::texture_coordinates(
+    std::pair<float, float> texel) const {
+	return {(texel.first - 0.5f) * width, 0, (texel.second - 0.5f) * depth};
+}
 util::AxisAlignedBoundingBox RectanglePlane::bounds() const {
 	return util::AxisAlignedBoundingBox(util::Vec3(-width / 2, 0, -depth / 2),
 	                                    util::Vec3(width / 2, 0, depth / 2));
 }
 util::SurfacePoint RectanglePlane::sampleLight(const cam::Hit& h) const {
-	// X coord of the sampled point.
-	float x = util::disMinus1To1(util::gen) * width / 2;
-	// Z coord of the sampled point.
-	float z = util::disMinus1To1(util::gen) * depth / 2;
-	util::Vec3 pos(x, 0, z);
-	return util::SurfacePoint(pos, util::Vec3(0, 1, 0),
-	                          texture_coordinates(pos), material);
-	// The sampled point will be in local coordinates.
+	auto uv = material->sampleEmissionProfile();
+	util::Vec3 point = texture_coordinates(uv);
+	return util::SurfacePoint(point, util::Vec3(0, 1, 0), uv, material);
 }
-util::Vec3 RectanglePlane::calculateLightEmission(const util::SurfacePoint& p,
-                                                  const util::Vec3& d) const {
-	// Basically this is just the emission at a surface point. And the pdf dimms
-	// the light in regard to the angle.
-	// Uniform pdf of shape is 1/area, converting to pdf over solid angle is
-	// pdf/(dot/length^2).
-	// This is wrong. We just need the normal pdf, per area, as we do not sample
-	// with regard to a direction.
-	auto emission = p.emission();
-	auto dot = std::max<float>(util::dot(p.normal(), d.normalize()), 0);
+/*std::pair<util::Vec3, float> RectanglePlane::calculateLightEmission(
+    const util::SurfacePoint& p, const util::Vec3& d) const {
+    // Basically this is just the emission at a surface point. And the pdf dimms
+    // the light in regard to the angle.
+    // Uniform pdf of shape is 1/area, converting to pdf over solid angle is
+    // pdf/(dot/length^2).
+    // Update: This is wrong. We just need the normal pdf, per area, as we do
+    // not sample with regard to a direction.
+    // Update 2: This is not wrong actually!
+    auto emission = p.emission();
+    auto dot = std::max<float>(util::dot(p.normal(), d.normalize()), 0);
+    auto area = width * depth;
+    auto uv = p.texel();
+    float pdf = material->emission_pdf(uv.first, uv.second).value_or(1) / area;
+    pdf = pdf / (dot / d.length());
+    return {emission, pdf};
+}*/
+
+util::Vec3 RectanglePlane::lightEmission(const util::SurfacePoint& p) const {
+	return p.emission();
+}
+float RectanglePlane::lightPdf(const util::SurfacePoint& p,
+                               const util::Vec3& dl_out) const {
+	auto dot = util::dot(p.normal(), dl_out.normalize());
+	if (twofaced)
+		dot = std::abs(dot);
+	else
+		dot = std::max<float>(dot, 0);
 	auto area = width * depth;
-	auto pdf = 1 / area;
-	return emission / pdf;
+	auto uv = p.texel();
+	float pdf = material->emission_pdf(uv.first, uv.second).value_or(1) / area;
+	pdf = pdf / (dot / dl_out.length());
+	return pdf;
 }
 }  // namespace shapes

@@ -69,17 +69,26 @@ util::SurfacePoint Triangle::sampleLight(const cam::Hit& h) const {
 	// The sampled point will be in local coordinates.
 }
 // TODO
-util::Vec3 Triangle::calculateLightEmission(const util::SurfacePoint& p,
-                                            const util::Vec3& d) const {
-	// Basically this is just the emission at a surface point. And the pdf dimms
-	// the light in regard to the angle.
-	// Uniform pdf of shape is 1/area, converting to pdf over solid angle is
-	// pdf/(dot/length^2).
-	auto emission = p.emission();
-	auto dot = std::max<float>(util::dot(p.normal(), d.normalize()), 0);
-	auto area = 1;
-	auto pdf = std::pow(d.length(), 2) / (dot * area);
-	return emission / pdf;
+/*std::pair<util::Vec3, float> Triangle::calculateLightEmission(
+    const util::SurfacePoint& p, const util::Vec3& d) const {
+    // Basically this is just the emission at a surface point. And the pdf dimms
+    // the light in regard to the angle.
+    // Uniform pdf of shape is 1/area, converting to pdf over solid angle is
+    // pdf/(dot/length^2).
+    auto emission = p.emission();
+    auto dot = std::max<float>(util::dot(p.normal(), d.normalize()), 0);
+    auto area = 1;
+    auto pdf = std::pow(d.length(), 2) / (dot * area);
+    return {emission, pdf};
+}*/
+// TODO
+util::Vec3 Triangle::lightEmission(const util::SurfacePoint& p) const {
+	return util::Vec3(0);
+}
+// TODO
+float Triangle::lightPdf(const util::SurfacePoint& p,
+                         const util::Vec3& dl_out) const {
+	return 0;
 }
 
 void Triangle::recalculateBB() {

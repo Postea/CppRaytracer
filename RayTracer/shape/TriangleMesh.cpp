@@ -91,9 +91,18 @@ util::SurfacePoint TriangleMesh::sampleLight(const cam::Hit& h) const {
 	return util::SurfacePoint(util::Vec3({}), 0, {}, material);
 }
 // TODO
-util::Vec3 TriangleMesh::calculateLightEmission(const util::SurfacePoint& p,
-                                                const util::Vec3& d) const {
-	return util::Vec3();
+/*std::pair<util::Vec3, float> TriangleMesh::calculateLightEmission(
+    const util::SurfacePoint& p, const util::Vec3& d) const {
+    return {util::Vec3(), 0.0f};
+}*/
+// TODO
+util::Vec3 TriangleMesh::lightEmission(const util::SurfacePoint& p) const {
+	return util::Vec3(0);
+}
+// TODO
+float TriangleMesh::lightPdf(const util::SurfacePoint& p,
+                             const util::Vec3& dl_out) const {
+	return 0;
 }
 util::AxisAlignedBoundingBox TriangleMesh::initBB() {
 	util::AxisAlignedBoundingBox init = triangles[0].bounds();

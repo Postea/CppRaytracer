@@ -36,8 +36,11 @@ std::optional<cam::Hit> CirclePlane::intersect(const cam::Ray& r) const {
 }
 std::pair<float, float> CirclePlane::texture_coordinates(
     const util::Vec3& pos) const {
-	return std::pair<float, float>(
-	    {pos.x() / radius + 0.5f, pos.z() / radius + 0.5f});
+	float x = pos.x() / radius;
+	float z = pos.z() / radius;
+	float r = std::sqrt(x * x + z * z);
+	float theta = std::atan2(z, x);
+	return std::pair<float, float>(r * r, (float)(theta / (2.0f * M_PI)));
 }
 
 util::AxisAlignedBoundingBox CirclePlane::bounds() const {
@@ -55,18 +58,27 @@ util::SurfacePoint CirclePlane::sampleLight(const cam::Hit& h) const {
 	                          texture_coordinates(pos), material);
 	// The sampled point will be in local coordinates.
 }
-util::Vec3 CirclePlane::calculateLightEmission(const util::SurfacePoint& p,
-                                               const util::Vec3& d) const {
-	// Basically this is just the emission at a surface point. And the pdf dimms
-	// the light in regard to the angle.
-	// Uniform pdf of shape is 1/area, converting to pdf over solid angle is
-	// pdf/(dot/length^2).
-	// This is wrong. We just need the normal pdf, per area, as we do not sample
-	// with regard to a direction.
-	auto emission = p.emission();
-	auto dot = std::max<float>(util::dot(p.normal(), d.normalize()), 0);
-	auto area = M_PI * std::pow(radius, 2);
-	auto pdf = 1 / area;
-	return emission / pdf;
+/*std::pair<util::Vec3, float> CirclePlane::calculateLightEmission(
+    const util::SurfacePoint& p, const util::Vec3& d) const {
+    // Basically this is just the emission at a surface point. And the pdf dimms
+    // the light in regard to the angle.
+    // Uniform pdf of shape is 1/area, converting to pdf over solid angle is
+    // pdf/(dot/length^2).
+    // This is wrong. We just need the normal pdf, per area, as we do not sample
+    // with regard to a direction.
+    auto emission = p.emission();
+    auto dot = std::max<float>(util::dot(p.normal(), d.normalize()), 0);
+    auto area = M_PI * std::pow(radius, 2);
+    auto pdf = 1 / area;
+    return {emission, pdf};
+}*/
+// TODO
+util::Vec3 CirclePlane::lightEmission(const util::SurfacePoint& p) const {
+	return util::Vec3(0);
+}
+// TODO
+float CirclePlane::lightPdf(const util::SurfacePoint& p,
+                            const util::Vec3& dl_out) const {
+	return 0;
 }
 }  // namespace shapes

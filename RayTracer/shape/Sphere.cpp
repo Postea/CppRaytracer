@@ -2,6 +2,8 @@
 
 #include "Sphere.h"
 
+#include <cassert>
+
 #include "../tools/Random.h"
 #include "math.h"
 
@@ -43,39 +45,55 @@ std::optional<cam::Hit> Sphere::intersect(const cam::Ray& r) const {
 }
 std::pair<float, float> Sphere::texture_coordinates(
     const util::Vec3& pos) const {
-	float theta = std::acos(pos.y() / radius);
-	float phi = M_PI + std::atan2(pos.x(), pos.z());
-	return std::pair<float, float>(
-	    {(float)(phi / (2 * M_PI)), (float)(theta / M_PI)});
+	float theta = std::atan2(pos.x(), pos.z());
+	float phi = std::acos(pos.y() / radius);
+	return std::make_pair<float, float>((float)(theta / (2 * M_PI)),
+	                                    (float)(phi / (M_PI)));
+}
+util::Vec3 Sphere::texture_coordinates(std::pair<float, float> texel) const {
+	float theta = texel.first * M_PI * 2;
+	float phi = texel.second * M_PI;
+	float z = radius * std::cos(theta) * std::sin(phi);
+	float x = radius * std::sin(theta) * std::sin(phi);
+	float y = radius * std::cos(phi);
+	return {x, y, z};
 }
 util::AxisAlignedBoundingBox Sphere::bounds() const {
 	return util::AxisAlignedBoundingBox(util::Vec3(-radius),
 	                                    util::Vec3(radius));
 }
 util::SurfacePoint Sphere::sampleLight(const cam::Hit& h) const {
-	// Theta of sampled point.
-	float theta = 2 * M_PI * util::dis0to1(util::gen);
-	// Phi of the sampled point.
-	float phi = std::acos((2 * util::dis0to1(util::gen) - 1));
-	// Convert from polar coordinates to cartesian.
-	util::Vec3 point(radius * std::cos(theta) * std::sin(phi),
-	                 radius * std::sin(theta) * std::sin(phi),
-	                 radius * std::cos(phi));
-	return util::SurfacePoint(point, point.normalize(),
-	                          texture_coordinates(point), material);
+	auto uv = material->sampleEmissionProfile();
+	util::Vec3 point = texture_coordinates(uv);
+	return util::SurfacePoint(point, point.normalize(), uv, material);
 }
-util::Vec3 Sphere::calculateLightEmission(const util::SurfacePoint& p,
-                                          const util::Vec3& d) const {
-	// Basically this is just the emission at a surface point. And the pdf dimms
-	// the light in regard to the angle.
-	// Uniform pdf of shape is 1/area, converting to pdf over solid angle is
-	// pdf/(dot/length^2).
-	// This is wrong. We just need the normal pdf, per area, as we do not sample
-	// with regard to a direction.
-	auto emission = p.emission();
-	auto dot = std::max<float>(util::dot(p.normal(), d.normalize()), 0);
-	auto area = 4 * M_PI * std::pow(radius, 2);
-	auto pdf = 1 / area;
-	return emission / pdf;
+/*std::pair<util::Vec3, float> Sphere::calculateLightEmission(
+    const util::SurfacePoint& p, const util::Vec3& d) const {
+    // Basically this is just the emission at a surface point. And the pdf dimms
+    // the light in regard to the angle.
+    // Uniform pdf of shape is 1/area, converting to pdf over solid angle is
+    // pdf/(dot/length^2).
+    // This is wrong. We just need the normal pdf, per area, as we do not sample
+    // with regard to a direction.
+    auto emission = p.emission();
+    // auto dot = std::max<float>(util::dot(p.normal(), d.normalize()), 0);
+    auto area = 4 * M_PI * std::pow(radius, 2);
+    auto uv = p.texel();
+    float pdf = material->emission_pdf(uv.first, uv.second).value_or(1) / area;
+    return {emission, pdf};
+}*/
+
+util::Vec3 Sphere::lightEmission(const util::SurfacePoint& p) const {
+	return p.emission();
+}
+float Sphere::lightPdf(const util::SurfacePoint& p,
+                       const util::Vec3& dl_out) const {
+	auto dot = std::max<float>(util::dot(p.normal(), dl_out.normalize()), 0);
+
+	auto uv = p.texel();
+	auto phi = uv.second * M_PI;
+	float pdf = material->emission_pdf(uv.first, uv.second).value_or(1);
+	pdf = pdf / (dot / dl_out.length());
+	return pdf;
 }
 }  // namespace shapes
