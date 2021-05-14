@@ -13,14 +13,21 @@ util::SurfacePoint PointLight::sampleLight(const cam::Hit& h) const {
 	return util::SurfacePoint(util::Vec3(0), h.point().normalize(), {},
 	                          material);
 }
-util::Vec3 PointLight::calculateLightEmission(const util::SurfacePoint& p,
-                                              const util::Vec3& d) const {
-	// Basically this is just the emission at a surface point. And the pdf dimms
-	// the light in regard to the angle.
-	auto emission = p.emission();
-	// Illegally do not divide by area
-	// auto area = M_PI * std::pow(radius, 2);
-	auto pdf = std::pow(d.length(), 2);
-	return emission / pdf;
+/*std::pair<util::Vec3, float> PointLight::calculateLightEmission(
+    const util::SurfacePoint& p, const util::Vec3& d) const {
+    // Basically this is just the emission at a surface point. And the pdf dimms
+    // the light in regard to the angle.
+    auto emission = p.emission();
+    // Illegally do not divide by area
+    // auto area = M_PI * std::pow(radius, 2);
+    auto pdf = std::pow(d.length(), 2);
+    return {emission, pdf};
+}*/
+util::Vec3 PointLight::lightEmission(const util::SurfacePoint& p) const {
+	return p.emission();
+}
+float PointLight::lightPdf(const util::SurfacePoint& p,
+                           const util::Vec3& dl_out) const {
+	return -std::pow(dl_out.length(), 2);
 }
 }  // namespace shapes
