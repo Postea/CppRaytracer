@@ -9,6 +9,6 @@ class Light {
 	virtual float lightPdf(const util::SurfacePoint& p,
 	                       const util::Vec3& dl_out) const = 0;
 
-	virtual std::optional<cam::Hit> intersect(const cam::Ray& r) const = 0;
+	// virtual std::optional<cam::Hit> intersect(const cam::Ray& r) const = 0;
 };
 }  // namespace shapes
