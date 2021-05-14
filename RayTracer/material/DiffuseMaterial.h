@@ -24,6 +24,7 @@ class DiffuseMaterial : public Material {
 	float calculateLightMultiplier(const util::Vec3& d_in,
 	                               const util::Vec3& d_out,
 	                               const util::Vec3& n) const override;
+	float brdf_pdf(const util::Vec3& d_out, const util::Vec3& n) const override;
 	std::optional<float> emission_pdf(float u, float v) const override;
 
    private:

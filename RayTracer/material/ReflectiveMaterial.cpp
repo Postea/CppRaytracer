@@ -58,4 +58,10 @@ float ReflectiveMaterial::calculateLightMultiplier(const util::Vec3& d_in,
 
 	return std::cos(std::min<float>(theta * 3, M_PI / 2));
 }
+
+float ReflectiveMaterial::brdf_pdf(const util::Vec3& d_out,
+                                   const util::Vec3& n) const {
+	// This is gonna be a problem, because this material can scatter
+	return 0;
+}
 }  // namespace material

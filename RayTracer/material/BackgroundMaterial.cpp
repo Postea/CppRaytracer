@@ -1,5 +1,7 @@
 #include "BackgroundMaterial.h"
 
+#include <cassert>
+
 #include "texture/Constant.h"
 
 namespace material {
@@ -42,6 +44,12 @@ float BackgroundMaterial::calculateLightMultiplier(const util::Vec3& d_in,
                                                    const util::Vec3& d_out,
                                                    const util::Vec3& n) const {
 	// Background should not be able to receive any light
+	return 0;
+}
+float BackgroundMaterial::brdf_pdf(const util::Vec3& d_out,
+                                   const util::Vec3& n) const {
+	// Background can not scatter so this is fine and will never be used
+	assert(false);
 	return 0;
 }
 }  // namespace material

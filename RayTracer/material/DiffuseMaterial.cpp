@@ -60,4 +60,11 @@ float DiffuseMaterial::calculateLightMultiplier(const util::Vec3& d_in,
                                                 const util::Vec3& n) const {
 	return M_1_PI;
 }
+
+float DiffuseMaterial::brdf_pdf(const util::Vec3& d_out,
+                                const util::Vec3& n) const {
+	auto dot = util::dot(n, d_out.normalize());
+	dot = std::max<float>(dot, 0);
+	return dot * M_1_PI;
+}
 }  // namespace material

@@ -22,6 +22,7 @@ class ReflectiveMaterial : public Material {
 	float calculateLightMultiplier(const util::Vec3& d_in,
 	                               const util::Vec3& d_out,
 	                               const util::Vec3& n) const override;
+	float brdf_pdf(const util::Vec3& d_out, const util::Vec3& n) const override;
 
    private:
 	std::shared_ptr<util::Sampler> albedo_texture;
