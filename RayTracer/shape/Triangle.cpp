@@ -12,7 +12,6 @@ Triangle::Triangle(util::Vertex p1, util::Vertex p2, util::Vertex p3,
 	recalculateBB();
 }
 std::optional<cam::Hit> Triangle::intersect(const cam::Ray& r) const {
-	// std::cout << "In tri intersect" << std::endl;
 	util::Vec3 e1 = p2.position - p1.position;
 	util::Vec3 e2 = p3.position - p1.position;
 	util::Vec3 pvec = util::cross(r.d, e2);
@@ -31,20 +30,11 @@ std::optional<cam::Hit> Triangle::intersect(const cam::Ray& r) const {
 	util::Vec3 hit = r.x0 + r.d * t;
 
 	float w = 1 - u - v;
-	/*
-	std::cout << p1().normal << std::endl;
-	std::cout << p2().normal << std::endl;
-	std::cout << p3().normal << std::endl;
-	std::cout << u << std::endl;
-	std::cout << v << std::endl;
-	std::cout << w << std::endl;*/
-	// auto bary_normal =
-	//    (u * p1().normal + v * p2().normal + w * p3().normal).normalize();
+
 	auto cross_normal =
 	    util::cross(p2.position - p1.position, p3.position - p1.position)
 	        .normalize();
-	// if (util::dot(bary_normal, cross_normal) < 0)
-	//	std::cout << "Hm" << std::endl;
+
 	return std::optional<cam::Hit>(
 	    cam::Hit(hit, cross_normal, texture_coordinates(hit), t, material));
 }
@@ -54,7 +44,6 @@ std::pair<float, float> Triangle::texture_coordinates(
 	return std::pair<float, float>({});
 }
 util::AxisAlignedBoundingBox Triangle::bounds() const {
-	// std::cout << "In tri bounds" << std::endl;
 	return bb;
 }
 // TODO
@@ -68,19 +57,7 @@ util::SurfacePoint Triangle::sampleLight(const cam::Hit& h) const {
 	                          texture_coordinates(pos), material);
 	// The sampled point will be in local coordinates.
 }
-// TODO
-/*std::pair<util::Vec3, float> Triangle::calculateLightEmission(
-    const util::SurfacePoint& p, const util::Vec3& d) const {
-    // Basically this is just the emission at a surface point. And the pdf dimms
-    // the light in regard to the angle.
-    // Uniform pdf of shape is 1/area, converting to pdf over solid angle is
-    // pdf/(dot/length^2).
-    auto emission = p.emission();
-    auto dot = std::max<float>(util::dot(p.normal(), d.normalize()), 0);
-    auto area = 1;
-    auto pdf = std::pow(d.length(), 2) / (dot * area);
-    return {emission, pdf};
-}*/
+
 // TODO
 util::Vec3 Triangle::lightEmission(const util::SurfacePoint& p) const {
 	return util::Vec3(0);
