@@ -67,21 +67,6 @@ util::SurfacePoint Sphere::sampleLight(const cam::Hit& h) const {
 	util::Vec3 point = texture_coordinates(uv);
 	return util::SurfacePoint(point, point.normalize(), uv, material);
 }
-/*std::pair<util::Vec3, float> Sphere::calculateLightEmission(
-    const util::SurfacePoint& p, const util::Vec3& d) const {
-    // Basically this is just the emission at a surface point. And the pdf dimms
-    // the light in regard to the angle.
-    // Uniform pdf of shape is 1/area, converting to pdf over solid angle is
-    // pdf/(dot/length^2).
-    // This is wrong. We just need the normal pdf, per area, as we do not sample
-    // with regard to a direction.
-    auto emission = p.emission();
-    // auto dot = std::max<float>(util::dot(p.normal(), d.normalize()), 0);
-    auto area = 4 * M_PI * std::pow(radius, 2);
-    auto uv = p.texel();
-    float pdf = material->emission_pdf(uv.first, uv.second).value_or(1) / area;
-    return {emission, pdf};
-}*/
 
 util::Vec3 Sphere::lightEmission(const util::SurfacePoint& p) const {
 	return p.emission();
