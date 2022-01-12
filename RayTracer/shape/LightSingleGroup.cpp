@@ -24,11 +24,6 @@ util::SurfacePoint LightSingleGroup::sampleLight(const cam::Hit& h) const {
 	                       sample.texel(), sample.material);
 	return result;
 }
-/*
-std::pair<util::Vec3, float> LightSingleGroup::calculateLightEmission(
-    const util::SurfacePoint& p, const util::Vec3& d) const {
-    return light->calculateLightEmission(p, d);
-}*/
 
 util::Vec3 LightSingleGroup::lightEmission(const util::SurfacePoint& p) const {
 	return light->lightEmission(p);
