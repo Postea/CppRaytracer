@@ -72,9 +72,9 @@ util::SurfacePoint CirclePlane::sampleLight(const cam::Hit& h) const {
     auto pdf = 1 / area;
     return {emission, pdf};
 }*/
-// TODO
+
 util::Vec3 CirclePlane::lightEmission(const util::SurfacePoint& p) const {
-	return util::Vec3(0);
+	return p.emission();
 }
 // TODO
 float CirclePlane::lightPdf(const util::SurfacePoint& p,
