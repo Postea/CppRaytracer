@@ -11,7 +11,6 @@
 
 #include "material/BackgroundMaterial.h"
 #include "material/DiffuseMaterial.h"
-#include "material/ReflectiveMaterial.h"
 #include "material/texture/Constant.h"
 #include "sampling/Image.h"
 #include "sampling/Scene.h"
