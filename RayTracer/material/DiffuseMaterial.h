@@ -12,15 +12,15 @@ class DiffuseMaterial : public Material {
 	                const std::shared_ptr<util::Sampler>& emission_texture,
 	                const util::Image& distribution);
 	DiffuseMaterial(const std::shared_ptr<util::Sampler>& albedo);
-	DiffuseMaterial(const util::Vec3& color);
+	DiffuseMaterial(const util::Vec3& albedo,
+	                const util::Vec3& emission = util::Vec3(0));
 
 	util::Vec3 albedo(const std::pair<float, float>& uv) const override;
 	util::Vec3 emission(const std::pair<float, float>& uv) const override;
 	std::pair<float, float> sampleEmissionProfile() const override;
-	util::Vec3 scattered_d(const util::Vec3& d,
-	                       const util::Vec3& n) const override;
-	bool scatter(const util::Vec3& d, const util::Vec3& n) const override;
-
+	std::optional<util::Vec3> scattered_d(const util::Vec3& d,
+	                                      const util::Vec3& n) const override;
+	// bool scatter(const util::Vec3& d, const util::Vec3& n) const override;
 	float calculateLightMultiplier(const util::Vec3& d_in,
 	                               const util::Vec3& d_out,
 	                               const util::Vec3& n) const override;
