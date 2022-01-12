@@ -16,28 +16,18 @@ Image::Image(int width, int height)
 		vec.insert(vec.end(), color);
 	}
 }
-/*
-void Image::setPixels(std::shared_ptr<Sampler> sampler) {
-    Threadpool tp(4);
-    for (int x = 0; x != width; x++) {
-        for (int y = 0; y != height; y++) {
-            vec[width * y + x] = sampler->color(x, y);
-        }
-    }
-} */
 void Image::setPixel(int x, int y, Vec3 color) {
 	vec[width * y + x] = color;
 }
 void Image::setPixels(size_t threadcount, std::shared_ptr<Sampler> sampler) {
 	Threadpool tp(threadcount);
-	for (int x = 0; x != width; x++) {
-		for (int y = 0; y != height; y++) {
+	for (int x = 0; x < width; x++) {
+		for (int y = 0; y < height; y++) {
 			tp.queueTask(std::bind([this, x, y, sampler]() {
 				this->setPixelsTask(x, y, sampler);
 			}));
 		}
 	}
-	// std::cout << "Done queing" << std::endl;
 }
 
 void Image::setPixelsTask(int x, int y, std::shared_ptr<Sampler> sampler) {
@@ -68,14 +58,12 @@ Vec3 Image::color(float x, float y) const {
 	Vec3 v = vec[width * yy + xx];
 	return v;
 }
-Image raytrace(size_t threadcount, const cam::CamObs& cam,
-               const std::shared_ptr<Sampler>& sampler, size_t n) {
-	Image result(cam.width, cam.height);
+Image raytrace(size_t threadcount, const std::shared_ptr<Scene>& scene,
+               size_t n) {
+	Image result(scene->cam.width, scene->cam.height);
 
 	result.setPixels(threadcount, std::make_shared<StratifiedSampler>(
-	                                  StratifiedSampler(sampler, n))
-	                 // sampler
-	);
+	                                  StratifiedSampler(scene, n)));
 	result.gammaCorrect(2.2);
 	return result;
 }
@@ -144,10 +132,8 @@ void writeBmp(const char* filename, Image img) {
 			char bgr[3] = {blue, green, red};
 			for (int i = 0; i < 3; i++) {
 				char c0 = (bgr[i] & 0x00FF);
-				// char c8 = ((bgr[i] & (unsigned int)0xFF00) >> 8);
 
 				ofile.write(&c0, sizeof(c0));
-				// ofile.write (&c8, sizeof (c8));
 			}
 		}
 		// If needed add extra bytes after each row
