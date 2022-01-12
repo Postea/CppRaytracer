@@ -55,7 +55,7 @@ std::optional<cam::Hit> TriangleMesh::intersect(size_t i,
 	std::optional<cam::Hit> temp = std::nullopt;
 	std::optional<cam::Hit> mid_hit = std::nullopt;
 	int_fast16_t bound = hierarchy[i].leaves_i + hierarchy[i].leaves_size - 1;
-	// assert(!(hierarchy[i].leaves_i == -1 ^ hierarchy[i].leaves_size == -1));
+
 	for (size_t tri_i = hierarchy[i].leaves_i; tri_i <= bound; tri_i++) {
 		auto tri = leaves[tri_i];
 		std::optional<cam::Hit> temp = tri.intersect(r);
@@ -75,7 +75,6 @@ std::optional<cam::Hit> TriangleMesh::intersect(size_t i,
 	std::sort(hits.begin(), hits.end(),
 	          [](cam::Hit a, cam::Hit b) { return a.scalar() < b.scalar(); });
 	if (hits[0].material == nullptr) return std::nullopt;
-	// for (auto hit : hits) std::cout << hit << std::endl;
 	return hits[0];
 }
 // TODO
@@ -90,11 +89,6 @@ util::AxisAlignedBoundingBox TriangleMesh::bounds() const {
 util::SurfacePoint TriangleMesh::sampleLight(const cam::Hit& h) const {
 	return util::SurfacePoint(util::Vec3({}), 0, {}, material);
 }
-// TODO
-/*std::pair<util::Vec3, float> TriangleMesh::calculateLightEmission(
-    const util::SurfacePoint& p, const util::Vec3& d) const {
-    return {util::Vec3(), 0.0f};
-}*/
 // TODO
 util::Vec3 TriangleMesh::lightEmission(const util::SurfacePoint& p) const {
 	return util::Vec3(0);
@@ -134,10 +128,6 @@ void TriangleMesh::hierarch(size_t i,
 			middle.push_back(tri_ptr);
 		}
 	}
-	// std::cout << depth << " Left: " << left.shapeList.size() <<
-	// std::endl; std::cout << depth << " Right: " << right.shapeList.size()
-	// << std::endl; std::cout << depth << " Middle: " <<
-	// group.shapeList.size() << std::endl;
 
 	// Handle middle leaves
 	if (!middle.empty()) {
@@ -160,15 +150,5 @@ void TriangleMesh::hierarch(size_t i,
 	if (!left_non_leaves.empty()) hierarch(hierarchy[i].left, left_non_leaves);
 	if (!right_non_leaves.empty())
 		hierarch(hierarchy[i].right, right_non_leaves);
-
-	/*size_t hierarch_min_cluster_size = 1;
-	if (left.shapeList.size() >= hierarch_min_cluster_size) {
-	    group.add(left);
-	    hierarch(left, left_non_leaves, depth - 1);
-	}
-	if (right.shapeList.size() >= hierarch_min_cluster_size) {
-	    group.add(right);
-	    hierarch(right, right_non_leaves, depth - 1);
-	}*/
 }
 }  // namespace shapes
