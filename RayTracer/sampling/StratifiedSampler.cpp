@@ -16,8 +16,6 @@ Vec3 StratifiedSampler::color(float x, float y) const {
 			color = color + sampler->color(xs, ys);
 		}
 	}
-	// if (color != Vec3 (16, 16, 16) && color != Vec3 (0, 0, 8))
-	// std::cout << color << " and " << color / (n_ * n_) << n_ << std::endl;
 	return color / (n * n);
 }
 }  // namespace util
