@@ -10,10 +10,10 @@ class SurfacePoint {
 	             const std::pair<float, float>& uv,
 	             const std::shared_ptr<material::Material>& material);
 
-	cam::Ray scattered_ray(const cam::Ray& inc_ray) const;
+	std::optional<cam::Ray> scattered_ray(const cam::Ray& inc_ray) const;
 	util::Vec3 albedo() const;
 	util::Vec3 emission() const;
-	bool scatter(const util::Vec3& d, const util::Vec3& n) const;
+	// bool scatter(const util::Vec3& d, const util::Vec3& n) const;
 	util::Vec3 point() const;
 	util::Vec3 normal() const;
 	std::pair<float, float> texel() const;
