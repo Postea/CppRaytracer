@@ -25,8 +25,8 @@ EmissionProfile::EmissionProfile(const std::shared_ptr<util::Sampler>& emission,
       distribution(std::make_optional(distribution)) {
 	// vec: a vector with texel and grey value
 	std::vector<std::pair<std::pair<float, float>, float>> vec;
-	for (int w = 0; w <= distribution.width; w++) {
-		for (int h = 0; h <= distribution.height; h++) {
+	for (int w = 0; w < distribution.width; w++) {
+		for (int h = 0; h < distribution.height; h++) {
 			auto xyz = distribution[{w, h}];
 			float grey = 0.299f * xyz[0] + 0.587f * xyz[1] + 0.114f * xyz[2];
 			vec.push_back({{(float)w / (float)distribution.width,
@@ -45,7 +45,6 @@ EmissionProfile::EmissionProfile(const std::shared_ptr<util::Sampler>& emission,
 	float cumm = 0;
 	for (auto x : vec) {
 		cumm += x.second;
-		// std::cout << cumm << std::endl;
 		cdf.push_back({x.first, cumm});
 	}
 	// Transform cdf to cap at 1
