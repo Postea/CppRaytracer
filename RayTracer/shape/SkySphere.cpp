@@ -23,7 +23,7 @@ SkySphere::SkySphere(const std::shared_ptr<util::Sampler>& sampler,
 	material =
 	    std::make_shared<material::BackgroundMaterial>(sampler, distribution);
 }
-// Thit intersect method rightly flips the normal.But the normal is never used
+// This intersect method rightly flips the normal.But the normal is never used
 // for non scatter materials, so we do not flip the normal
 /*
 std::optional<cam::Hit> Background::intersect(const cam::Ray& r) const {
@@ -34,6 +34,12 @@ std::optional<cam::Hit> Background::intersect(const cam::Ray& r) const {
               hit->material}});
     return hit;
 }*/
+
+util::SurfacePoint SkySphere::sampleLight(const cam::Hit& h) const {
+	auto uv = material->sampleEmissionProfile();
+	util::Vec3 point = texture_coordinates(uv);
+	return util::SurfacePoint(point, -point.normalize(), uv, material);
+}
 
 float SkySphere::lightPdf(const util::SurfacePoint& p,
                           const util::Vec3& dl_out) const {
