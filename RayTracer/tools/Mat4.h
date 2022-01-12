@@ -19,18 +19,21 @@ class Mat4 {
 	bool operator!=(const Mat4& rhs) const;
 	// Methods
 	Mat4 transpose() const;
-	Vec3 transformDir(Vec3 v) const;
-	Vec3 transformPoint(Vec3 v) const;
+	Vec3 transformDir(const Vec3& v) const;
+	Vec3 transformPoint(const Vec3& v) const;
 	Vec3 position() const;
 	Mat4 invertFull() const;
+	friend Mat4 translate(const Vec3& xyz);
+	friend Mat4 rotate(const Vec3& axis, float angle);
+	friend Mat4 scale(const Vec3& xyz);
 
    private:
 	std::array<float, 16> arr;
 };
 
-Mat4 translate(Vec3 xyz);
-Mat4 rotate(Vec3 axis, float angle);
-Mat4 scale(Vec3 xyz);
+Mat4 translate(const Vec3& xyz);
+Mat4 rotate(const Vec3& axis, float angle);
+Mat4 scale(const Vec3& xyz);
 Mat4 identity();
 
 }  // namespace util

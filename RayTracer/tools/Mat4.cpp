@@ -20,8 +20,9 @@ Mat4 Mat4::operator*(const Mat4& rhs) const {
 	for (int c = 0; c != 4; c++) {
 		for (int r = 0; r != 4; r++) {
 			float v = 0;
-			for (int k = 0; k != 4; k++) v += arr[4 * k + r] * rhs[{c, k}];
-			n[{c, r}] = v;
+			for (int k = 0; k != 4; k++)
+				v += arr[4 * k + r] * rhs.arr[4 * c + k];
+			n.arr[4 * c + r] = v;
 		}
 	}
 	return n;
@@ -35,36 +36,27 @@ bool Mat4::operator!=(const Mat4& rhs) const {
 // Methods
 Mat4 Mat4::transpose() const {
 	Mat4 x;
-	for (int c = 0; c != 4; c++) {
-		for (int r = 0; r != 4; r++) {
-			x[{c, r}] = arr[4 * r + c];
+	for (int c = 0; c < 4; c++) {
+		for (int r = 0; r < 4; r++) {
+			x.arr[4 * c + r] = arr[4 * r + c];
 		}
 	}
 	return x;
 }
-Vec3 Mat4::transformDir(Vec3 v) const {
-	Mat4 mat(*this);
-	const float x =
-	    mat[{0, 0}] * v[0] + mat[{0, 1}] * v[1] + mat[{0, 2}] * v[2];
-	const float y =
-	    mat[{1, 0}] * v[0] + mat[{1, 1}] * v[1] + mat[{1, 2}] * v[2];
-	const float z =
-	    mat[{2, 0}] * v[0] + mat[{2, 1}] * v[1] + mat[{2, 2}] * v[2];
+Vec3 Mat4::transformDir(const Vec3& v) const {
+	const float x = arr[0] * v[0] + arr[1] * v[1] + arr[2] * v[2];
+	const float y = arr[4] * v[0] + arr[5] * v[1] + arr[6] * v[2];
+	const float z = arr[8] * v[0] + arr[9] * v[1] + arr[10] * v[2];
 	return Vec3(x, y, z);
 }
-Vec3 Mat4::transformPoint(Vec3 v) const {
-	Mat4 mat(*this);
-	float x = mat[{0, 0}] * v[0] + mat[{0, 1}] * v[1] + mat[{0, 2}] * v[2] +
-	          mat[{0, 3}];
-	float y = mat[{1, 0}] * v[0] + mat[{1, 1}] * v[1] + mat[{1, 2}] * v[2] +
-	          mat[{1, 3}];
-	float z = mat[{2, 0}] * v[0] + mat[{2, 1}] * v[1] + mat[{2, 2}] * v[2] +
-	          mat[{2, 3}];
+Vec3 Mat4::transformPoint(const Vec3& v) const {
+	const float x = arr[0] * v[0] + arr[1] * v[1] + arr[2] * v[2] + arr[3];
+	const float y = arr[4] * v[0] + arr[5] * v[1] + arr[6] * v[2] + arr[7];
+	const float z = arr[8] * v[0] + arr[9] * v[1] + arr[10] * v[2] + arr[11];
 	return Vec3(x, y, z);
 }
 Vec3 Mat4::position() const {
-	Mat4 mat(*this);
-	return Vec3(mat[{0, 3}], mat[{1, 3}], mat[{2, 3}]);
+	return Vec3(arr[3], arr[7], arr[11]);
 }
 Mat4 Mat4::invertFull() const {
 	Mat4 ret;
@@ -168,15 +160,15 @@ Mat4 Mat4::invertFull() const {
 	return retu;
 }
 // Static
-Mat4 translate(Vec3 xyz) {
-	Mat4 matrix;
-	matrix[{0, 3}] = xyz[0];
-	matrix[{1, 3}] = xyz[1];
-	matrix[{2, 3}] = xyz[2];
-	return matrix;
+Mat4 translate(const Vec3& xyz) {
+	Mat4 mat;
+	mat.arr[3] = xyz[0];
+	mat.arr[7] = xyz[1];
+	mat.arr[11] = xyz[2];
+	return mat;
 }
-Mat4 rotate(Vec3 axis, float angle) {
-	Mat4 matrix;
+Mat4 rotate(const Vec3& axis, float angle) {
+	Mat4 mat;
 	float rad = (angle / 180) * M_PI;
 	float cosa = cos(rad);
 	float sina = sin(rad);
@@ -186,28 +178,28 @@ Mat4 rotate(Vec3 axis, float angle) {
 	float rz = axis[2] / l;
 	float icosa = 1 - cosa;
 	{
-		matrix[{0, 0}] = (icosa * rx * rx + cosa);
-		matrix[{1, 0}] = (icosa * rx * ry + rz * sina);
-		matrix[{2, 0}] = (icosa * rx * rz - ry * sina);
+		mat.arr[0] = (icosa * rx * rx + cosa);
+		mat.arr[4] = (icosa * rx * ry + rz * sina);
+		mat.arr[8] = (icosa * rx * rz - ry * sina);
 	}
 	{
-		matrix[{0, 1}] = (icosa * rx * ry - rz * sina);
-		matrix[{1, 1}] = (icosa * ry * ry + cosa);
-		matrix[{2, 1}] = (icosa * ry * rz + rx * sina);
+		mat.arr[1] = (icosa * rx * ry - rz * sina);
+		mat.arr[5] = (icosa * ry * ry + cosa);
+		mat.arr[9] = (icosa * ry * rz + rx * sina);
 	}
 	{
-		matrix[{0, 2}] = (icosa * rx * rz + ry * sina);
-		matrix[{1, 2}] = (icosa * ry * rz - rx * sina);
-		matrix[{2, 2}] = (icosa * rz * rz + cosa);
+		mat.arr[2] = (icosa * rx * rz + ry * sina);
+		mat.arr[6] = (icosa * ry * rz - rx * sina);
+		mat.arr[10] = (icosa * rz * rz + cosa);
 	}
-	return matrix;
+	return mat;
 }
-Mat4 scale(Vec3 xyz) {
-	Mat4 matrix;
-	matrix[{0, 0}] = xyz[0];
-	matrix[{1, 1}] = xyz[1];
-	matrix[{2, 2}] = xyz[2];
-	return matrix;
+Mat4 scale(const Vec3& xyz) {
+	Mat4 mat;
+	mat.arr[0] = xyz[0];
+	mat.arr[5] = xyz[1];
+	mat.arr[10] = xyz[2];
+	return mat;
 }
 Mat4 identity() {
 	return Mat4({1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1});
@@ -217,7 +209,7 @@ std::ostream& operator<<(std::ostream& os, const Mat4& rhs) {
 	for (int c = 0; c < 4; c++) {
 		os << "(";
 		for (int r = 0; r < 4; r++) {
-			os << rhs[{c, r}];
+			os << rhs.arr[4 * c + r];
 			if (r != 3) {
 				os << ",";
 			}
