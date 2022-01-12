@@ -6,15 +6,12 @@ namespace util {
 
 Threadpool::Threadpool(size_t n) : alive(true) {
 	// Create the specified number of threads
-	threads.reserve(n);
-	for (int i = 0; i < n; ++i) {
+	for (int i = 0; i < n; i++) {
 		threads.emplace_back(std::bind(&Threadpool::threading, this));
 	}
 }
 
 Threadpool::~Threadpool() {
-	// std::unique_lock<std::mutex> lock(m);
-
 	alive = false;
 	cv.notify_all();
 
