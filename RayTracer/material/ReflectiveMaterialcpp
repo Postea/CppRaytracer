@@ -34,16 +34,21 @@ util::Vec3 ReflectiveMaterial::emission(
     const std::pair<float, float>& uv) const {
 	return emission_profile.color(uv.first, uv.second);
 }
-util::Vec3 ReflectiveMaterial::scattered_d(const util::Vec3& d,
+std::optional<util::Vec3> ReflectiveMaterial::scattered_d(const util::Vec3& d,
                                            const util::Vec3& n) const {
-	util::Vec3 rand = util::rand_vec3_in_circle(clearness);
-	util::Vec3 reflected = reflection(d, n);
-	return reflected + rand;
+	if (util::dot(d, n) > 0) {
+		util::Vec3 rand = util::rand_vec3_in_circle(clearness);
+		util::Vec3 reflected = reflection(d, n);
+		return std::make_optional(reflected + rand);
+	} else
+		return std::nullopt;
 }
+/*
 bool ReflectiveMaterial::scatter(const util::Vec3& d,
                                  const util::Vec3& n) const {
-	return util::dot(d, n) > 0;
+    return util::dot(d, n) > 0;
 }
+*/
 float ReflectiveMaterial::calculateLightMultiplier(const util::Vec3& d_in,
                                                    const util::Vec3& d_out,
                                                    const util::Vec3& n) const {
