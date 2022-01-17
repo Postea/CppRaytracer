@@ -51,7 +51,7 @@ int main() {
 
 		Group group(ident);
 
-		Image sky_image = readImage("textures/moonlit_golf_4k.hdr");
+		Image sky_image = readImage("textures/FullMoon4.bmp");
 		auto skysphere = make_shared<SkySphere>(
 		    SkySphere(make_shared<Image>(sky_image), sky_image));
 
@@ -65,12 +65,12 @@ int main() {
 		std::ifstream roo("Tower_Base.obj");
 		TriangleMesh rook(roo,
 		                  make_shared<DiffuseMaterial>(Vec3(0.1f, 0.9f, 0.1f)));
-		group.add(ShapeSingleGroup(translate(Vec3(6, 0, -2)),
-		                           make_shared<TriangleMesh>(rook)));
+		// group.add(ShapeSingleGroup(translate(Vec3(6, 0, -2)),
+		//                            make_shared<TriangleMesh>(rook)));
 
 		auto red_sphere = make_shared<Sphere>(
 		    1.0f, make_shared<DiffuseMaterial>(Vec3(0.9f, 0.1f, 0.1f)));
-		group.add(ShapeSingleGroup(translate(Vec3(2, 0, -2)), red_sphere));
+		// group.add(ShapeSingleGroup(translate(Vec3(2, 0, -2)), red_sphere));
 
 		auto green_sphere = make_shared<Sphere>(
 		    1.0f, make_shared<DiffuseMaterial>(Vec3(0.1f, 0.9f, 0.1f)));
@@ -85,10 +85,10 @@ int main() {
 		clock_t clkFinish;
 		cout << "Start render" << endl;
 		clkStart = clock();
-		Image img = raytrace(4, sc, n * n);
+		Image img = raytrace(1, sc, n * n);
 		clkFinish = clock();
 		cout << "Start imaging" << endl;
-		writeBmp("results/aaa.bmp", img);
+		writeBmp("results/mis_2.bmp", img);
 		cout << "End" << endl;
 		std::cout << clkFinish - clkStart;
 

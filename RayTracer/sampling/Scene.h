@@ -22,12 +22,9 @@ class Scene : public util::Sampler {
 	                          int nn) const;
 	/*float Scene::bsdfMisWeight(const std::optional<cam::Hit>& h,
 	                           const cam::Ray& scatterRay,
-	                           size_t lights_samples) const;
-	float Scene::lightMisWeight(std::shared_ptr<shapes::Light> light,
-	                            const std::optional<cam::Hit>& h,
-	                            const util::Vec3& d_in,
-	                            const util::SurfacePoint& samplePoint,
-	                            size_t light_samples) const;*/
+	                           size_t lights_samples) const;*/
+	float Scene::misWeight(size_t f_samples, float f_pdf, size_t g_samples,
+	                       float g_pdf) const;
 	shapes::Group group;
 	std::vector<std::shared_ptr<shapes::Light>> lights;
 	size_t depth;

@@ -23,63 +23,85 @@ util::Vec3 Scene::calculateRadiance(const cam::Ray& r, size_t depth) const {
 	std::optional<cam::Hit> h = group.intersect(r);
 
 	util::Vec3 result;  // = h->emission();
-	auto scatter_ray = h->scattered_ray(r);
-
-	if (scatter_ray) {
-		auto cosine_term = util::dot(h->normal(), scatter_ray->d.normalize());
-		auto brdf = h->material->calculateLightMultiplier(-scatter_ray->d, -r.d,
+	std::optional<cam::Ray> scatter = h->scattered_ray(r);
+	if (scatter) {
+		auto brdf_ray = h->scattered_ray(r);
+		auto cosine_term = util::dot(h->normal(), brdf_ray->d.normalize());
+		auto brdf = h->material->calculateLightMultiplier(-brdf_ray->d, -r.d,
 		                                                  h->normal());
-		auto brdf_pdf = h->material->brdf_pdf(scatter_ray->d, h->normal());
-
-		result = result + (h->albedo() *
-		                   calculateRadiance(scatter_ray.value(), depth - 1) *
-		                   brdf * cosine_term) /
-		                      brdf_pdf;
-
+		auto brdf_pdf = h->material->brdf_pdf(brdf_ray->d, h->normal());
+		auto L = h->albedo() * calculateRadiance(brdf_ray.value(), depth - 1);
+		auto scatter_function = (brdf * L * cosine_term) / brdf_pdf;
+		result = scatter_function;
 #if true
-		size_t lightSamples = 4;
+		size_t lightSamples = 1;
 		result = result + directLighting(h, r, lightSamples);
 #endif
 	} else {
-		if (this->depth == depth) result = h->emission();
-		// result = h->emission();
+		// if (this->depth == depth) result = h->emission();
+		result = h->emission();
 	}
 	return result;
 }
 util::Vec3 Scene::directLighting(const std::optional<cam::Hit>& h, cam::Ray r,
-                                 int lightSamples) const {
+                                 int samples) const {
 	util::Vec3 result;
 	for (auto light : lights) {
 		util::Vec3 lightPart;
-		for (int i = 0; i < lightSamples; i++) {
+		for (int i = 0; i < samples; i++) {
+			// Sample the light source with mis
 			auto samplePoint = light->sampleLight(h.value());
 			auto shadowRay =
 			    cam::Ray(samplePoint.point(), h->point() - samplePoint.point(),
 			             cam::epsilon, 1 - cam::epsilon, false);
 			// Only check for intersection when the the ray points away from the
-			// surface of the light. otherwise it hits the light itself
-			if (util::dot(shadowRay.d, samplePoint.normal()) > 0) {
-				auto shadowHit = group.intersect(shadowRay);
-				if (!shadowHit) {
-					auto lightPdf = light->lightPdf(samplePoint, shadowRay.d);
-					if (lightPdf > 0) {
-						auto lightEmission =
-						    light->lightEmission(samplePoint) / lightPdf;
-						auto lightMultiplier = h->calculateLightMultiplier(
-						    shadowRay.d.normalize(), -r.d, h->normal());
-						util::Vec3 scatterFunction =
-						    lightMultiplier * lightEmission *
-						    std::max<float>(util::dot(-shadowRay.d.normalize(),
-						                              h->normal()),
-						                    0);
-						lightPart = lightPart + (scatterFunction);
-					} else {
-						result = result;
-					}
-				}
+			// surface of the light. otherwise it hits the light itself and we
+			// can break
+			if (util::dot(shadowRay.d, samplePoint.normal()) <= 0) break;
+			auto shadowHit = group.intersect(shadowRay);
+			// If there is a hit from the shadowRay break
+			if (shadowHit) break;
+			auto lightPdf = light->lightPdf(samplePoint, shadowRay.d);
+			// Can this even happen?
+			if (lightPdf <= 0) {
+				std::cout << "Hm" << std::endl;
+				break;
 			}
+			auto brdf = h->calculateLightMultiplier(shadowRay.d.normalize(),
+			                                        -r.d, h->normal());
+			auto brdf_pdf = h->material->brdf_pdf(-shadowRay.d, h->normal());
+			auto L = light->lightEmission(samplePoint);
+			auto cosine_term = util::dot(-shadowRay.d.normalize(), h->normal());
+			if (cosine_term < 0) {
+				std::cout << "hm" << std::endl;
+			}
+			auto weight = misWeight(1, lightPdf, 1, brdf_pdf);
+			// std::cout << "light:" << lightPdf << " " << brdf_pdf << " "
+			//           << weight << std::endl;
+			util::Vec3 scatterFunction =
+			    (brdf * L * cosine_term * weight) / lightPdf;
+
+			lightPart = lightPart + (scatterFunction);
+
+			// Sample the brdf with mis
+			auto brdf_ray = h->scattered_ray(r);
+			auto lh = light->intersect(brdf_ray.value());
+			if (!lh) break;
+			brdf =
+			    lh->calculateLightMultiplier(-brdf_ray->d, -r.d, h->normal());
+			brdf_pdf = h->material->brdf_pdf(brdf_ray->d, h->normal());
+			L = light->lightEmission(lh.value());
+			lightPdf = light->lightPdf(lh.value(), -brdf_ray->d);
+			cosine_term = util::dot(brdf_ray->d, h->normal());
+			weight = misWeight(1, brdf_pdf, 1, lightPdf);
+			// std::cout << "brdf:" << brdf_pdf << " " << lightPdf << " " <<
+			// weight
+			//           << std::endl;
+			scatterFunction = (brdf * L * cosine_term * weight) / brdf_pdf;
+
+			lightPart = lightPart + (scatterFunction);
 		}
-		result = result + (h->albedo() * (lightPart / lightSamples));
+		result = result + (h->albedo() * (lightPart / samples));
 	}
 	return result;
 }
@@ -97,13 +119,10 @@ util::Vec3 Scene::directLighting(const std::optional<cam::Hit>& h, cam::Ray r,
     }
     return numerator / denominator;
 }
-// Not used
-float Scene::lightMisWeight(std::shared_ptr<shapes::Light> light,
-                            const std::optional<cam::Hit>& h,
-                            const util::Vec3& d_in,
-                            const util::SurfacePoint& samplePoint,
-                            size_t light_samples) const {
-    float numerator = light_samples * light->lightPdf(samplePoint, d_in);
-    float denominator = numerator + h->material->brdf_pdf(-d_in, h->normal());
-    return numerator / denominator;
-}*/
+*/
+float Scene::misWeight(size_t f_samples, float f_pdf, size_t g_samples,
+                       float g_pdf) const {
+	float li = f_samples * f_pdf;
+	float br = g_samples * g_pdf;
+	return (li * li) / ((li * li) + (br * br));
+}
