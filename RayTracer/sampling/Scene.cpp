@@ -83,27 +83,3 @@ util::Vec3 Scene::directLighting(const std::optional<cam::Hit>& h, cam::Ray r,
 	}
 	return result;
 }
-// Not used
-/*float Scene::bsdfMisWeight(const std::optional<cam::Hit>& h,
-                           const cam::Ray& scatterRay,
-                           size_t lights_samples) const {
-    float numerator = h->material->brdf_pdf(scatterRay.d, h->normal());
-    float denominator = numerator;
-    for (auto light : lights) {
-        //auto light_hit = light->intersect(scatterRay);
-        //if (light_hit)
-        //    denominator += lights_samples *
-        //                   light->lightPdf(light_hit.value(), -scatterRay.d);
-    }
-    return numerator / denominator;
-}
-// Not used
-float Scene::lightMisWeight(std::shared_ptr<shapes::Light> light,
-                            const std::optional<cam::Hit>& h,
-                            const util::Vec3& d_in,
-                            const util::SurfacePoint& samplePoint,
-                            size_t light_samples) const {
-    float numerator = light_samples * light->lightPdf(samplePoint, d_in);
-    float denominator = numerator + h->material->brdf_pdf(-d_in, h->normal());
-    return numerator / denominator;
-}*/
