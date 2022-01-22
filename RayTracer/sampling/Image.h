@@ -18,8 +18,9 @@ class Image : public Sampler {
 	Vec3 color(float x, float y) const override;
 
 	const int width, height;
-	bool halfed;
 	void gammaCorrect(float gamma);
+
+	void halfImage(bool upper, float tolerance);
 
 	friend Image raytrace(size_t threadcount,
 	                      const std::shared_ptr<Scene>& scene, size_t n);

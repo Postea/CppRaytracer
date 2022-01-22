@@ -9,8 +9,7 @@
 #include "../tools/stb_image.h"
 
 namespace util {
-Image::Image(int width, int height)
-    : width(width), height(height), halfed(false) {
+Image::Image(int width, int height) : width(width), height(height) {
 	Vec3 color({});
 	for (int i = 0; i < width * height; i++) {
 		vec.insert(vec.end(), color);
@@ -36,6 +35,9 @@ void Image::setPixelsTask(int x, int y, std::shared_ptr<Sampler> sampler) {
 }
 
 void Image::gammaCorrect(float gamma) {
+	// Check if the Vec3 in the image are in range [0,1]
+	std::for_each(vec.begin(), vec.end(),
+	              [](util::Vec3 v) { assert(v.limited(0, 1)); });
 	// correct the whole data-array with the given gamma
 	std::transform(vec.begin(), vec.end(), vec.begin(),
 	               [gamma](util::Vec3 v) -> util::Vec3 {
@@ -43,6 +45,19 @@ void Image::gammaCorrect(float gamma) {
 		                                 std::powf(v.y(), 1 / gamma),
 		                                 std::powf(v.z(), 1 / gamma));
 	               });
+}
+
+void Image::halfImage(bool upper, float tolerance) {
+	// Half the image
+	bool cutter;
+	if (!upper) tolerance = -tolerance;
+	for (int y = 0; y < height; y++) {
+		cutter = upper ^ (y < (height * (0.5 + tolerance)));
+		// Color all the x values
+		for (int x = 0; x < width; x++) {
+			if (cutter) this->operator[]({x, y}) = util::Vec3(0);
+		}
+	}
 }
 Vec3 Image::operator[](const std::array<int, 2>& i) const {
 	return vec[width * i[1] + i[0]];
@@ -52,7 +67,6 @@ Vec3& Image::operator[](const std::array<int, 2>& i) {
 }
 
 Vec3 Image::color(float x, float y) const {
-	if (halfed && y > 0.5) return Vec3(0);
 	int xx = (int)((x - std::floor(x)) * width);
 	int yy = (int)((y - std::floor(y)) * height);
 	Vec3 v = vec[width * yy + xx];
