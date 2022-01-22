@@ -19,7 +19,7 @@ class Scene : public util::Sampler {
 
    private:
 	util::Vec3 directLighting(const std::optional<cam::Hit>& h, cam::Ray r,
-	                          int nn) const;
+	                          int n) const;
 	shapes::Group group;
 	std::vector<std::shared_ptr<shapes::Light>> lights;
 	size_t depth;
