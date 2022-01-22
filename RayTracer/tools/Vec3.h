@@ -36,6 +36,7 @@ class Vec3 {
 	float z() const;
 	Vec3 normalize() const;
 	float length() const;
+	bool limited(float lower_limit, float upper_limit) const;
 
    private:
 	std::array<float, 3> arr;

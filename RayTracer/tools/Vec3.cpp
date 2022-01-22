@@ -90,6 +90,15 @@ bool Vec3::operator==(const Vec3& rhs) const {
 bool Vec3::operator!=(const Vec3& rhs) const {
 	return !(*this == rhs);
 }
+float Vec3::x() const {
+	return arr[0];
+}
+float Vec3::y() const {
+	return arr[1];
+}
+float Vec3::z() const {
+	return arr[2];
+}
 Vec3 Vec3::normalize() const {
 	Vec3 x(*this);
 	float l = x.length();
@@ -101,14 +110,12 @@ Vec3 Vec3::normalize() const {
 float Vec3::length() const {
 	return sqrt(arr[0] * arr[0] + arr[1] * arr[1] + arr[2] * arr[2]);
 }
-float Vec3::x() const {
-	return arr[0];
-}
-float Vec3::y() const {
-	return arr[1];
-}
-float Vec3::z() const {
-	return arr[2];
+bool Vec3::limited(float lower_limit, float upper_limit) const {
+	bool x = lower_limit <= arr[0] && arr[0] <= upper_limit;
+	bool y = lower_limit <= arr[1] && arr[1] <= upper_limit;
+	bool z = lower_limit <= arr[2] && arr[2] <= upper_limit;
+
+	return x && y && z;
 }
 // Static
 float dot(const Vec3 lhs, const Vec3 rhs) {
