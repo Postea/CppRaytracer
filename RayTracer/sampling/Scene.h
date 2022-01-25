@@ -11,7 +11,7 @@ class Scene : public util::Sampler {
    public:
 	Scene(const shapes::Group& group,
 	      std::vector<std::shared_ptr<shapes::Light>> lights,
-	      const cam::CamObs& cam, size_t depth);
+	      const cam::CamObs& cam, size_t max_depth, size_t light_n);
 	util::Vec3 color(float x, float y) const override;
 	util::Vec3 calculateRadiance(const cam::Ray& r, size_t depth) const;
 
@@ -22,5 +22,7 @@ class Scene : public util::Sampler {
 	                          int n) const;
 	shapes::Group group;
 	std::vector<std::shared_ptr<shapes::Light>> lights;
-	size_t depth;
+	size_t max_depth;
+	size_t light_n;
+	bool direct;
 };

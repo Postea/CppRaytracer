@@ -7,18 +7,21 @@
 
 Scene::Scene(const shapes::Group& group,
              const std::vector<std::shared_ptr<shapes::Light>> lights,
-             const cam::CamObs& cam, size_t depth)
-    : group(group), lights(lights), cam(cam), depth(depth) {
+             const cam::CamObs& cam, size_t max_depth, size_t light_n)
+    : group(group),
+      lights(lights),
+      cam(cam),
+      max_depth(max_depth),
+      light_n(light_n),
+      direct(light_n != 0) {
 }
 
 util::Vec3 Scene::color(float x, float y) const {
 	cam::Ray r = cam.create(x, y);
-	return calculateRadiance(r, depth);
+	return calculateRadiance(r, max_depth);
 }
 
 util::Vec3 Scene::calculateRadiance(const cam::Ray& r, size_t depth) const {
-#define direct false
-
 	// Recursion limit hit
 	if (depth == 0) return util::Vec3(0);
 
@@ -26,14 +29,13 @@ util::Vec3 Scene::calculateRadiance(const cam::Ray& r, size_t depth) const {
 	auto scatter_ray = h->scattered_ray(r);
 	// If the material does not scatter, return
 	if (!scatter_ray) {
-// if we are at the first depth, we have to count the materials emission
-// as we did not account for it with directLightning
-#if direct
-		if (this->depth == depth) return h->emission();
-		return util::Vec3(0);
-#else
-		return h->emission();
-#endif
+		// if we are at the first depth, we have to count the materials emission
+		// as we did not account for it with directLightning
+		if (direct) {
+			if (this->max_depth == depth) return h->emission();
+			return util::Vec3(0);
+		} else
+			return h->emission();
 	}
 	auto brdf = h->calculateLightMultiplier(-scatter_ray->d, -r.d, h->normal());
 	auto L = calculateRadiance(scatter_ray.value(), depth - 1);
@@ -47,12 +49,10 @@ util::Vec3 Scene::calculateRadiance(const cam::Ray& r, size_t depth) const {
 	auto scatter_function = (brdf * L * cosine_term) / brdf_pdf;
 
 	util::Vec3 L_direct;
-#if direct
-	size_t light_samples = 1;
-	L_direct = directLighting(h, r, light_samples);
-#else
-	L_direct = util::Vec3(0);
-#endif
+	if (direct)
+		L_direct = directLighting(h, r, light_n);
+	else
+		L_direct = util::Vec3(0);
 
 	return h->albedo() * (scatter_function + L_direct);
 }
