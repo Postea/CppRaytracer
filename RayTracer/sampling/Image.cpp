@@ -18,20 +18,23 @@ Image::Image(int width, int height) : width(width), height(height) {
 void Image::setPixel(int x, int y, Vec3 color) {
 	vec[width * y + x] = color;
 }
-void Image::setPixels(size_t threadcount, std::shared_ptr<Sampler> sampler) {
-	Threadpool tp(threadcount);
+void Image::setPixels(size_t threadcount, std::string fname,
+                      std::shared_ptr<OptiSampler> sampler) {
+	Threadpool tp(threadcount, fname);
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
 			tp.queueTask(std::bind([this, x, y, sampler]() {
-				this->setPixelsTask(x, y, sampler);
+				return this->setPixelsTask(x, y, sampler);
 			}));
 		}
 	}
 }
 
-void Image::setPixelsTask(int x, int y, std::shared_ptr<Sampler> sampler) {
-	Vec3 v = sampler->color(x, y);
-	setPixel(x, y, v);
+std::vector<int64_t> Image::setPixelsTask(
+    int x, int y, std::shared_ptr<OptiSampler> sampler) {
+	auto v = sampler->color_opti(x, y);
+	setPixel(x, y, v.first);
+	return v.second;
 }
 
 void Image::gammaCorrect(float gamma) {
@@ -72,12 +75,13 @@ Vec3 Image::color(float x, float y) const {
 	Vec3 v = vec[width * yy + xx];
 	return v;
 }
-Image raytrace(size_t threadcount, const std::shared_ptr<Scene>& scene,
-               size_t n) {
+Image raytrace(size_t threadcount, std::string fname,
+               const std::shared_ptr<Scene>& scene, size_t n) {
 	Image result(scene->cam.width, scene->cam.height);
 
-	result.setPixels(threadcount, std::make_shared<StratifiedSampler>(
-	                                  StratifiedSampler(scene, n)));
+	result.setPixels(
+	    threadcount, fname,
+	    std::make_shared<StratifiedSampler>(StratifiedSampler(scene, n)));
 	result.gammaCorrect(2.2);
 	return result;
 }

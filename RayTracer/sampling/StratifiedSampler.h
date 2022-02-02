@@ -1,16 +1,17 @@
 #pragma once
 
 #include "../tools/Random.h"
-#include "Sampler.h"
+#include "OptiSampler.h"
 
 namespace util {
-class StratifiedSampler : public Sampler {
+class StratifiedSampler : public OptiSampler {
    public:
-	StratifiedSampler(const std::shared_ptr<Sampler>& sampler, size_t n);
-	Vec3 color(float x, float y) const override;
+	StratifiedSampler(const std::shared_ptr<OptiSampler>& sampler, size_t n);
+	std::pair<Vec3, std::vector<int64_t>> color_opti(float x,
+	                                                 float y) const override;
 
    private:
-	std::shared_ptr<Sampler> sampler;
+	std::shared_ptr<OptiSampler> sampler;
 	size_t n;
 };
 }  // namespace util
