@@ -3,7 +3,7 @@
 namespace util {
 StratifiedSampler::StratifiedSampler(
     const std::shared_ptr<OptiSampler>& sampler, size_t n)
-    : sampler(sampler), n(std::ceil(std::sqrt(n))){};
+    : sampler(sampler), n(n){};
 
 std::pair<Vec3, std::vector<int64_t>> StratifiedSampler::color_opti(
     float x, float y) const {

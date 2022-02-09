@@ -10,7 +10,7 @@ namespace util {
 class Image : public Sampler {
    public:
 	void setPixel(int x, int y, Vec3 color);
-	void setPixels(size_t threadcount, std::string fname,
+	void setPixels(size_t threadcount, std::string fname,std::string formula,
 	               std::shared_ptr<OptiSampler> sampler);
 
 	Vec3 operator[](const std::array<int, 2>& i) const;  // int x, int y
@@ -24,6 +24,7 @@ class Image : public Sampler {
 	void halfImage(bool upper, float tolerance);
 
 	friend Image raytrace(size_t threadcount, std::string fname,
+	                      std::string formula,
 	                      const std::shared_ptr<Scene>& scene, size_t n);
 	friend Image readImage(const char* filename);
 
@@ -36,7 +37,7 @@ class Image : public Sampler {
 	Image(int width, int height);
 };
 
-Image raytrace(size_t threadcount, std::string fname,
+Image raytrace(size_t threadcount, std::string fname, std::string formula,
                const std::shared_ptr<Scene>& scene, size_t n);
 void writeBmp(const char* filename, Image img);
 Image readImage(const char* filename);

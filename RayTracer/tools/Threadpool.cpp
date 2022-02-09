@@ -6,10 +6,12 @@
 #include <string>
 #include <thread>
 
+#define writeLogs false
+
 namespace util {
 
-Threadpool::Threadpool(size_t n, std::string fname)
-    : alive(true), fname(fname) {
+Threadpool::Threadpool(size_t n, std::string fname, std::string formula)
+    : alive(true), fname(fname), formula(formula) {
 	// Create the specified number of threads
 	for (int i = 0; i < n; i++) {
 		thread_names.push_back(i);
@@ -38,7 +40,7 @@ Threadpool::~Threadpool() {
 	}
 	std::ofstream res;
 	res.open("results/results.txt", std::ios_base::app);
-	res << fname << " " << rays << std::endl;
+	res << fname << " " << rays << " " << formula << std::endl;
 
 	assert(task_n == temp);
 }
@@ -56,7 +58,9 @@ void Threadpool::threading(size_t i) {
 	int64_t task_n = 0;
 	int64_t n_rays = 0;
 	std::ofstream logFile;
+#if writeLogs
 	logFile.open("results/logFile" + std::to_string(i) + ".txt");
+#endif
 	while (true) {
 		std::unique_lock<std::mutex> lock(m);
 		while (alive && q.empty()) {
@@ -65,8 +69,10 @@ void Threadpool::threading(size_t i) {
 		if (q.empty()) {
 			storage.push_back({i, task_n, n_rays});
 			lock.unlock();
+#if writeLogs
 			logFile << std::endl;
 			logFile.close();
+#endif
 			return;
 		}
 		auto task = std::move(q.front());
@@ -75,10 +81,14 @@ void Threadpool::threading(size_t i) {
 		++task_n;
 		auto x = task();
 		for (auto xx : x) {
-			if (xx == -1)
+			if (xx == -1) {
+#if writeLogs
 				logFile << ";";
-			else {
+#endif
+			} else {
+#if writeLogs
 				logFile << xx << " ";
+#endif
 				n_rays += xx;
 			}
 		}
