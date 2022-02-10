@@ -20,8 +20,8 @@ class Scene : public util::OptiSampler {
 	cam::CamObs cam;
 
    private:
-	std::pair<util::Vec3, int64_t> directLighting(
-	    const std::optional<cam::Hit>& h, cam::Ray r, int n) const;
+	std::pair<util::Vec3, int64_t> directLighting(const cam::Hit& h,
+	                                              cam::Ray r) const;
 	shapes::Group group;
 	std::vector<std::shared_ptr<shapes::Light>> lights;
 	size_t max_depth;
