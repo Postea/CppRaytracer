@@ -59,11 +59,14 @@ std::pair<util::Vec3, std::vector<int64_t>> Scene::calculateRadiance(
 	auto scatter_function = (brdf * L_i * cosine_term) / brdf_pdf;
 
 	std::pair<util::Vec3, int64_t> L_direct;
-	if (direct)
+	util::Vec3 L_e;
+	if (direct) {
 		L_direct = directLighting(h, r, light_n);
-	else
+		L_e = (max_depth == depth) ? h->emission() : util::Vec3(0);
+	} else {
 		L_direct = {util::Vec3(0), 0};
-	auto L_e = (max_depth == depth) ? h->emission() : util::Vec3(0);
+		L_e = h->emission();
+	}
 	direct_rays += L_direct.second;
 	return {L_e + (h->albedo() * (scatter_function + L_direct.first)),
 	        {primary_rays, direct_rays}};
