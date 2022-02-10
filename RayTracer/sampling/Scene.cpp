@@ -26,19 +26,20 @@ util::Vec3 Scene::calculateRadiance(const cam::Ray& r, size_t depth) const {
 	if (depth == 0) return util::Vec3(0);
 
 	std::optional<cam::Hit> h = group.intersect(r);
+	assert(h);
 	auto scatter_ray = h->scattered_ray(r);
 	// If the material does not scatter, return
 	if (!scatter_ray) {
 		// if we are at the first depth, we have to count the materials emission
 		// as we did not account for it with directLightning
 		if (direct) {
-			if (this->max_depth == depth) return h->emission();
+			if (max_depth == depth) return h->emission();
 			return util::Vec3(0);
 		} else
 			return h->emission();
 	}
 	auto brdf = h->calculateLightMultiplier(-scatter_ray->d, -r.d, h->normal());
-	auto L = calculateRadiance(scatter_ray.value(), depth - 1);
+	auto L_i = calculateRadiance(scatter_ray.value(), depth - 1);
 	auto cosine_term = util::dot(h->normal(), scatter_ray->d.normalize());
 	// This can not happen
 	if (cosine_term <= 0) {
@@ -46,15 +47,15 @@ util::Vec3 Scene::calculateRadiance(const cam::Ray& r, size_t depth) const {
 	}
 	auto brdf_pdf = h->material->brdf_pdf(scatter_ray->d, h->normal());
 
-	auto scatter_function = (brdf * L * cosine_term) / brdf_pdf;
+	auto scatter_function = (brdf * L_i * cosine_term) / brdf_pdf;
 
 	util::Vec3 L_direct;
 	if (direct)
 		L_direct = directLighting(h, r, light_n);
 	else
 		L_direct = util::Vec3(0);
-
-	return h->albedo() * (scatter_function + L_direct);
+	auto L_e = (max_depth == depth) ? h->emission() : util::Vec3(0);
+	return L_e + (h->albedo() * (scatter_function + L_direct));
 }
 util::Vec3 Scene::directLighting(const std::optional<cam::Hit>& h, cam::Ray r,
                                  int n) const {
