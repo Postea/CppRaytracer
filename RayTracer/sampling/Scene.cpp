@@ -50,23 +50,25 @@ util::Vec3 Scene::calculateRadiance(const cam::Ray& r, size_t depth) const {
 	auto scatter_function = (brdf * L_i * cosine_term) / brdf_pdf;
 
 	util::Vec3 L_direct;
-	if (direct)
-		L_direct = directLighting(h, r, light_n);
-	else
+	util::Vec3 L_e;
+	if (direct) {
+		L_direct = directLighting(h.value(), r);
+		L_e = (max_depth == depth) ? h->emission() : util::Vec3(0);
+	} else {
 		L_direct = util::Vec3(0);
-	auto L_e = (max_depth == depth) ? h->emission() : util::Vec3(0);
+		L_e = util::Vec3(0);
+	}
 	return L_e + (h->albedo() * (scatter_function + L_direct));
 }
-util::Vec3 Scene::directLighting(const std::optional<cam::Hit>& h, cam::Ray r,
-                                 int n) const {
+util::Vec3 Scene::directLighting(const cam::Hit& h, cam::Ray r) const {
 	util::Vec3 result;
 	for (auto light : lights) {
 		util::Vec3 light_part;
-		for (int i = 0; i < n; i++) {
-			auto sample_point = light->sampleLight(h.value());
-			auto shadow_ray = cam::Ray(sample_point.point(),
-			                           h->point() - sample_point.point(),
-			                           cam::epsilon, 1 - cam::epsilon, false);
+		for (int i = 0; i < light_n; i++) {
+			auto sample_point = light->sampleLight(h);
+			auto shadow_ray =
+			    cam::Ray(sample_point.point(), h.point() - sample_point.point(),
+			             cam::epsilon, 1 - cam::epsilon, false);
 			// When the surface normal and the shadowray dont point in the same
 			// hemisphere, the ray hits the surface, so we can break
 			if (util::dot(shadow_ray.d, sample_point.normal()) <= 0) break;
@@ -78,19 +80,19 @@ util::Vec3 Scene::directLighting(const std::optional<cam::Hit>& h, cam::Ray r,
 			// This happens when the shaodow ray is beyond the surfaces normal.
 			// This means, that the shadow ray hits the surface and we can break
 			if (light_pdf <= 0) break;
-			auto brdf = h->calculateLightMultiplier(shadow_ray.d.normalize(),
-			                                        -r.d, h->normal());
+			auto brdf = h.calculateLightMultiplier(shadow_ray.d.normalize(),
+			                                       -r.d, h.normal());
 			auto L = light->lightEmission(sample_point);
 			// Dot product could be negative, in that case break
 			auto cosine_term = std::max<float>(
-			    util::dot(-shadow_ray.d.normalize(), h->normal()), 0);
+			    util::dot(-shadow_ray.d.normalize(), h.normal()), 0);
 			if (cosine_term <= 0) break;
 
 			auto scatterFunction = (brdf * L * cosine_term) / light_pdf;
 			// Add the values from this light to the others
 			light_part = light_part + scatterFunction;
 		}
-		result = result + (light_part / n);
+		result = result + (light_part / light_n);
 	}
 	return result;
 }
