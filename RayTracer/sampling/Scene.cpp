@@ -69,9 +69,19 @@ util::Vec3 Scene::directLighting(const cam::Hit& h, cam::Ray r) const {
 			auto shadow_ray =
 			    cam::Ray(sample_point.point(), h.point() - sample_point.point(),
 			             cam::epsilon, 1 - cam::epsilon, false);
+
 			// When the surface normal and the shadowray dont point in the same
 			// hemisphere, the ray hits the surface, so we can continue
-			if (util::dot(shadow_ray.d, sample_point.normal()) <= 0) continue;
+			if (util::dot(shadow_ray.d, sample_point.normal()) <= 0) {
+				continue;
+			}
+
+			// Dot product could be negative, in that case continue
+			auto cosine_term = std::max<float>(
+			    util::dot(-shadow_ray.d.normalize(), h.normal()), 0);
+			if (cosine_term <= 0) {
+				continue;
+			}
 
 			auto shadow_hit = group.intersect(shadow_ray);
 			// If the shadowray his something we can continue
@@ -80,16 +90,13 @@ util::Vec3 Scene::directLighting(const cam::Hit& h, cam::Ray r) const {
 			// This happens when the shaodow ray is beyond the surfaces normal.
 			// This means, that the shadow ray hits the surface and we can
 			// continue
-			if (light_pdf <= 0) continue;
+			// THIS SHOULD NEVER HAPPEN AS WE ALREADY CHECK FOR THIS EARLIER
+			if (light_pdf <= 0) {
+				continue;
+			}
 			auto brdf = h.calculateLightMultiplier(shadow_ray.d.normalize(),
 			                                       -r.d, h.normal());
 			auto L = light->lightEmission(sample_point);
-			// Dot product could be negative, in that case continue
-			auto cosine_term = std::max<float>(
-			    util::dot(-shadow_ray.d.normalize(), h.normal()), 0);
-			if (cosine_term <= 0) {
-				continue;
-			}
 
 			auto scatterFunction = (brdf * L * cosine_term) / light_pdf;
 			// Add the values from this light to the others
