@@ -74,20 +74,14 @@ util::Vec3 Scene::directLighting(const cam::Hit& h, cam::Ray r) const {
 			// hemisphere, the ray hits the surface, so we can continue
 			// This is part of the light_pdf and with this condition, the light
 			// pdf should never be able to be < 0
-			if (util::dot(shadow_ray.d, sample_point.normal()) <= 0) {
-				continue;
-			}
-
+			if (util::dot(shadow_ray.d, sample_point.normal()) <= 0) continue;
 			// Dot product could be negative, in that case continue
-			auto cosine_term = std::max<float>(
-			    util::dot(-shadow_ray.d.normalize(), h.normal()), 0);
-			if (cosine_term <= 0) {
-				continue;
-			}
-
+			auto cosine_term = util::dot(-shadow_ray.d.normalize(), h.normal());
+			if (cosine_term <= 0) continue;
 			auto shadow_hit = group.intersect(shadow_ray);
 			// If the shadowray his something we can continue
 			if (shadow_hit) continue;
+
 			auto light_pdf = light->lightPdf(sample_point, shadow_ray.d);
 			auto brdf = h.calculateLightMultiplier(shadow_ray.d.normalize(),
 			                                       -r.d, h.normal());
