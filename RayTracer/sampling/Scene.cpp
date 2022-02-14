@@ -72,6 +72,8 @@ util::Vec3 Scene::directLighting(const cam::Hit& h, cam::Ray r) const {
 
 			// When the surface normal and the shadowray dont point in the same
 			// hemisphere, the ray hits the surface, so we can continue
+			// This is part of the light_pdf and with this condition, the light
+			// pdf should never be able to be < 0
 			if (util::dot(shadow_ray.d, sample_point.normal()) <= 0) {
 				continue;
 			}
@@ -87,13 +89,6 @@ util::Vec3 Scene::directLighting(const cam::Hit& h, cam::Ray r) const {
 			// If the shadowray his something we can continue
 			if (shadow_hit) continue;
 			auto light_pdf = light->lightPdf(sample_point, shadow_ray.d);
-			// This happens when the shaodow ray is beyond the surfaces normal.
-			// This means, that the shadow ray hits the surface and we can
-			// continue
-			// THIS SHOULD NEVER HAPPEN AS WE ALREADY CHECK FOR THIS EARLIER
-			if (light_pdf <= 0) {
-				continue;
-			}
 			auto brdf = h.calculateLightMultiplier(shadow_ray.d.normalize(),
 			                                       -r.d, h.normal());
 			auto L = light->lightEmission(sample_point);
