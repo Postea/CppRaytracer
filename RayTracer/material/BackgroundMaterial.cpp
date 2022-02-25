@@ -50,6 +50,7 @@ float BackgroundMaterial::calculateLightMultiplier(const util::Vec3& d_in,
                                                    const util::Vec3& d_out,
                                                    const util::Vec3& n) const {
 	// Background should not be able to receive any light
+	assert(false);
 	return 0;
 }
 // Should never get called

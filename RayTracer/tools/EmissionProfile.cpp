@@ -40,6 +40,11 @@ EmissionProfile::EmissionProfile(const std::shared_ptr<util::Sampler>& emission,
 	             std::pair<std::pair<float, float>, float> b) {
 		          return a.second > b.second;
 	          });
+	// Remove all the pixels with zero probability
+	std::remove_if(vec.begin(), vec.end(),
+	               [](std::pair<std::pair<float, float>, float> a) {
+		               return a.second == 0;
+	               });
 	// Build cdf
 	cdf = {};
 	float cumm = 0;
