@@ -1,5 +1,6 @@
 #include "SkySphere.h"
 #define _USE_MATH_DEFINES
+#include <cassert>
 #include <limits>
 
 #include "../material/BackgroundMaterial.h"
@@ -16,6 +17,7 @@ SkySphere::SkySphere(const std::shared_ptr<util::Sampler>& sampler,
 		for (int y = 0; y < distribution.height; y++) {
 			auto color = distribution[{x, y}];
 			auto sinn = sin(M_PI * ((float)y / distribution.height));
+			assert(sinn >= 0);
 			color = color * sinn;
 			distribution.setPixel(x, y, color);
 		}
