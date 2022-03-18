@@ -11,6 +11,7 @@ Triangle::Triangle(util::Vertex p1, util::Vertex p2, util::Vertex p3,
     : p1(p1), p2(p2), p3(p3), material(material) {
 	recalculateBB();
 }
+// https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/moller-trumbore-ray-triangle-intersection
 std::optional<cam::Hit> Triangle::intersect(const cam::Ray& r) const {
 	util::Vec3 e1 = p2.position - p1.position;
 	util::Vec3 e2 = p3.position - p1.position;
@@ -29,7 +30,7 @@ std::optional<cam::Hit> Triangle::intersect(const cam::Ray& r) const {
 	float t = util::dot(e2, qvec) / det;
 	util::Vec3 hit = r.x0 + r.d * t;
 
-	float w = 1 - u - v;
+	// float w = 1 - u - v;
 
 	auto cross_normal =
 	    util::cross(p2.position - p1.position, p3.position - p1.position)
