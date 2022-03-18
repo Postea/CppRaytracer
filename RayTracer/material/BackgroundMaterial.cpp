@@ -11,8 +11,8 @@ BackgroundMaterial::BackgroundMaterial(
 }
 BackgroundMaterial::BackgroundMaterial(
     const std::shared_ptr<util::Sampler>& texture,
-    const util::Image& distribution)
-    : emission_profile({texture, distribution}) {
+    const util::Image& distribution, float intensity)
+    : emission_profile({texture, distribution, intensity}) {
 }
 BackgroundMaterial::BackgroundMaterial(const util::Vec3& albedo)
     : emission_profile({std::make_shared<Constant>(albedo)}) {

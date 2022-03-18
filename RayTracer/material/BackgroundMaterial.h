@@ -8,7 +8,7 @@ class BackgroundMaterial : public Material {
    public:
 	BackgroundMaterial(const std::shared_ptr<util::Sampler>& texture);
 	BackgroundMaterial(const std::shared_ptr<util::Sampler>& texture,
-	                   const util::Image& distribution);
+	                   const util::Image& distribution, float intensity = 1);
 	BackgroundMaterial(const util::Vec3& albedo);
 
 	util::Vec3 albedo(const std::pair<float, float>& uv) const override;
