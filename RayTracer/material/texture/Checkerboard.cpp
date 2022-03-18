@@ -1,13 +1,13 @@
 #include "Checkerboard.h"
 
 namespace material {
-Checkerboard::Checkerboard(int size) : size(size) {
+Checkerboard::Checkerboard(int size, util::Vec3 c1, util::Vec3 c2)
+    : size(size), c1(c1), c2(c2) {
 }
 util::Vec3 Checkerboard::color(float x, float y) const {
-	util::Vec3 color(0);
 	bool hori = (int)(x * size) % 2 == 0;
 	bool verti = (int)(y * size) % 2 == 0;
-	if (hori ^ verti) color = util::Vec3(1);
-	return color;
+	if (hori ^ verti) return c2;
+	return c1;
 }
 }  // namespace material
