@@ -106,27 +106,20 @@ util::AxisAlignedBoundingBox TriangleMesh::initBB() {
 
 void TriangleMesh::hierarch(size_t i,
                             std::vector<std::shared_ptr<Triangle>> v) {
-	auto bb_pair = util::splitAABB(hierarchy[i].bb);
+	std::array<util::AxisAlignedBoundingBox, 2> bb_pair =
+	    util::splitAABB(hierarchy[i].bb);
 	TriMeshNode left({bb_pair[0], -1, -1, -1, -1});
 	TriMeshNode right({bb_pair[1], -1, -1, -1, -1});
 	std::vector<std::shared_ptr<Triangle>> left_non_leaves;
 	std::vector<std::shared_ptr<Triangle>> right_non_leaves;
 	std::vector<std::shared_ptr<Triangle>> middle;
 	for (auto tri_ptr : v) {
-		if (left.bb.contains(tri_ptr->bounds())) {
+		if (left.bb.contains(tri_ptr->bounds()))
 			left_non_leaves.push_back(tri_ptr);
-		} else if (right.bb.contains(tri_ptr->bounds())) {
+		else if (right.bb.contains(tri_ptr->bounds()))
 			right_non_leaves.push_back(tri_ptr);
-		} else {
-			if (!left.bb.partiallyContains(tri_ptr->bounds())) {
-				std::cout << "Node " << hierarchy[i].bb << std::endl;
-				std::cout << left.bb << "//////" << tri_ptr->bounds()
-				          << std::endl;
-			}
-			assert(left.bb.partiallyContains(tri_ptr->bounds()));
-			assert(right.bb.partiallyContains(tri_ptr->bounds()));
+		else
 			middle.push_back(tri_ptr);
-		}
 	}
 
 	// Handle middle leaves
