@@ -148,6 +148,7 @@ void AxisAlignedBoundingBox::orientate() {
 	                 std::max<float>(min.z(), max.z()));
 }
 // Pair is 0->Left 1->Right
+// From cgg Abgaben of Prof. Tramberend
 std::array<AxisAlignedBoundingBox, 2> splitAABB(AxisAlignedBoundingBox box) {
 	util::Vec3 size2 = (box.maxBound() - box.minBound()) / 2;
 	AxisAlignedBoundingBox left;
