@@ -8,11 +8,11 @@
 
 namespace shapes {
 SkySphere::SkySphere(const std::shared_ptr<util::Sampler>& sampler)
-    : Sphere(100, std::make_shared<material::BackgroundMaterial>(sampler)) {
+    : Sphere(1000, std::make_shared<material::BackgroundMaterial>(sampler)) {
 }
 SkySphere::SkySphere(const std::shared_ptr<util::Sampler>& sampler,
                      util::Image& distribution)
-    : Sphere(100, std::make_shared<material::BackgroundMaterial>(sampler)) {
+    : Sphere(1000, std::make_shared<material::BackgroundMaterial>(sampler)) {
 	for (int x = 0; x < distribution.width; x++) {
 		for (int y = 0; y < distribution.height; y++) {
 			auto color = distribution[{x, y}];
@@ -47,7 +47,7 @@ float SkySphere::lightPdf(const util::SurfacePoint& p,
                           const util::Vec3& dl_out) const {
 	auto uv = p.texel();
 	auto phi = uv.second * M_PI;
-	float pdf = material->emission_pdf(uv.first, uv.second).value_or(1);
+	float pdf = material->emission_pdf(uv.first, uv.second).value();
 	pdf = pdf / (2 * M_PI * M_PI * sin(phi));
 
 	return pdf;
