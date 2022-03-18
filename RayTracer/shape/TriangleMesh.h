@@ -34,12 +34,11 @@ class TriangleMesh : public Light, public Shape {
 
    public:
 	std::shared_ptr<material::Material> material;
-	std::vector<Triangle> triangles;
 	std::vector<Triangle> leaves;
 	std::vector<TriMeshNode> hierarchy;
 
    private:
-	util::AxisAlignedBoundingBox initBB();
+	util::AxisAlignedBoundingBox initBB(std::vector<Triangle> triangles);
 	std::optional<cam::Hit> TriangleMesh::intersect(size_t i,
 	                                                const cam::Ray& r) const;
 	void hierarch(size_t i, const std::vector<std::shared_ptr<Triangle>> v);

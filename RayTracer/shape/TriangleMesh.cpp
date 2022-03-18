@@ -12,13 +12,13 @@
 namespace shapes {
 // Only a test constructor. Can not be used for actual rendering
 TriangleMesh::TriangleMesh(std::vector<Triangle> triangles)
-    : triangles(triangles), material(nullptr), hierarchy({}) {
+    : material(nullptr), hierarchy({}) {
 }
 TriangleMesh::TriangleMesh(std::istream& in,
                            const std::shared_ptr<material::Material>& mat)
     : material(mat), hierarchy({}) {
-	triangles = util::loadObj(in, material);
-	hierarchy.push_back({initBB(), -1, -1, -1, -1});
+	auto triangles = util::loadObj(in, material);
+	hierarchy.push_back({initBB(triangles), -1, -1, -1, -1});
 	std::vector<std::shared_ptr<Triangle>> v;
 	for (auto tri : triangles) v.push_back(std::make_shared<Triangle>(tri));
 	hierarch(0, v);
@@ -98,7 +98,8 @@ float TriangleMesh::lightPdf(const util::SurfacePoint& p,
                              const util::Vec3& dl_out) const {
 	return 0;
 }
-util::AxisAlignedBoundingBox TriangleMesh::initBB() {
+util::AxisAlignedBoundingBox TriangleMesh::initBB(
+    std::vector<Triangle> triangles) {
 	util::AxisAlignedBoundingBox init = triangles[0].bounds();
 	for (auto tri : triangles) init = init + tri.bounds();
 	return init;
