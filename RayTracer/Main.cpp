@@ -35,7 +35,7 @@ using namespace shapes;
 using namespace std;
 
 int main() {
-	if (true) {
+	if (false) {
 		cout << "Start" << endl;
 		// Image img = Image (100, 100);
 
@@ -77,7 +77,7 @@ int main() {
 		// group.add(ShapeSingleGroup(translate(Vec3(4, 0, -2)), green_sphere));
 
 		std::vector<std::shared_ptr<Light>> lights = {skysphere};
-		auto sc = std::make_shared<Scene>(Scene(group, lights, obs, 8));
+		auto sc = std::make_shared<Scene>(Scene(group, lights, obs, 8, 4));
 
 		size_t n = 1;
 
@@ -101,11 +101,11 @@ int main() {
 	} else {
 		std::ifstream is("Extended_Cube.obj");
 		TriangleMesh mesh(is, nullptr);
-		cout << "triangles: " << mesh.triangles.size() << endl;
 		cout << "leaves: " << mesh.leaves.size() << endl;
 		cout << "hierarchy: " << mesh.hierarchy.size() << endl;
-		for (auto hier : mesh.hierarchy) {
-			cout << "{" << hier.left << " " << hier.right << " "
+		for (int i = 0; i < mesh.hierarchy.size(); i++) {
+			auto hier = mesh.hierarchy[i];
+			cout << i << ".  {" << hier.left << " " << hier.right << " "
 			     << hier.leaves_i << " " << hier.leaves_size << "}" << endl;
 		}
 	}
