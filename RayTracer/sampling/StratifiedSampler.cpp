@@ -3,7 +3,7 @@
 namespace util {
 StratifiedSampler::StratifiedSampler(const std::shared_ptr<Sampler>& sampler,
                                      size_t n)
-    : sampler(sampler), n(std::ceil(std::sqrt(n))){};
+    : sampler(sampler), n(n){};
 
 Vec3 StratifiedSampler::color(float x, float y) const {
 	Vec3 color(0, 0, 0);
