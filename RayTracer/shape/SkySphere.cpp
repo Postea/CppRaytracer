@@ -11,7 +11,7 @@ SkySphere::SkySphere(const std::shared_ptr<util::Sampler>& sampler)
     : Sphere(1000, std::make_shared<material::BackgroundMaterial>(sampler)) {
 }
 SkySphere::SkySphere(const std::shared_ptr<util::Sampler>& sampler,
-                     util::Image& distribution)
+                     util::Image& distribution, float intensity)
     : Sphere(1000, std::make_shared<material::BackgroundMaterial>(sampler)) {
 	for (int x = 0; x < distribution.width; x++) {
 		for (int y = 0; y < distribution.height; y++) {
@@ -22,8 +22,8 @@ SkySphere::SkySphere(const std::shared_ptr<util::Sampler>& sampler,
 			distribution.setPixel(x, y, color);
 		}
 	}
-	material =
-	    std::make_shared<material::BackgroundMaterial>(sampler, distribution);
+	material = std::make_shared<material::BackgroundMaterial>(
+	    sampler, distribution, intensity);
 }
 // This intersect method rightly flips the normal.But the normal is never used
 // for non scatter materials, so we do not flip the normal

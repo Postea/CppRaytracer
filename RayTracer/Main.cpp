@@ -49,7 +49,7 @@ int main() {
 	Image sky_image = readImage(config::sky.c_str());
 	sky_image.halfImage(true, 0.01);
 	auto skysphere = make_shared<SkySphere>(
-	    SkySphere(make_shared<Image>(sky_image), sky_image));
+	    SkySphere(make_shared<Image>(sky_image), sky_image, 0.2f));
 	// auto skysphere =
 	// make_shared<SkySphere>(make_shared<Constant>(Vec3(0.9)));
 
@@ -62,25 +62,24 @@ int main() {
 
 	auto checkered_board = make_shared<RectanglePlane>(
 	    16.0f, 16.0f, false,
-	    make_shared<DiffuseMaterial>(make_shared<Checkerboard>(8)));
+	    make_shared<DiffuseMaterial>(
+	        make_shared<Checkerboard>(8, Vec3(1), Vec3(0.9))));
 
 	group.add(ShapeSingleGroup(translate(Vec3(0, -1, 0)), checkered_board));
 
-	std::ifstream roo("Tower_Base.obj");
-	TriangleMesh rook(roo,
+	TriangleMesh rook(std::ifstream("Tower_Base.obj"),
 	                  make_shared<DiffuseMaterial>(Vec3(0.05f, 0.05f, 0.9f)));
-	group.add(ShapeSingleGroup(translate(Vec3(-1, 0, 1)),
+	TriangleMesh cube(std::ifstream("Cube.obj"),
+	                  make_shared<DiffuseMaterial>(Vec3(0.05f, 0.9f, 0.05f)));
+
+	group.add(ShapeSingleGroup(translate(Vec3(0, 0, 0)),
 	                           make_shared<TriangleMesh>(rook)));
+	group.add(ShapeSingleGroup(translate(Vec3(3, 0, 0)),
+	                           make_shared<TriangleMesh>(cube)));
 
 	auto red_sphere = make_shared<Sphere>(
 	    1.0f, make_shared<DiffuseMaterial>(Vec3(0.9f, 0.05f, 0.05f)));
-	group.add(ShapeSingleGroup(translate(Vec3(7, 0, -7)), red_sphere));
-	group.add(ShapeSingleGroup(translate(Vec3(7, 0, 7)), red_sphere));
-
-	auto green_sphere = make_shared<Sphere>(
-	    1.0f, make_shared<DiffuseMaterial>(Vec3(0.05f, 0.9f, 0.05f)));
-	group.add(ShapeSingleGroup(translate(Vec3(-7, 0, -7)), green_sphere));
-	group.add(ShapeSingleGroup(translate(Vec3(-7, 0, 7)), green_sphere));
+	group.add(ShapeSingleGroup(translate(Vec3(-3, 1, 0)), red_sphere));
 
 	std::vector<std::shared_ptr<Light>> lights = {skysphere};
 	auto sc = std::make_shared<Scene>(
@@ -115,7 +114,6 @@ int main() {
 #elif false
 	std::ifstream is("Extended_Cube.obj");
 	TriangleMesh mesh(is, nullptr);
-	cout << "triangles: " << mesh.triangles.size() << endl;
 	cout << "leaves: " << mesh.leaves.size() << endl;
 	cout << "hierarchy: " << mesh.hierarchy.size() << endl;
 	for (auto hier : mesh.hierarchy) {

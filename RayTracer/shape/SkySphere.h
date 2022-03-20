@@ -10,7 +10,7 @@ class SkySphere : public Sphere {
    public:
 	SkySphere(const std::shared_ptr<util::Sampler>& sampler);
 	SkySphere(const std::shared_ptr<util::Sampler>& sampler,
-	          util::Image& distribution);
+	          util::Image& distribution, float intensity = 1);
 	float lightPdf(const util::SurfacePoint& p,
 	               const util::Vec3& dl_out) const override;
 	// We should have to flip the normal, but it does not matter
