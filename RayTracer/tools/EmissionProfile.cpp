@@ -28,7 +28,8 @@ EmissionProfile::EmissionProfile(const std::shared_ptr<util::Sampler>& emission,
 	for (int w = 0; w < distribution.width; w++) {
 		for (int h = 0; h < distribution.height; h++) {
 			auto xyz = distribution[{w, h}];
-			float grey = 0.299f * xyz[0] + 0.587f * xyz[1] + 0.114f * xyz[2];
+			float grey =
+			    0.299f * xyz[0] + 0.587f * xyz[1] + 0.114f * xyz[2] * intensity;
 			vec.push_back({{(float)w / (float)distribution.width,
 			                (float)h / (float)distribution.height},
 			               grey});
@@ -41,11 +42,13 @@ EmissionProfile::EmissionProfile(const std::shared_ptr<util::Sampler>& emission,
 		          return a.second > b.second;
 	          });
 	// Remove all the pixels with zero probability
+	std::cout << vec.size() << std::endl;
 	auto rm = std::remove_if(vec.begin(), vec.end(),
 	                         [](std::pair<std::pair<float, float>, float> a) {
 		                         return a.second == 0;
 	                         });
 	vec.erase(rm, vec.end());
+	std::cout << vec.size() << std::endl;
 	// Build cdf
 	cdf = {};
 	float cumm = 0;
