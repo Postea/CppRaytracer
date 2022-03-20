@@ -6,10 +6,10 @@ namespace config {
 
 std::map<std::string, util::Mat4> cameras{
     {"upperAngle", rotate(Vec3(1, 0, 0), -40) * rotate(Vec3(0, 1, 0), -45) *
-                       translate(Vec3(-7, 4, 8))},
-    {"lowerAngle", rotate(Vec3(1, 0, 0), 10) * translate(Vec3(0, 0, 9))},
+                       translate(Vec3(-4, 4, 5))},
+    {"lowerAngle", rotate(Vec3(1, 0, 0), 15) * translate(Vec3(0.5, 0.2, 6))},
     {"topDown", rotate(Vec3(1, 0, 0), -90) * rotate(Vec3(1, 0, 0), 0) *
-                    translate(Vec3(0, 5, 0))},
+                    translate(Vec3(0, 7, 0))},
 };
 std::map<std::string, std::string> skies{
     {"StaryNight", "textures/moonlit_golf_4k.hdr"},
@@ -19,11 +19,11 @@ std::map<std::string, std::string> skies{
 size_t threadpool_size = 4;
 
 size_t sample_n = 1;
-size_t sample_l = 9;
+size_t sample_l = 1;
 size_t max_depth = 8;
 
-auto camera_key = "upperAngle";
-auto sky_key = "FullMoon";
+auto camera_key = "topDown";
+auto sky_key = "StaryNight";
 
 // derived
 auto n_n = sample_n * sample_n;
