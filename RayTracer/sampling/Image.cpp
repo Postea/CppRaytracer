@@ -36,11 +36,14 @@ void Image::setPixelsTask(int x, int y, std::shared_ptr<Sampler> sampler) {
 
 void Image::gammaCorrect(float gamma) {
 	// Check if the Vec3 in the image are in range [0,1]
-	std::for_each(vec.begin(), vec.end(),
-	              [](util::Vec3 v) { assert(v.limited(0, 1)); });
+	/*std::for_each(vec.begin(), vec.end(),
+	              [](util::Vec3 v) { assert(v.limited(0, 1)); });*/
 	// correct the whole data-array with the given gamma
 	std::transform(vec.begin(), vec.end(), vec.begin(),
 	               [gamma](util::Vec3 v) -> util::Vec3 {
+		               v = util::Vec3(std::min<float>(v.x(), 1),
+		                              std::min<float>(v.y(), 1),
+		                              std::min<float>(v.z(), 1));
 		               return util::Vec3(std::powf(v.x(), 1 / gamma),
 		                                 std::powf(v.y(), 1 / gamma),
 		                                 std::powf(v.z(), 1 / gamma));
