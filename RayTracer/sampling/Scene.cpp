@@ -25,7 +25,7 @@ std::pair<util::Vec3, std::vector<int64_t>> Scene::color_opti(float x,
 
 std::pair<util::Vec3, std::vector<int64_t>> Scene::calculateRadiance(
     const cam::Ray& r, size_t depth) const {
-	int64_t primary_rays = 0;
+	int64_t primary_rays = 1;
 	int64_t direct_rays = 0;
 	// Recursion limit hit
 	if (depth == 0) return {util::Vec3(0), {primary_rays, direct_rays}};
