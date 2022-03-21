@@ -31,16 +31,20 @@ Threadpool::~Threadpool() {
 	std::cout << task_n << " queued tasks" << std::endl;
 
 	int temp = 0;
-	int64_t rays = 0;
+	int64_t prim_rays = 0;
+	int64_t dire_rays = 0;
 	for (auto x : storage) {
 		temp += std::get<1>(x);
-		rays += std::get<2>(x);
-		std::cout << "Thread " << std::get<0>(x) << " casted " << std::get<2>(x)
-		          << " rays, in " << std::get<1>(x) << " tasks" << std::endl;
+		prim_rays += std::get<2>(x);
+		dire_rays += std::get<3>(x);
+		std::cout << "Thread " << std::get<0>(x) << " casted ("
+		          << std::get<2>(x) << " " << std::get<3>(x) << ") rays, in "
+		          << std::get<1>(x) << " tasks" << std::endl;
 	}
 	std::ofstream res;
 	res.open("results/results.txt", std::ios_base::app);
-	res << fname << " " << rays << " " << formula << std::endl;
+	res << fname << " " << prim_rays << " " << dire_rays << " " << formula
+	    << std::endl;
 
 	assert(task_n == temp);
 }
@@ -56,7 +60,8 @@ void Threadpool::queueTask(
 
 void Threadpool::threading(size_t i) {
 	int64_t task_n = 0;
-	int64_t n_rays = 0;
+	int64_t prim_rays = 0;
+	int64_t dire_rays = 0;
 	std::ofstream logFile;
 #if writeLogs
 	logFile.open("results/logFile" + std::to_string(i) + ".txt");
@@ -67,7 +72,7 @@ void Threadpool::threading(size_t i) {
 			cv.wait(lock);
 		}
 		if (q.empty()) {
-			storage.push_back({i, task_n, n_rays});
+			storage.push_back({i, task_n, prim_rays, dire_rays});
 			lock.unlock();
 #if writeLogs
 			logFile << std::endl;
@@ -80,17 +85,19 @@ void Threadpool::threading(size_t i) {
 		lock.unlock();
 		++task_n;
 		auto x = task();
-		for (auto xx : x) {
-			if (xx == -1) {
+		for (int i = 0; i < x.size() - 2; i += 3) {
+			auto prim = x.at(i);
+			auto dire = x.at(i + 1);
+			auto delimiter = x.at(i + 2);
+			prim_rays += prim;
+			dire_rays += dire;
+
 #if writeLogs
+			logFile << prim << " " << dire;
+			if (delimiter == -1) {
 				logFile << ";";
-#endif
-			} else {
-#if writeLogs
-				logFile << xx << " ";
-#endif
-				n_rays += xx;
 			}
+#endif
 		}
 		logFile << std::endl;
 	}

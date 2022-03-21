@@ -21,7 +21,7 @@ class Threadpool {
 	void threading(size_t i);
 	std::vector<std::thread> threads;
 	std::vector<size_t> thread_names;
-	std::vector<std::tuple<size_t, int64_t, int64_t>> storage;
+	std::vector<std::tuple<size_t, int64_t, int64_t, int64_t>> storage;
 	std::string fname;
 	std::string formula;
 	int task_n = 0;
