@@ -46,10 +46,12 @@ int main() {
 
 	Group group(ident);
 
-	Image sky_image = readImage(config::sky.c_str());
+	Image sky_image = readImage(config::sky[0].c_str());
+	Image sky_image_dist = readImage(config::sky[1].c_str());
 	sky_image.halfImage(true, 0.01);
+	sky_image_dist.halfImage(true, 0.01);
 	auto skysphere = make_shared<SkySphere>(
-	    SkySphere(make_shared<Image>(sky_image), sky_image, 0.2f));
+	    SkySphere(make_shared<Image>(sky_image), sky_image_dist, 1.0f));
 	// auto skysphere =
 	// make_shared<SkySphere>(make_shared<Constant>(Vec3(0.9)));
 
@@ -63,14 +65,14 @@ int main() {
 	auto checkered_board = make_shared<RectanglePlane>(
 	    16.0f, 16.0f, false,
 	    make_shared<DiffuseMaterial>(
-	        make_shared<Checkerboard>(8, Vec3(1), Vec3(0.9))));
+	        make_shared<Checkerboard>(8, Vec3(1), Vec3(0.6))));
 
 	group.add(ShapeSingleGroup(translate(Vec3(0, -1, 0)), checkered_board));
 
 	TriangleMesh rook(std::ifstream("Tower_Base.obj"),
-	                  make_shared<DiffuseMaterial>(Vec3(0.05f, 0.05f, 0.9f)));
+	                  make_shared<DiffuseMaterial>(Vec3(0.0f, 0.0f, 1.0f)));
 	TriangleMesh cube(std::ifstream("Cube.obj"),
-	                  make_shared<DiffuseMaterial>(Vec3(0.05f, 0.9f, 0.05f)));
+	                  make_shared<DiffuseMaterial>(Vec3(0.0f, 1.0f, 0.0f)));
 
 	group.add(ShapeSingleGroup(translate(Vec3(0, 0, 0)),
 	                           make_shared<TriangleMesh>(rook)));
@@ -78,10 +80,11 @@ int main() {
 	                           make_shared<TriangleMesh>(cube)));
 
 	auto red_sphere = make_shared<Sphere>(
-	    1.0f, make_shared<DiffuseMaterial>(Vec3(0.9f, 0.05f, 0.05f)));
+	    1.0f, make_shared<DiffuseMaterial>(Vec3(1.0f, 0.0f, 0.0f)));
 	group.add(ShapeSingleGroup(translate(Vec3(-3, 1, 0)), red_sphere));
 
 	std::vector<std::shared_ptr<Light>> lights = {skysphere};
+
 	auto sc = std::make_shared<Scene>(
 	    Scene(group, lights, obs, config::max_depth, config::sample_l));
 
@@ -105,10 +108,13 @@ int main() {
 	// test::axisalignedboundingbox_test();
 
 #elif false
-	Image x = readImage("results/mis_2.bmp");
-	x.halfImage(true, 0.2);
-	cout << "halfed" << endl;
-	writeBmp("results/aaa.bmp", x);
+	Image x = readImage("textures/moonlit_golf_4k.hdr");
+	float ma = 0;
+	for (auto xx : x.vec) {
+		auto l = xx.length();
+		if (l > ma) ma = l;
+	}
+	cout << ma << endl;
 #elif true
 	cout << config::fnme << endl;
 #elif false

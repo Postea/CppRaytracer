@@ -11,29 +11,29 @@ std::map<std::string, util::Mat4> cameras{
     {"topDown", rotate(Vec3(1, 0, 0), -90) * rotate(Vec3(1, 0, 0), 0) *
                     translate(Vec3(0, 7, 0))},
 };
-std::map<std::string, std::string> skies{
-    {"StaryNight", "textures/moonlit_golf_4k.hdr"},
-    {"FullMoon", "textures/FullMoon4.bmp"},
+std::map<std::string, std::array<std::string, 2>> skies{
+    {"StaryNight",
+     {"textures/stary_night.bmp", "textures/stary_night_dist.bmp"}},
+    {"FullMoon", {"textures/FullMoon4.bmp", "textures/FullMoon4.bmp"}},
 };
 
 size_t threadpool_size = 4;
 
 size_t sample_n = 1;
-size_t sample_l = 9;
+size_t sample_l = 1;
 size_t max_depth = 8;
 
-auto camera_key = "topDown";
-auto sky_key = "StaryNight";
+auto camera_key = "upperAngle";
+auto sky_key = "FullMoon";
 
 // derived
 size_t n_n = sample_n * sample_n;
-std::string formula = std::to_string(n_n) + "*(1+" + std::to_string(sample_l) +
-                      ") = " + std::to_string((n_n) * (1 + sample_l));
+std::string formula = std::to_string(n_n) + "\t" + std::to_string(sample_l);
 bool direct = sample_l != 0;
 auto camera = cameras[camera_key];
 auto sky = skies[sky_key];
 std::string file_name() {
-	std::string fnme("results/");
+	std::string fnme("results/Outdoor_");
 	if (direct)
 		fnme.append("direct_");
 	else
