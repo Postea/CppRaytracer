@@ -24,6 +24,8 @@ class Threadpool {
 	std::vector<std::tuple<size_t, int64_t, int64_t, int64_t>> storage;
 	std::string fname;
 	std::string formula;
+	clock_t clkStart;
+
 	int task_n = 0;
 	bool alive;
 	std::queue<std::function<std::vector<int64_t>(void)>> q;

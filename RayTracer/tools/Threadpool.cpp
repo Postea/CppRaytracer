@@ -11,7 +11,7 @@
 namespace util {
 
 Threadpool::Threadpool(size_t n, std::string fname, std::string formula)
-    : alive(true), fname(fname), formula(formula) {
+    : alive(true), fname(fname), formula(formula), clkStart(clock()) {
 	// Create the specified number of threads
 	for (int i = 0; i < n; i++) {
 		thread_names.push_back(i);
@@ -43,8 +43,9 @@ Threadpool::~Threadpool() {
 	}
 	std::ofstream res;
 	res.open("results/results.txt", std::ios_base::app);
-	res << fname << " " << prim_rays << " " << dire_rays << " " << formula
-	    << std::endl;
+	res << fname << "\t" << prim_rays << "\t" << dire_rays << "\t"
+	    << prim_rays + dire_rays << "\t" << formula << "\t"
+	    << clock() - clkStart << std::endl;
 
 	assert(task_n == temp);
 }
