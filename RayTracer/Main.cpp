@@ -45,43 +45,56 @@ int main() {
 	CamObs obs(config::camera, M_PI / 2, 600, 360);
 
 	Group group(ident);
-
-	Image sky_image = readImage(config::sky.c_str());
-	sky_image.halfImage(true, 0.01);
-	auto skysphere = make_shared<SkySphere>(
-	    SkySphere(make_shared<Image>(sky_image), sky_image, 0.2f));
-	// auto skysphere =
-	// make_shared<SkySphere>(make_shared<Constant>(Vec3(0.9)));
-
-	group.add(skysphere);
-
-	auto floor = make_shared<RectanglePlane>(
-	    1000.0f, 1000.0f, false, make_shared<DiffuseMaterial>(Vec3(0.3)));
-
-	group.add(ShapeSingleGroup(translate(Vec3(0, -1.001, 0)), floor));
-
 	auto checkered_board = make_shared<RectanglePlane>(
-	    16.0f, 16.0f, false,
+	    30.0f, 30.0f, false,
 	    make_shared<DiffuseMaterial>(
-	        make_shared<Checkerboard>(8, Vec3(1), Vec3(0.9))));
+	        make_shared<Checkerboard>(8, Vec3(0.8), Vec3(0.4))));
+	// floor
+	group.add(ShapeSingleGroup(translate(Vec3(0, 0, 0)), checkered_board));
+	// ceiling
+	group.add(
+	    ShapeSingleGroup(rotate(Vec3(1, 0, 0), 180) * translate(Vec3(0, 10, 0)),
+	                     checkered_board));
+	// back wall
+	group.add(
+	    ShapeSingleGroup(rotate(Vec3(1, 0, 0), 90) * translate(Vec3(0, 8, -5)),
+	                     checkered_board));
+	// front wall
+	group.add(
+	    ShapeSingleGroup(rotate(Vec3(1, 0, 0), -90) * translate(Vec3(0, 8, 8)),
+	                     checkered_board));
+	// left wall
+	group.add(
+	    ShapeSingleGroup(rotate(Vec3(1, 0, 0), 90) * rotate(Vec3(0, 1, 0), 90) *
+	                         translate(Vec3(-8, 8, 0)),
+	                     checkered_board));
+	// right wall
+	group.add(ShapeSingleGroup(rotate(Vec3(1, 0, 0), 90) *
+	                               rotate(Vec3(0, 1, 0), -90) *
+	                               translate(Vec3(8, 8, 0)),
+	                           checkered_board));
+	// cube
+	auto cube = make_shared<TriangleMesh>(
+	    std::ifstream("Cube.obj"), make_shared<DiffuseMaterial>(Vec3(1, 0, 0)));
+	group.add(ShapeSingleGroup(translate(Vec3(0, 1, -3)), cube));
 
-	group.add(ShapeSingleGroup(translate(Vec3(0, -1, 0)), checkered_board));
+	// light
+	auto rect_light = make_shared<RectanglePlane>(
+	    1.0f, 1.0f, false, make_shared<BackgroundMaterial>(Vec3(1)));
 
-	TriangleMesh rook(std::ifstream("Tower_Base.obj"),
-	                  make_shared<DiffuseMaterial>(Vec3(0.05f, 0.05f, 0.9f)));
-	TriangleMesh cube(std::ifstream("Cube.obj"),
-	                  make_shared<DiffuseMaterial>(Vec3(0.05f, 0.9f, 0.05f)));
+	auto light_transform = rotate(Vec3(1, 0, 0), 90) *
+	                       rotate(Vec3(0, 1, 0), -90) *
+	                       translate(Vec3(7.99, 1.5, 0));
 
-	group.add(ShapeSingleGroup(translate(Vec3(0, 0, 0)),
-	                           make_shared<TriangleMesh>(rook)));
-	group.add(ShapeSingleGroup(translate(Vec3(3, 0, 0)),
-	                           make_shared<TriangleMesh>(cube)));
+	group.add(ShapeSingleGroup(light_transform, rect_light));
 
-	auto red_sphere = make_shared<Sphere>(
-	    1.0f, make_shared<DiffuseMaterial>(Vec3(0.9f, 0.05f, 0.05f)));
-	group.add(ShapeSingleGroup(translate(Vec3(-3, 1, 0)), red_sphere));
+	std::vector<std::shared_ptr<Light> > lights = {
+	    make_shared<LightSingleGroup>(light_transform, rect_light)};
 
-	std::vector<std::shared_ptr<Light>> lights = {skysphere};
+	auto skysphere = make_shared<SkySphere>(make_shared<Constant>(Vec3(50)));
+	group.add(skysphere);
+	//  scene building end
+
 	auto sc = std::make_shared<Scene>(
 	    Scene(group, lights, obs, config::max_depth, config::sample_l));
 
