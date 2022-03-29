@@ -19,12 +19,12 @@ std::map<std::string, std::array<std::string, 2>> skies{
 
 size_t threadpool_size = 4;
 
-size_t sample_n = 1;
+size_t sample_n = 7;
 size_t sample_l = 1;
 size_t max_depth = 8;
 
 auto camera_key = "upperAngle";
-auto sky_key = "FullMoon";
+auto sky_key = "StaryNight";
 
 // derived
 size_t n_n = sample_n * sample_n;
@@ -33,13 +33,11 @@ bool direct = sample_l != 0;
 auto camera = cameras[camera_key];
 auto sky = skies[sky_key];
 std::string file_name() {
-	std::string fnme("results/Outdoor_");
+	std::string fnme("results/outdoor/");
 	if (direct)
 		fnme.append("direct_");
 	else
 		fnme.append("classi_");
-	fnme.append(sky_key);
-	fnme.append("_");
 	fnme.append(camera_key);
 	fnme.append("_");
 	fnme.append(std::to_string(n_n));
@@ -48,6 +46,8 @@ std::string file_name() {
 		fnme.append(std::to_string(sample_l));
 	else
 		fnme.append(std::to_string(0));
+	fnme.append("_");
+	fnme.append(sky_key);
 	fnme.append(".bmp");
 	return fnme;
 };
