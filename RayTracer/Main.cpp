@@ -36,6 +36,22 @@ using namespace cam;
 using namespace shapes;
 using namespace std;
 
+namespace config {
+
+size_t threadpool_size = 4;
+
+size_t sample_n = 7;
+size_t sample_l = 1;
+size_t max_depth = 8;
+
+auto camera_key = "upperAngle";
+auto sky_key = "StaryNight";
+
+auto camera = cameras[camera_key];
+auto sky = skies[sky_key];
+
+};  // namespace config
+
 int main() {
 #if true
 	cout << "Start" << endl;
@@ -88,15 +104,19 @@ int main() {
 	auto sc = std::make_shared<Scene>(
 	    Scene(group, lights, obs, config::max_depth, config::sample_l));
 
+	// End scene
+	auto fnme =
+	    config::file_name(config::sample_n, config::sample_l, config::max_depth,
+	                      config::camera_key, config::sky_key);
 	clock_t clkStart;
 	clock_t clkFinish;
 	cout << "Start render" << endl;
 	clkStart = clock();
-	Image img = raytrace(config::threadpool_size, config::fnme, config::formula,
-	                     sc, config::sample_n);
+	Image img =
+	    raytrace(config::threadpool_size, fnme, "", sc, config::sample_n);
 	clkFinish = clock();
-	cout << "Start imaging to " << config::fnme << endl;
-	writeBmp(config::fnme.c_str(), img);
+	cout << "Start imaging to " << fnme << endl;
+	writeBmp(fnme.c_str(), img);
 	cout << "End" << endl;
 	std::cout << clkFinish - clkStart;
 

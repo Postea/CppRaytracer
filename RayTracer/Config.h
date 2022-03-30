@@ -17,39 +17,22 @@ std::map<std::string, std::array<std::string, 2>> skies{
     {"FullMoon", {"textures/FullMoon4.bmp", "textures/FullMoon4.bmp"}},
 };
 
-size_t threadpool_size = 4;
+std::string file_name(size_t n, size_t l, size_t d, std::string camera_key,
+                      std::string sky_key) {
+	// derived
+	size_t n_n = n * n;
 
-size_t sample_n = 7;
-size_t sample_l = 1;
-size_t max_depth = 8;
-
-auto camera_key = "upperAngle";
-auto sky_key = "StaryNight";
-
-// derived
-size_t n_n = sample_n * sample_n;
-std::string formula = std::to_string(n_n) + "\t" + std::to_string(sample_l);
-bool direct = sample_l != 0;
-auto camera = cameras[camera_key];
-auto sky = skies[sky_key];
-std::string file_name() {
 	std::string fnme("results/outdoor/");
-	if (direct)
-		fnme.append("direct_");
-	else
-		fnme.append("classi_");
 	fnme.append(camera_key);
 	fnme.append("_");
 	fnme.append(std::to_string(n_n));
 	fnme.append("_");
-	if (direct)
-		fnme.append(std::to_string(sample_l));
-	else
-		fnme.append(std::to_string(0));
+	fnme.append(std::to_string(l));
+	fnme.append("_");
+	fnme.append(std::to_string(d));
 	fnme.append("_");
 	fnme.append(sky_key);
 	fnme.append(".bmp");
 	return fnme;
 };
-auto fnme = file_name();
 }  // namespace config
