@@ -36,115 +36,108 @@ using namespace cam;
 using namespace shapes;
 using namespace std;
 
-namespace config {
-
 size_t threadpool_size = 4;
-
-size_t sample_n = 7;
+/*
+size_t sample_n = 1;
 size_t sample_l = 1;
 size_t max_depth = 8;
 
 auto camera_key = "upperAngle";
 auto sky_key = "StaryNight";
 
-auto camera = cameras[camera_key];
-auto sky = skies[sky_key];
-
-};  // namespace config
-
+auto camera = config::cameras[camera_key];
+auto sky = config::skies[sky_key];
+*/
 int main() {
-#if true
-	cout << "Start" << endl;
-	// Image img = Image (100, 100);
+	auto s = {1, 2, 3, 4, 5, 6};
+	auto l = {0};
+	auto d = {8};
+	for (const auto& [sky_key, sky] : config::skies) {
+		Image sky_image = readImage(sky[0].c_str());
+		Image sky_image_dist = readImage(sky[1].c_str());
+		sky_image.halfImage(true, 0.01);
+		sky_image_dist.halfImage(true, 0.01);
 
-	Mat4 ident;
-	CamObs obs(config::camera, M_PI / 2, 600, 360);
+		for (const auto& [camera_key, camera] : config::cameras) {
+			CamObs obs(camera, M_PI / 2, 600, 360);
 
-	Group group(ident);
+			for (const auto& sample_n : s) {
+				for (const auto& sample_l : l) {
+					for (const auto& max_depth : d) {
+						cout << "Start" << endl;
+						// Image img = Image (100, 100);
 
-	Image sky_image = readImage(config::sky[0].c_str());
-	Image sky_image_dist = readImage(config::sky[1].c_str());
-	sky_image.halfImage(true, 0.01);
-	sky_image_dist.halfImage(true, 0.01);
-	auto skysphere = make_shared<SkySphere>(
-	    SkySphere(make_shared<Image>(sky_image), sky_image_dist, 1.0f));
-	// auto skysphere =
-	// make_shared<SkySphere>(make_shared<Constant>(Vec3(0.9)));
+						Mat4 ident;
 
-	group.add(skysphere);
+						Group group(ident);
 
-	auto floor = make_shared<RectanglePlane>(
-	    1000.0f, 1000.0f, false, make_shared<DiffuseMaterial>(Vec3(0.3)));
+						auto skysphere = make_shared<SkySphere>(
+						    SkySphere(make_shared<Image>(sky_image),
+						              sky_image_dist, 1.0f));
+						// auto skysphere =
+						// make_shared<SkySphere>(make_shared<Constant>(Vec3(0.9)));
 
-	group.add(ShapeSingleGroup(translate(Vec3(0, -1.001, 0)), floor));
+						group.add(skysphere);
 
-	auto checkered_board = make_shared<RectanglePlane>(
-	    16.0f, 16.0f, false,
-	    make_shared<DiffuseMaterial>(
-	        make_shared<Checkerboard>(8, Vec3(1), Vec3(0.6))));
+						auto floor = make_shared<RectanglePlane>(
+						    1000.0f, 1000.0f, false,
+						    make_shared<DiffuseMaterial>(Vec3(0.3)));
 
-	group.add(ShapeSingleGroup(translate(Vec3(0, -1, 0)), checkered_board));
+						group.add(ShapeSingleGroup(
+						    translate(Vec3(0, -1.001, 0)), floor));
 
-	TriangleMesh rook(std::ifstream("Tower_Base.obj"),
-	                  make_shared<DiffuseMaterial>(Vec3(0.0f, 0.0f, 1.0f)));
-	TriangleMesh cube(std::ifstream("Cube.obj"),
-	                  make_shared<DiffuseMaterial>(Vec3(0.0f, 1.0f, 0.0f)));
+						auto checkered_board = make_shared<RectanglePlane>(
+						    16.0f, 16.0f, false,
+						    make_shared<DiffuseMaterial>(
+						        make_shared<Checkerboard>(8, Vec3(1),
+						                                  Vec3(0.6))));
 
-	group.add(ShapeSingleGroup(translate(Vec3(0, 0, 0)),
-	                           make_shared<TriangleMesh>(rook)));
-	group.add(ShapeSingleGroup(translate(Vec3(3, 0, 0)),
-	                           make_shared<TriangleMesh>(cube)));
+						group.add(ShapeSingleGroup(translate(Vec3(0, -1, 0)),
+						                           checkered_board));
 
-	auto red_sphere = make_shared<Sphere>(
-	    1.0f, make_shared<DiffuseMaterial>(Vec3(1.0f, 0.0f, 0.0f)));
-	group.add(ShapeSingleGroup(translate(Vec3(-3, 1, 0)), red_sphere));
+						TriangleMesh rook(std::ifstream("Tower_Base.obj"),
+						                  make_shared<DiffuseMaterial>(
+						                      Vec3(0.0f, 0.0f, 1.0f)));
+						TriangleMesh cube(std::ifstream("Cube.obj"),
+						                  make_shared<DiffuseMaterial>(
+						                      Vec3(0.0f, 1.0f, 0.0f)));
 
-	std::vector<std::shared_ptr<Light>> lights = {skysphere};
+						group.add(
+						    ShapeSingleGroup(translate(Vec3(0, 0, 0)),
+						                     make_shared<TriangleMesh>(rook)));
+						group.add(
+						    ShapeSingleGroup(translate(Vec3(3, 0, 0)),
+						                     make_shared<TriangleMesh>(cube)));
 
-	auto sc = std::make_shared<Scene>(
-	    Scene(group, lights, obs, config::max_depth, config::sample_l));
+						auto red_sphere = make_shared<Sphere>(
+						    1.0f, make_shared<DiffuseMaterial>(
+						              Vec3(1.0f, 0.0f, 0.0f)));
+						group.add(ShapeSingleGroup(translate(Vec3(-3, 1, 0)),
+						                           red_sphere));
 
-	// End scene
-	auto fnme =
-	    config::file_name(config::sample_n, config::sample_l, config::max_depth,
-	                      config::camera_key, config::sky_key);
-	clock_t clkStart;
-	clock_t clkFinish;
-	cout << "Start render" << endl;
-	clkStart = clock();
-	Image img =
-	    raytrace(config::threadpool_size, fnme, "", sc, config::sample_n);
-	clkFinish = clock();
-	cout << "Start imaging to " << fnme << endl;
-	writeBmp(fnme.c_str(), img);
-	cout << "End" << endl;
-	std::cout << clkFinish - clkStart;
+						std::vector<std::shared_ptr<Light>> lights = {
+						    skysphere};
 
-#elif false
-	// test::vec3_test();
-	// test::mat4_test();
-	// test::ray_test();
-	// test::shape_test();
-	// test::axisalignedboundingbox_test();
+						auto sc = std::make_shared<Scene>(
+						    Scene(group, lights, obs, max_depth, sample_l));
 
-#elif false
-	Image x = readImage("textures/moonlit_golf_4k.hdr");
-	float ma = 0;
-	for (auto xx : x.vec) {
-		auto l = xx.length();
-		if (l > ma) ma = l;
+						// End scene
+						auto fnme = config::file_name(
+						    sample_n, sample_l, max_depth, camera_key, sky_key);
+						clock_t clkStart;
+						clock_t clkFinish;
+						cout << "Start render" << endl;
+						clkStart = clock();
+						Image img =
+						    raytrace(threadpool_size, fnme, "", sc, sample_n);
+						clkFinish = clock();
+						cout << "Start imaging to " << fnme << endl;
+						writeBmp(fnme.c_str(), img);
+						cout << "End" << endl;
+						std::cout << clkFinish - clkStart;
+					}
+				}
+			}
+		}
 	}
-	cout << ma << endl;
-#elif true
-	cout << config::fnme << endl;
-#elif false
-	std::ifstream is("Extended_Cube.obj");
-	TriangleMesh mesh(is, nullptr);
-	cout << "leaves: " << mesh.leaves.size() << endl;
-	cout << "hierarchy: " << mesh.hierarchy.size() << endl;
-	for (auto hier : mesh.hierarchy) {
-		cout << "{" << hier.left << " " << hier.right << " " << hier.leaves_i
-		     << " " << hier.leaves_size << "}" << endl;
-	}
-#endif
 };
