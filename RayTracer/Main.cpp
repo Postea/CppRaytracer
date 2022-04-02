@@ -36,6 +36,20 @@ using namespace cam;
 using namespace shapes;
 using namespace std;
 
+int tree_recurs(const std::vector<shapes::TriMeshNode>& hierarchy,
+                shapes::TriMeshNode r) {
+	int ld = 1;
+	int rd = 1;
+	if (r.left != -1) {
+		ld += tree_recurs(hierarchy, hierarchy[r.left]);
+	}
+	if (r.right != -1) {
+		rd += tree_recurs(hierarchy, hierarchy[r.right]);
+	}
+	int d = max<int>(rd, ld);
+	// if (d != 0) cout << d << endl;
+	return d;
+}
 int main() {
 #if true
 	cout << "Start" << endl;
@@ -109,15 +123,17 @@ int main() {
 	cout << "halfed" << endl;
 	writeBmp("results/aaa.bmp", x);
 #elif true
-	cout << config::fnme << endl;
-#elif false
-	std::ifstream is("Extended_Cube.obj");
+	std::ifstream is("Cube.obj");
 	TriangleMesh mesh(is, nullptr);
 	cout << "leaves: " << mesh.leaves.size() << endl;
 	cout << "hierarchy: " << mesh.hierarchy.size() << endl;
+	int i = 0;
 	for (auto hier : mesh.hierarchy) {
-		cout << "{" << hier.left << " " << hier.right << " " << hier.leaves_i
-		     << " " << hier.leaves_size << "}" << endl;
+		cout << i << " {" << hier.left << " " << hier.right << " "
+		     << hier.leaves_i << " " << hier.leaves_size << "}" << endl;
+		i++;
 	}
+
+	cout << tree_recurs(mesh.hierarchy, mesh.hierarchy[0]) << endl;
 #endif
 };
