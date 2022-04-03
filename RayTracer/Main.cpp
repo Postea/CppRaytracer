@@ -36,102 +36,109 @@ using namespace cam;
 using namespace shapes;
 using namespace std;
 
+size_t threadpool_size = 4;
+/*
+size_t sample_n = 1;
+size_t sample_l = 1;
+size_t max_depth = 8;
+
+auto camera_key = "upperAngle";
+auto sky_key = "StaryNight";
+
+auto camera = config::cameras[camera_key];
+auto sky = config::skies[sky_key];
+*/
 int main() {
-#if true
-	cout << "Start" << endl;
-	// Image img = Image (100, 100);
+	auto s = {1};
+	auto l = {1};
+	auto d = {8};
 
-	Mat4 ident;
-	CamObs obs(config::camera, M_PI / 2, 600, 360);
+	for (const auto& [camera_key, camera] : config::cameras) {
+		CamObs obs(camera, M_PI / 2, 600, 360);
 
-	Group group(ident);
-	auto checkered_board = make_shared<RectanglePlane>(
-	    30.0f, 30.0f, false,
-	    make_shared<DiffuseMaterial>(
-	        make_shared<Checkerboard>(8, Vec3(0.8), Vec3(0.4))));
-	// floor
-	group.add(ShapeSingleGroup(translate(Vec3(0, 0, 0)), checkered_board));
-	// ceiling
-	group.add(
-	    ShapeSingleGroup(rotate(Vec3(1, 0, 0), 180) * translate(Vec3(0, 10, 0)),
-	                     checkered_board));
-	// back wall
-	group.add(
-	    ShapeSingleGroup(rotate(Vec3(1, 0, 0), 90) * translate(Vec3(0, 8, -5)),
-	                     checkered_board));
-	// front wall
-	group.add(
-	    ShapeSingleGroup(rotate(Vec3(1, 0, 0), -90) * translate(Vec3(0, 8, 8)),
-	                     checkered_board));
-	// left wall
-	group.add(
-	    ShapeSingleGroup(rotate(Vec3(1, 0, 0), 90) * rotate(Vec3(0, 1, 0), 90) *
-	                         translate(Vec3(-8, 8, 0)),
-	                     checkered_board));
-	// right wall
-	group.add(ShapeSingleGroup(rotate(Vec3(1, 0, 0), 90) *
-	                               rotate(Vec3(0, 1, 0), -90) *
-	                               translate(Vec3(8, 8, 0)),
-	                           checkered_board));
-	// cube
-	auto cube = make_shared<TriangleMesh>(
-	    std::ifstream("Cube.obj"), make_shared<DiffuseMaterial>(Vec3(1, 0, 0)));
-	group.add(ShapeSingleGroup(translate(Vec3(0, 1, -3)), cube));
+		for (const auto& sample_n : s) {
+			for (const auto& sample_l : l) {
+				for (const auto& max_depth : d) {
+					cout << "Start" << endl;
+					// Image img = Image (100, 100);
 
-	// light
-	auto rect_light = make_shared<RectanglePlane>(
-	    1.0f, 1.0f, false, make_shared<BackgroundMaterial>(Vec3(1)));
+					Mat4 ident;
+					CamObs obs(camera, M_PI / 2, 600, 360);
 
-	auto light_transform = rotate(Vec3(1, 0, 0), 90) *
-	                       rotate(Vec3(0, 1, 0), -90) *
-	                       translate(Vec3(7.99, 1.5, 0));
+					Group group(ident);
+					auto checkered_board = make_shared<RectanglePlane>(
+					    30.0f, 30.0f, false,
+					    make_shared<DiffuseMaterial>(make_shared<Checkerboard>(
+					        8, Vec3(0.8), Vec3(0.4))));
+					// floor
+					group.add(ShapeSingleGroup(translate(Vec3(0, 0, 0)),
+					                           checkered_board));
+					// ceiling
+					group.add(ShapeSingleGroup(
+					    rotate(Vec3(1, 0, 0), 180) * translate(Vec3(0, 10, 0)),
+					    checkered_board));
+					// back wall
+					group.add(ShapeSingleGroup(
+					    rotate(Vec3(1, 0, 0), 90) * translate(Vec3(0, 8, -5)),
+					    checkered_board));
+					// front wall
+					group.add(ShapeSingleGroup(
+					    rotate(Vec3(1, 0, 0), -90) * translate(Vec3(0, 8, 8)),
+					    checkered_board));
+					// left wall
+					group.add(ShapeSingleGroup(rotate(Vec3(1, 0, 0), 90) *
+					                               rotate(Vec3(0, 1, 0), 90) *
+					                               translate(Vec3(-8, 8, 0)),
+					                           checkered_board));
+					// right wall
+					group.add(ShapeSingleGroup(rotate(Vec3(1, 0, 0), 90) *
+					                               rotate(Vec3(0, 1, 0), -90) *
+					                               translate(Vec3(8, 8, 0)),
+					                           checkered_board));
+					// cube
+					auto cube = make_shared<TriangleMesh>(
+					    std::ifstream("Cube.obj"),
+					    make_shared<DiffuseMaterial>(Vec3(1, 0, 0)));
+					group.add(
+					    ShapeSingleGroup(translate(Vec3(0, 1, -3)), cube));
 
-	group.add(ShapeSingleGroup(light_transform, rect_light));
+					// light
+					auto rect_light = make_shared<RectanglePlane>(
+					    1.0f, 1.0f, false,
+					    make_shared<BackgroundMaterial>(Vec3(1)));
 
-	std::vector<std::shared_ptr<Light> > lights = {
-	    make_shared<LightSingleGroup>(light_transform, rect_light)};
+					auto light_transform = rotate(Vec3(1, 0, 0), 90) *
+					                       rotate(Vec3(0, 1, 0), -90) *
+					                       translate(Vec3(7.99, 1.5, 0));
 
-	auto skysphere = make_shared<SkySphere>(make_shared<Constant>(Vec3(50)));
-	group.add(skysphere);
-	//  scene building end
+					group.add(ShapeSingleGroup(light_transform, rect_light));
 
-	auto sc = std::make_shared<Scene>(
-	    Scene(group, lights, obs, config::max_depth, config::sample_l));
+					std::vector<std::shared_ptr<Light> > lights = {
+					    make_shared<LightSingleGroup>(light_transform,
+					                                  rect_light)};
 
-	clock_t clkStart;
-	clock_t clkFinish;
-	cout << "Start render" << endl;
-	clkStart = clock();
-	Image img = raytrace(config::threadpool_size, config::fnme, config::formula,
-	                     sc, config::sample_n);
-	clkFinish = clock();
-	cout << "Start imaging to " << config::fnme << endl;
-	writeBmp(config::fnme.c_str(), img);
-	cout << "End" << endl;
-	std::cout << clkFinish - clkStart;
+					auto skysphere =
+					    make_shared<SkySphere>(make_shared<Constant>(Vec3(50)));
+					group.add(skysphere);
+					//  scene building end
+					auto sc = std::make_shared<Scene>(
+					    Scene(group, lights, obs, max_depth, sample_l));
 
-#elif false
-	// test::vec3_test();
-	// test::mat4_test();
-	// test::ray_test();
-	// test::shape_test();
-	// test::axisalignedboundingbox_test();
-
-#elif false
-	Image x = readImage("results/mis_2.bmp");
-	x.halfImage(true, 0.2);
-	cout << "halfed" << endl;
-	writeBmp("results/aaa.bmp", x);
-#elif true
-	cout << config::fnme << endl;
-#elif false
-	std::ifstream is("Extended_Cube.obj");
-	TriangleMesh mesh(is, nullptr);
-	cout << "leaves: " << mesh.leaves.size() << endl;
-	cout << "hierarchy: " << mesh.hierarchy.size() << endl;
-	for (auto hier : mesh.hierarchy) {
-		cout << "{" << hier.left << " " << hier.right << " " << hier.leaves_i
-		     << " " << hier.leaves_size << "}" << endl;
+					auto fnme = config::file_name(sample_n, sample_l, max_depth,
+					                              camera_key);
+					clock_t clkStart;
+					clock_t clkFinish;
+					cout << "Start render" << endl;
+					clkStart = clock();
+					Image img =
+					    raytrace(threadpool_size, fnme, "", sc, sample_n);
+					clkFinish = clock();
+					cout << "Start imaging to " << fnme << endl;
+					writeBmp(fnme.c_str(), img);
+					cout << "End" << endl;
+					std::cout << clkFinish - clkStart;
+				}
+			}
+		}
 	}
-#endif
 };
