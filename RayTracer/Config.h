@@ -21,6 +21,7 @@ std::string file_name(size_t n, size_t l, size_t d, std::string camera_key) {
 	fnme.append(std::to_string(l));
 	fnme.append("_");
 	fnme.append(std::to_string(d));
+	fnme.append("_");
 	fnme.append(".bmp");
 	return fnme;
 };
