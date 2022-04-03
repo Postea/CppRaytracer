@@ -95,7 +95,7 @@ int main() {
 	cout << "Start rendering" << endl;
 
 	for (const auto& [camera_key, camera] : config::cameras) {
-		CamObs obs(camera, M_PI / 2, 600, 360);
+		CamObs obs(camera, M_PI / 2, 350, 210);
 
 		for (const auto& sample_n : s) {
 			for (const auto& sample_l : l) {
