@@ -37,8 +37,8 @@ using namespace shapes;
 using namespace std;
 
 size_t threadpool_size = 4;
-auto s = {1};
-auto l = {16};
+auto s = {1, 2, 3, 4, 5, 6};
+auto l = {0, 1, 4, 8, 16};
 auto d = {8};
 
 int main() {
