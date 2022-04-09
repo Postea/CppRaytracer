@@ -37,8 +37,8 @@ using namespace shapes;
 using namespace std;
 
 size_t threadpool_size = 4;
-auto s = {1};
-auto l = {6};
+auto s = {4};
+auto l = {0};
 auto d = {8};
 
 int main() {
@@ -76,14 +76,14 @@ int main() {
 	cout << "Start rendering" << endl;
 	for (const auto& [sky_key, sky] : config::skies) {
 		// Sky texture
-		Image sky_image = readImage(sky[0].c_str());
-		Image sky_image_dist = readImage(sky[1].c_str());
+		Image sky_image = readImage(std::get<0>(sky).c_str());
+		Image sky_image_dist = readImage(std::get<1>(sky).c_str());
 		sky_image.halfImage(true, 0.01);
 		sky_image_dist.halfImage(true, 0.01);
 		// New group so we can swap out the skysphere
 		Group main_group(ident);
-		auto skysphere = make_shared<SkySphere>(
-		    SkySphere(make_shared<Image>(sky_image), sky_image_dist, 1.0f));
+		auto skysphere = make_shared<SkySphere>(SkySphere(
+		    make_shared<Image>(sky_image), sky_image_dist, std::get<2>(sky)));
 		main_group.add(group);
 		main_group.add(skysphere);
 
