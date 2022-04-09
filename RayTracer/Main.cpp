@@ -37,8 +37,8 @@ using namespace shapes;
 using namespace std;
 
 size_t threadpool_size = 4;
-auto s = {1, 2, 3, 4, 5, 6};
-auto l = {0, 1, 4, 8, 16};
+auto s = {1};
+auto l = {6};
 auto d = {8};
 
 int main() {
@@ -83,7 +83,7 @@ int main() {
 		// New group so we can swap out the skysphere
 		Group main_group(ident);
 		auto skysphere = make_shared<SkySphere>(
-		    SkySphere(make_shared<Image>(sky_image), sky_image_dist, 2.0f));
+		    SkySphere(make_shared<Image>(sky_image), sky_image_dist, 1.0f));
 		main_group.add(group);
 		main_group.add(skysphere);
 

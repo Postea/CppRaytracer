@@ -12,9 +12,8 @@ std::map<std::string, util::Mat4> cameras{
                     translate(Vec3(0, 7, 0))},
 };
 std::map<std::string, std::array<std::string, 2>> skies{
-    {"StaryNight",
-     {"textures/stary_night.bmp", "textures/stary_night_dist.bmp"}},
-    {"FullMoon", {"textures/FullMoon4.bmp", "textures/FullMoon4.bmp"}},
+    {"StaryNight", {"textures/stary_night.bmp", "textures/stary_night.bmp"}},
+    {"FullWhite", {"textures/FullWhite.bmp", "textures/FullWhite.bmp"}},
 };
 
 std::string file_name(size_t n, size_t l, size_t d, std::string camera_key,
