@@ -37,9 +37,9 @@ using namespace shapes;
 using namespace std;
 
 size_t threadpool_size = 4;
-auto s = {1};
+auto s = {4};
 auto l = {0};
-auto d = {8};
+auto d = {3, INT32_MAX};
 
 int main() {
 	cout << "Start building scene" << endl;
@@ -48,7 +48,7 @@ int main() {
 	auto checkered_board = make_shared<RectanglePlane>(
 	    30.0f, 30.0f, false,
 	    make_shared<DiffuseMaterial>(
-	        make_shared<Checkerboard>(8, Vec3(0.8), Vec3(0.4))));
+	        make_shared<Checkerboard>(8, Vec3(0.7), Vec3(0.35))));
 	// floor
 	group.add(ShapeSingleGroup(translate(Vec3(0, 0, 0)), checkered_board));
 	// ceiling
@@ -69,10 +69,10 @@ int main() {
 	                         translate(Vec3(-8, 8, 0)),
 	                     checkered_board));
 	// right wall
-	group.add(ShapeSingleGroup(rotate(Vec3(1, 0, 0), 90) *
-	                               rotate(Vec3(0, 1, 0), -90) *
-	                               translate(Vec3(8, 8, 0)),
-	                           checkered_board));
+	// group.add(ShapeSingleGroup(rotate(Vec3(1, 0, 0), 90) *
+	//                               rotate(Vec3(0, 1, 0), -90) *
+	//                               translate(Vec3(8, 8, 0)),
+	//                           checkered_board));
 	// cube
 	auto cube = make_shared<TriangleMesh>(
 	    std::ifstream("Cube.obj"), make_shared<DiffuseMaterial>(Vec3(1, 0, 0)));
@@ -80,14 +80,14 @@ int main() {
 
 	// light
 	auto rect_light = make_shared<RectanglePlane>(
-	    1.0f, 1.0f, false, make_shared<BackgroundMaterial>(Vec3(1)));
+	    30.0f, 30.0f, false, make_shared<BackgroundMaterial>(Vec3(1)));
 
 	auto light_transform = rotate(Vec3(1, 0, 0), 90) *
 	                       rotate(Vec3(0, 1, 0), -90) *
-	                       translate(Vec3(7.99, 1.5, 0));
+	                       translate(Vec3(8, 8, 0));
 
 	group.add(ShapeSingleGroup(light_transform, rect_light));
-	auto skysphere = make_shared<SkySphere>(make_shared<Constant>(Vec3(50)));
+	auto skysphere = make_shared<SkySphere>(make_shared<Constant>(Vec3(0)));
 	group.add(skysphere);
 
 	std::vector<std::shared_ptr<Light> > lights = {
