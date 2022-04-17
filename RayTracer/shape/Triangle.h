@@ -25,8 +25,7 @@ class Triangle : public Light, public Shape {
 	               const util::Vec3& dl_out) const override;
 
 	const std::shared_ptr<material::Material>& material;
-
-   private:
+	// public:
 	const util::Vertex p1;
 	const util::Vertex p2;
 	const util::Vertex p3;

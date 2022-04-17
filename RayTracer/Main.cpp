@@ -51,7 +51,7 @@ int tree_recurs(const std::vector<shapes::TriMeshNode>& hierarchy,
 	return d;
 }
 int main() {
-#if true
+#if false
 	cout << "Start" << endl;
 	// Image img = Image (100, 100);
 
@@ -132,6 +132,50 @@ int main() {
 		cout << i << " {" << hier.left << " " << hier.right << " "
 		     << hier.leaves_i << " " << hier.leaves_size << "}" << endl;
 		i++;
+		for (int i = 0; i < hier.leaves_size; i++) {
+			cout << mesh.leaves[hier.leaves_i + i].p1.position << " "
+			     << mesh.leaves[hier.leaves_i + i].p2.position << " "
+			     << mesh.leaves[hier.leaves_i + i].p3.position << endl;
+		}
+	}
+	cout << endl;
+	for (auto hier : mesh.hierarchy) {
+		std::vector<util::Vertex> v;
+		std::vector<std::tuple<int, int, int> > f;
+		for (int i = 0; i < hier.leaves_size; i++) {
+			auto tri = mesh.leaves[hier.leaves_i + i];
+			int p1_i = -1;
+			int p2_i = -1;
+			int p3_i = -1;
+			for (int j = 0; j < v.size(); j++) {
+				auto p = v[j];
+				if (p.position == tri.p1.position) p1_i = j + 1;
+				if (p.position == tri.p2.position) p2_i = j + 1;
+				if (p.position == tri.p3.position) p3_i = j + 1;
+			}
+			if (p1_i == -1) {
+				v.push_back(tri.p1);
+				p1_i = v.size();
+			}
+			if (p2_i == -1) {
+				v.push_back(tri.p2);
+				p2_i = v.size();
+			}
+			if (p3_i == -1) {
+				v.push_back(tri.p3);
+				p3_i = v.size();
+			}
+			f.push_back({p1_i, p2_i, p3_i});
+		}
+		for (auto x : v) {
+			cout << "v " << x.position[0] << ".000000 " << x.position[1]
+			     << ".000000 " << x.position[2] << ".000000" << endl;
+		}
+		for (auto x : f) {
+			cout << "f " << std::get<0>(x) << " " << std::get<1>(x) << " "
+			     << std::get<2>(x) << endl;
+		}
+		cout << endl;
 	}
 
 	cout << tree_recurs(mesh.hierarchy, mesh.hierarchy[0]) << endl;
