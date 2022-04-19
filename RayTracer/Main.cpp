@@ -37,9 +37,10 @@ using namespace shapes;
 using namespace std;
 
 size_t threadpool_size = 4;
-auto s = {1};
-auto l = {0};
-auto d = {8};
+std::array<size_t, 2> sample_configs[] = {
+    {1, 5}, {1, 6}, {1, 7}, {2, 0}, {2, 16}, {5, 1}, {6, 0}, {10, 6}, {20, 0},
+};
+size_t max_depth = 8;
 
 int main() {
 	cout << "Start building scene" << endl;
@@ -80,14 +81,16 @@ int main() {
 
 	// light
 	auto rect_light = make_shared<RectanglePlane>(
-	    1.0f, 1.0f, false, make_shared<BackgroundMaterial>(Vec3(1)));
+	    1.0f, 1.0f, false, make_shared<BackgroundMaterial>(Vec3(4.0f)));
 
 	auto light_transform = rotate(Vec3(1, 0, 0), 90) *
 	                       rotate(Vec3(0, 1, 0), -90) *
 	                       translate(Vec3(7.99, 1.5, 0));
 
 	group.add(ShapeSingleGroup(light_transform, rect_light));
-	auto skysphere = make_shared<SkySphere>(make_shared<Constant>(Vec3(50)));
+
+	// Sometimes the ray escapes, probably due to floating point errors
+	auto skysphere = make_shared<SkySphere>(make_shared<Constant>(Vec3(0)));
 	group.add(skysphere);
 
 	std::vector<std::shared_ptr<Light> > lights = {
@@ -96,29 +99,23 @@ int main() {
 
 	for (const auto& [camera_key, camera] : config::cameras) {
 		CamObs obs(camera, M_PI / 2, 350, 210);
+		for (const auto& [sample_n, sample_l] : sample_configs) {
+			//  scene building end
+			auto sc = std::make_shared<Scene>(
+			    Scene(group, lights, obs, max_depth, sample_l));
 
-		for (const auto& sample_n : s) {
-			for (const auto& sample_l : l) {
-				for (const auto& max_depth : d) {
-					//  scene building end
-					auto sc = std::make_shared<Scene>(
-					    Scene(group, lights, obs, max_depth, sample_l));
-
-					auto fnme = config::file_name(sample_n, sample_l, max_depth,
-					                              camera_key);
-					clock_t clkStart;
-					clock_t clkFinish;
-					cout << "Start render" << endl;
-					clkStart = clock();
-					Image img =
-					    raytrace(threadpool_size, fnme, "", sc, sample_n);
-					clkFinish = clock();
-					cout << "Start imaging to " << fnme << endl;
-					writeBmp(fnme.c_str(), img);
-					cout << "End" << endl;
-					std::cout << clkFinish - clkStart << endl;
-				}
-			}
+			auto fnme =
+			    config::file_name(sample_n, sample_l, max_depth, camera_key);
+			clock_t clkStart;
+			clock_t clkFinish;
+			cout << "Start render" << endl;
+			clkStart = clock();
+			Image img = raytrace(threadpool_size, fnme, "", sc, sample_n);
+			clkFinish = clock();
+			cout << "Start imaging to " << fnme << endl;
+			writeBmp(fnme.c_str(), img);
+			cout << "End" << endl;
+			std::cout << clkFinish - clkStart << endl;
 		}
 	}
 };
