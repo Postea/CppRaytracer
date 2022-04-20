@@ -4,9 +4,9 @@
 #include "Sampler.h"
 
 namespace util {
-class StratifiedSampler : public Sampler {
+class Stratified : public Sampler {
    public:
-	StratifiedSampler(const std::shared_ptr<Sampler>& sampler, size_t n);
+	Stratified(const std::shared_ptr<Sampler>& sampler, size_t n);
 	Vec3 color(float x, float y) const override;
 
    private:

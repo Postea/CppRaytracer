@@ -17,13 +17,14 @@ TriangleMesh::TriangleMesh(std::vector<Triangle> triangles)
 TriangleMesh::TriangleMesh(std::istream& in,
                            const std::shared_ptr<material::Material>& mat)
     : material(mat), hierarchy({}) {
-	auto triangles = util::loadObj(in, material);
-	hierarchy.push_back({initBB(triangles), -1, -1, -1, -1});
+	auto triangles = util::load_obj(in, material);
+	hierarchy.push_back({init_bb(triangles), -1, -1, -1, -1});
 	std::vector<std::shared_ptr<Triangle>> v;
 	for (auto tri : triangles) v.push_back(std::make_shared<Triangle>(tri));
 	hierarch(0, v);
 	triangles.clear();
 }
+
 std::optional<cam::Hit> TriangleMesh::intersect(const cam::Ray& r) const {
 	return intersect(0, r);
 }
@@ -77,38 +78,22 @@ std::optional<cam::Hit> TriangleMesh::intersect(size_t i,
 	if (hits[0].material == nullptr) return std::nullopt;
 	return hits[0];
 }
-// TODO
-std::pair<float, float> TriangleMesh::texture_coordinates(
-    const util::Vec3& pos) const {
-	return std::pair<float, float>({});
-}
+
 util::AxisAlignedBoundingBox TriangleMesh::bounds() const {
 	return hierarchy[0].bb;
 }
-// TODO
-util::SurfacePoint TriangleMesh::sampleLight(const cam::Hit& h) const {
-	return util::SurfacePoint(util::Vec3({}), 0, {}, material);
-}
-// TODO
-util::Vec3 TriangleMesh::lightEmission(const util::SurfacePoint& p) const {
-	return util::Vec3(0);
-}
-// TODO
-float TriangleMesh::lightPdf(const util::SurfacePoint& p,
-                             const util::Vec3& dl_out) const {
-	return 0;
-}
-util::AxisAlignedBoundingBox TriangleMesh::initBB(
-    std::vector<Triangle> triangles) {
+
+util::AxisAlignedBoundingBox TriangleMesh::init_bb(
+    const std::vector<Triangle>& triangles) {
 	util::AxisAlignedBoundingBox init = triangles[0].bounds();
-	for (auto tri : triangles) init = init + tri.bounds();
+	for (const auto& tri : triangles) init = init + tri.bounds();
 	return init;
 }
 
 void TriangleMesh::hierarch(size_t i,
-                            std::vector<std::shared_ptr<Triangle>> v) {
+                            const std::vector<std::shared_ptr<Triangle>>& v) {
 	std::array<util::AxisAlignedBoundingBox, 2> bb_pair =
-	    util::splitAABB(hierarchy[i].bb);
+	    util::split_bb(hierarchy[i].bb);
 	TriMeshNode left({bb_pair[0], -1, -1, -1, -1});
 	TriMeshNode right({bb_pair[1], -1, -1, -1, -1});
 	std::vector<std::shared_ptr<Triangle>> left_non_leaves;

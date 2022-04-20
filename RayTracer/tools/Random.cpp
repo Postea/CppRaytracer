@@ -3,7 +3,7 @@
 namespace util {
 
 Vec3 rand_vec3() {
-	return Vec3(disMinus1To1(gen), disMinus1To1(gen), disMinus1To1(gen));
+	return Vec3(dis_minus1_1(gen), dis_minus1_1(gen), dis_minus1_1(gen));
 }
 
 bool in_circle(const Vec3& v) {

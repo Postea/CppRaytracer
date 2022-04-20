@@ -13,7 +13,7 @@ std::map<std::string, util::Mat4> cameras{
 };
 std::map<std::string, std::string> skies{
     {"StaryNight", "textures/moonlit_golf_4k.hdr"},
-    {"FullMoon", "textures/FullMoon4.bmp"},
+    {"FullMoon", "textures/FullMoon.bmp"},
 };
 
 size_t threadpool_size = 4;
@@ -23,7 +23,7 @@ size_t sample_l = 1;
 size_t max_depth = 8;
 
 auto camera_key = "topDown";
-auto sky_key = "StaryNight";
+auto sky_key = "FullMoon";
 
 // derived
 auto n_n = sample_n * sample_n;

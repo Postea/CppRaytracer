@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "../tools/Threadpool.h"
-#include "StratifiedSampler.h"
+#include "Stratified.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "../tools/stb_image.h"
 
@@ -15,29 +15,30 @@ Image::Image(int width, int height) : width(width), height(height) {
 		vec.insert(vec.end(), color);
 	}
 }
-void Image::setPixel(int x, int y, Vec3 color) {
+
+void Image::set_pixel(int x, int y, const Vec3& color) {
 	vec[width * y + x] = color;
 }
-void Image::setPixels(size_t threadcount, std::shared_ptr<Sampler> sampler) {
+
+void Image::set_pixels(size_t threadcount,
+                       const std::shared_ptr<Sampler>& sampler) {
 	Threadpool tp(threadcount);
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
-			tp.queueTask(std::bind([this, x, y, sampler]() {
-				this->setPixelsTask(x, y, sampler);
+			tp.queue_task(std::bind([this, x, y, sampler]() {
+				this->set_pixels_task(x, y, sampler);
 			}));
 		}
 	}
 }
 
-void Image::setPixelsTask(int x, int y, std::shared_ptr<Sampler> sampler) {
+void Image::set_pixels_task(int x, int y,
+                            const std::shared_ptr<Sampler>& sampler) {
 	Vec3 v = sampler->color(x, y);
-	setPixel(x, y, v);
+	set_pixel(x, y, v);
 }
 
-void Image::gammaCorrect(float gamma) {
-	// Check if the Vec3 in the image are in range [0,1]
-	/*std::for_each(vec.begin(), vec.end(),
-	              [](util::Vec3 v) { assert(v.limited(0, 1)); });*/
+void Image::gamma_correct(float gamma) {
 	// correct the whole data-array with the given gamma
 	std::transform(vec.begin(), vec.end(), vec.begin(),
 	               [gamma](util::Vec3 v) -> util::Vec3 {
@@ -50,7 +51,7 @@ void Image::gammaCorrect(float gamma) {
 	               });
 }
 
-void Image::halfImage(bool upper, float tolerance) {
+void Image::half_image(bool upper, float tolerance) {
 	// Half the image
 	bool cutter;
 	if (!upper) tolerance = -tolerance;
@@ -62,6 +63,7 @@ void Image::halfImage(bool upper, float tolerance) {
 		}
 	}
 }
+
 Vec3 Image::operator[](const std::array<int, 2>& i) const {
 	return vec[width * i[1] + i[0]];
 }
@@ -75,47 +77,50 @@ Vec3 Image::color(float x, float y) const {
 	Vec3 v = vec[width * yy + xx];
 	return v;
 }
+
 Image raytrace(size_t threadcount, const std::shared_ptr<Scene>& scene,
                size_t n) {
 	Image result(scene->cam.width, scene->cam.height);
 
-	result.setPixels(threadcount, std::make_shared<StratifiedSampler>(
-	                                  StratifiedSampler(scene, n)));
-	result.gammaCorrect(2.2);
+	result.set_pixels(threadcount,
+	                  std::make_shared<Stratified>(Stratified(scene, n)));
+	result.gamma_correct(2.2);
 	return result;
 }
-void writeBmp(const char* filename, Image img) {
+// Inspired: https://en.wikipedia.org/wiki/User:Evercat/Buddhabrot.c
+// https://de.wikipedia.org/wiki/Windows_Bitmap
+void write_bmp(const char* filename, const Image& img) {
 	int width = img.width;    // Width of the image
 	int height = img.height;  // Height of the image
 
-	int horizontalBytes;  // Horizontal bytes to add, so the pixelarrays width
-	                      // is a multiple of 4
-	horizontalBytes = 4 - ((width * 3) % 4);
-	if (horizontalBytes == 4) horizontalBytes = 0;
+	int horizontal_bytes;  // Horizontal bytes to add, so the pixelarrays width
+	                       // is a multiple of 4
+	horizontal_bytes = 4 - ((width * 3) % 4);
+	if (horizontal_bytes == 4) horizontal_bytes = 0;
 
-	int pixelArraySize;  // The size of the pixelArray
-	pixelArraySize = ((width * 3) + horizontalBytes) * height;
+	int pixel_array_size;  // The size of the pixelArray
+	pixel_array_size = ((width * 3) + horizontal_bytes) * height;
 
 	// Headers
 	int header[12];
 	// Bitmap file header
 	char bb = 'B';  // bfType
 	char mm = 'M';
-	header[0] = pixelArraySize + 54;  // bfSize
-	header[1] = 0;                    // bfReserved
-	header[2] = 54;                   // bfOffbits
+	header[0] = pixel_array_size + 54;  // bfSize
+	header[1] = 0;                      // bfReserved
+	header[2] = 54;                     // bfOffbits
 	// Bitmap information header
-	header[3] = 40;              // biSize
-	header[4] = width;           // biWidth
-	header[5] = height;          // biHeight
-	short biPLanes = 1;          // biPlanes
-	short biBitCount = 24;       // biBitCount
-	header[6] = 0;               // biCompression
-	header[7] = pixelArraySize;  // biSizeImage
-	header[8] = 0;               // biXPelsPerMeter
-	header[9] = 0;               // biYPelsPerMeter
-	header[10] = 0;              // biClrUsed
-	header[11] = 0;              // biClrImportant
+	header[3] = 40;                // biSize
+	header[4] = width;             // biWidth
+	header[5] = height;            // biHeight
+	short bi_planes = 1;           // biPlanes
+	short bi_bit_count = 24;       // biBitCount
+	header[6] = 0;                 // biCompression
+	header[7] = pixel_array_size;  // biSizeImage
+	header[8] = 0;                 // biXPelsPerMeter
+	header[9] = 0;                 // biYPelsPerMeter
+	header[10] = 0;                // biClrUsed
+	header[11] = 0;                // biClrImportant
 
 	std::ofstream ofile(filename, std::ios::binary);
 
@@ -128,8 +133,8 @@ void writeBmp(const char* filename, Image img) {
 		ofile.write((char*)&header[i], sizeof(header[i]));
 	}
 	// ... biPlanes, bitBitCount, ...
-	ofile.write((char*)&biPLanes, sizeof(biPLanes));
-	ofile.write((char*)&biBitCount, sizeof(biBitCount));
+	ofile.write((char*)&bi_planes, sizeof(bi_planes));
+	ofile.write((char*)&bi_bit_count, sizeof(bi_bit_count));
 	// ... biCompression, biSizeImage, biXPelsPerMeter, biYPelsPerMeter,
 	// biClrUsed, biClrImportant
 	for (int i = 6; i < 12; i++) {
@@ -154,9 +159,9 @@ void writeBmp(const char* filename, Image img) {
 			}
 		}
 		// If needed add extra bytes after each row
-		if (horizontalBytes != 0) {
+		if (horizontal_bytes != 0) {
 			char null;
-			for (int n = 0; n < horizontalBytes; n++) {
+			for (int n = 0; n < horizontal_bytes; n++) {
 				ofile.write(&null, sizeof(null));
 			}
 		}
@@ -165,7 +170,7 @@ void writeBmp(const char* filename, Image img) {
 	ofile.close();
 }
 
-Image readImage(const char* filename) {
+Image read_image(const char* filename) {
 	int width, height, channels;
 	unsigned char* img = stbi_load(filename, &width, &height, &channels, 0);
 	Image result(width, height);
@@ -182,7 +187,7 @@ Image readImage(const char* filename) {
 		i++;
 	}
 	// Reverse the gamma correction on loaded images
-	result.gammaCorrect(0.454545);
+	result.gamma_correct(0.454545);
 	return result;
 }
 }  // namespace util

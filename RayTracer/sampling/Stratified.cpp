@@ -1,16 +1,15 @@
-#include "StratifiedSampler.h"
+#include "Stratified.h"
 
 namespace util {
-StratifiedSampler::StratifiedSampler(const std::shared_ptr<Sampler>& sampler,
-                                     size_t n)
+Stratified::Stratified(const std::shared_ptr<Sampler>& sampler, size_t n)
     : sampler(sampler), n(n){};
 
-Vec3 StratifiedSampler::color(float x, float y) const {
+Vec3 Stratified::color(float x, float y) const {
 	Vec3 color(0, 0, 0);
 	for (int xi = 0; xi < n; xi++) {
 		for (int yi = 0; yi < n; yi++) {
-			float rx = dis0to1(gen);
-			float ry = dis0to1(gen);
+			float rx = dis_0_to_1(gen);
+			float ry = dis_0_to_1(gen);
 			float xs = x + (xi + rx) / n;
 			float ys = y + (yi + ry) / n;
 			color = color + sampler->color(xs, ys);

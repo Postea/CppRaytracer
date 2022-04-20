@@ -18,7 +18,7 @@ Threadpool::~Threadpool() {
 	for (auto& thread : threads) thread.join();
 }
 
-void Threadpool::queueTask(const std::function<void(void)>& task) {
+void Threadpool::queue_task(const std::function<void(void)>& task) {
 	std::unique_lock<std::mutex> lock(m);
 	q.emplace(task);
 	lock.unlock();
