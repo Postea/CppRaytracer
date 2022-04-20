@@ -10,16 +10,16 @@
 #include <vector>
 
 #include "Config.h"
-#include "material/BackgroundMaterial.h"
-#include "material/DiffuseMaterial.h"
+#include "material/Diffuse.h"
+#include "material/Emitting.h"
 #include "material/texture/Checkerboard.h"
 #include "material/texture/Constant.h"
 #include "sampling/Image.h"
 #include "sampling/Scene.h"
-#include "shape/CirclePlane.h"
+#include "shape/Disk.h"
 #include "shape/Group.h"
 #include "shape/LightSingleGroup.h"
-#include "shape/RectanglePlane.h"
+#include "shape/Rectangle.h"
 #include "shape/ShapeSingleGroup.h"
 #include "shape/SkySphere.h"
 #include "shape/Sphere.h"
@@ -46,10 +46,10 @@ int main() {
 	cout << "Start building scene" << endl;
 	Mat4 ident;
 	Group group(ident);
-	auto checkered_board = make_shared<RectanglePlane>(
-	    30.0f, 30.0f, false,
-	    make_shared<DiffuseMaterial>(
-	        make_shared<Checkerboard>(8, Vec3(0.8), Vec3(0.4))));
+	auto checkered_board =
+	    make_shared<Rectangle>(30.0f, 30.0f, false,
+	                           make_shared<Diffuse>(make_shared<Checkerboard>(
+	                               8, Vec3(0.8), Vec3(0.4))));
 	// floor
 	group.add(ShapeSingleGroup(translate(Vec3(0, 0, 0)), checkered_board));
 	// ceiling
@@ -75,13 +75,13 @@ int main() {
 	                               translate(Vec3(8, 8, 0)),
 	                           checkered_board));
 	// cube
-	auto cube = make_shared<TriangleMesh>(
-	    std::ifstream("Cube.obj"), make_shared<DiffuseMaterial>(Vec3(1, 0, 0)));
+	auto cube = make_shared<TriangleMesh>(std::ifstream("Cube.obj"),
+	                                      make_shared<Diffuse>(Vec3(1, 0, 0)));
 	group.add(ShapeSingleGroup(translate(Vec3(0, 1, -3)), cube));
 
 	// light
-	auto rect_light = make_shared<RectanglePlane>(
-	    1.0f, 1.0f, false, make_shared<BackgroundMaterial>(Vec3(4.0f)));
+	auto rect_light = make_shared<Rectangle>(1.0f, 1.0f, false,
+	                                         make_shared<Emitting>(Vec3(4.0f)));
 
 	auto light_transform = rotate(Vec3(1, 0, 0), 90) *
 	                       rotate(Vec3(0, 1, 0), -90) *
@@ -113,7 +113,7 @@ int main() {
 			Image img = raytrace(threadpool_size, fnme, "", sc, sample_n);
 			clkFinish = clock();
 			cout << "Start imaging to " << fnme << endl;
-			writeBmp(fnme.c_str(), img);
+			write_bmp(fnme.c_str(), img);
 			cout << "End" << endl;
 			std::cout << clkFinish - clkStart << endl;
 		}

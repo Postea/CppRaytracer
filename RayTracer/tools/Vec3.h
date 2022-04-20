@@ -7,7 +7,7 @@ namespace util {
 class Vec3 {
    public:
 	// Constructor
-	Vec3(std::array<float, 3> const& arr);
+	Vec3(const std::array<float, 3>& arr);
 	Vec3(float x, float y, float z);
 	Vec3(float xyz);
 	Vec3();
@@ -42,6 +42,6 @@ class Vec3 {
 	std::array<float, 3> arr;
 };
 
-float dot(const Vec3 lhs, const Vec3 rhs);
+float dot(const Vec3& lhs, const Vec3& rhs);
 Vec3 cross(const Vec3& lhs, const Vec3& rhs);
 }  // namespace util

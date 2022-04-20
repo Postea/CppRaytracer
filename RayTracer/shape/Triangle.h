@@ -10,23 +10,19 @@
 #include "Shape.h"
 
 namespace shapes {
-class Triangle : public Light, public Shape {
+class Triangle : public Shape {
+	// Triangles do not support uv coordinates
    public:
-	Triangle(util::Vertex p1, util::Vertex p2, util::Vertex p3,
+	Triangle(const util::Vertex& p1, const util::Vertex& p2,
+	         const util::Vertex& p3,
 	         const std::shared_ptr<material::Material>& material);
 	std::optional<cam::Hit> intersect(const cam::Ray& r) const;
-	std::pair<float, float> texture_coordinates(const util::Vec3& pos) const;
 	util::AxisAlignedBoundingBox bounds() const;
-	void recalculateBB();
 
-	util::SurfacePoint sampleLight(const cam::Hit& h) const;
-	util::Vec3 lightEmission(const util::SurfacePoint& p) const override;
-	float lightPdf(const util::SurfacePoint& p,
-	               const util::Vec3& dl_out) const override;
-
-	const std::shared_ptr<material::Material>& material;
+	void recalculate_bb();
 
    private:
+	std::shared_ptr<material::Material> material;
 	const util::Vertex p1;
 	const util::Vertex p2;
 	const util::Vertex p3;

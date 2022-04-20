@@ -15,7 +15,7 @@ class Threadpool {
 	Threadpool(size_t n, std::string fname, std::string formula);
 	~Threadpool();
 	// Add a task to the queue
-	void queueTask(const std::function<std::vector<int64_t>(void)>& task);
+	void queue_task(const std::function<std::vector<int64_t>(void)>& task);
 
    private:
 	void threading(size_t i);

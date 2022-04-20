@@ -4,11 +4,11 @@
 namespace shapes {
 class Light {
    public:
-	virtual util::SurfacePoint sampleLight(const cam::Hit& h) const = 0;
-	virtual util::Vec3 lightEmission(const util::SurfacePoint& p) const = 0;
-	virtual float lightPdf(const util::SurfacePoint& p,
-	                       const util::Vec3& dl_out) const = 0;
+	virtual util::SurfacePoint sample_light(const cam::Hit& h) const = 0;
 
-	// virtual std::optional<cam::Hit> intersect(const cam::Ray& r) const = 0;
+	virtual util::Vec3 light_emission(const util::SurfacePoint& p) const = 0;
+
+	virtual float light_pdf(const util::SurfacePoint& p,
+	                        const util::Vec3& dl_out) const = 0;
 };
 }  // namespace shapes

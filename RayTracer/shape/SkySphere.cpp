@@ -3,48 +3,41 @@
 #include <cassert>
 #include <limits>
 
-#include "../material/BackgroundMaterial.h"
+#include "../material/Emitting.h"
 #include "math.h"
 
 namespace shapes {
 SkySphere::SkySphere(const std::shared_ptr<util::Sampler>& sampler)
-    : Sphere(1000, std::make_shared<material::BackgroundMaterial>(sampler)) {
+    : Sphere(1000, std::make_shared<material::Emitting>(sampler)) {
 }
 SkySphere::SkySphere(const std::shared_ptr<util::Sampler>& sampler,
                      util::Image& distribution, float intensity)
-    : Sphere(1000, std::make_shared<material::BackgroundMaterial>(sampler)) {
+    : Sphere(1000, std::make_shared<material::Emitting>(sampler)) {
 	for (int x = 0; x < distribution.width; x++) {
 		for (int y = 0; y < distribution.height; y++) {
 			auto color = distribution[{x, y}];
 			auto sinn = sin(M_PI * ((float)y / distribution.height));
 			assert(sinn >= 0);
 			color = color * sinn;
-			distribution.setPixel(x, y, color);
+			distribution.set_pixel(x, y, color);
 		}
 	}
-	material = std::make_shared<material::BackgroundMaterial>(
-	    sampler, distribution, intensity);
+	material =
+	    std::make_shared<material::Emitting>(sampler, distribution, intensity);
 }
-// This intersect method rightly flips the normal.But the normal is never used
-// for non scatter materials, so we do not flip the normal
-/*
-std::optional<cam::Hit> Background::intersect(const cam::Ray& r) const {
-    auto hit = Sphere::intersect(r);
-    if (hit)
-        hit = std::optional<cam::Hit>(
-            {{hit->point(), -hit->normal(), hit->texel(), hit->scalar(),
-              hit->material}});
-    return hit;
-}*/
 
-util::SurfacePoint SkySphere::sampleLight(const cam::Hit& h) const {
-	auto uv = material->sampleEmissionProfile();
+util::SurfacePoint SkySphere::sample_light(const cam::Hit& h) const {
+	auto uv = material->sample_emission_profile();
 	util::Vec3 point = texture_coordinates(uv);
 	return util::SurfacePoint(point, -point.normalize(), uv, material);
 }
 
-float SkySphere::lightPdf(const util::SurfacePoint& p,
-                          const util::Vec3& dl_out) const {
+util::Vec3 SkySphere::light_emission(const util::SurfacePoint& p) const {
+	return p.emission();
+}
+
+float SkySphere::light_pdf(const util::SurfacePoint& p,
+                           const util::Vec3& dl_out) const {
 	auto uv = p.texel();
 	auto phi = uv.second * M_PI;
 	float pdf = material->emission_pdf(uv.first, uv.second).value();
