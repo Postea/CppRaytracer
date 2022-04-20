@@ -7,23 +7,24 @@
 #include "Vertex.h"
 
 namespace util {
-std::vector<shapes::Triangle> loadObj(
+// https://en.wikipedia.org/wiki/Wavefront_.obj_file
+std::vector<shapes::Triangle> load_obj(
     std::istream& in, const std::shared_ptr<material::Material>& material) {
 	std::vector<Vertex> vertices;
 	std::vector<Vec3> v;
 	// std::vector<Vec3> vt;
 	// std::vector<Vec3> vn;
 
-	std::string lineStr;
-	while (std::getline(in, lineStr)) {
-		std::istringstream lineSS(lineStr);
-		std::string lineType;
-		lineSS >> lineType;
+	std::string line_str;
+	while (std::getline(in, line_str)) {
+		std::istringstream line_ss(line_str);
+		std::string line_type;
+		line_ss >> line_type;
 
 		// vertex
-		if (lineType == "v") {
+		if (line_type == "v") {
 			float x = 0, y = 0, z = 0;
-			lineSS >> x >> y >> z;
+			line_ss >> x >> y >> z;
 			v.push_back(Vec3(x, y, z));
 		}
 
@@ -42,17 +43,17 @@ std::vector<shapes::Triangle> loadObj(
 		}*/
 
 		// polygon
-		if (lineType == "f") {
-			std::string refStr;
-			while (lineSS >> refStr) {
-				std::istringstream ref(refStr);
-				std::string vStr
+		if (line_type == "f") {
+			std::string ref_str;
+			while (line_ss >> ref_str) {
+				std::istringstream ref(ref_str);
+				std::string v_str
 				    //, vtStr, vnStr
 				    ;
-				std::getline(ref, vStr, '/');
+				std::getline(ref, v_str, '/');
 				// std::getline(ref, vtStr, '/');
 				// std::getline(ref, vnStr, '/');
-				int currentv = atoi(vStr.c_str());
+				int currentv = atoi(v_str.c_str());
 				// int currentvt = atoi(vtStr.c_str());
 				// int currentvn = atoi(vnStr.c_str());
 				currentv = (currentv >= 0 ? currentv : v.size() + currentv);

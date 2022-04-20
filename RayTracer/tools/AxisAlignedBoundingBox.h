@@ -19,11 +19,11 @@ class AxisAlignedBoundingBox {
 	bool intersects(const cam::Ray& r) const;
 	bool contains(const Vec3& v) const;
 	bool contains(const AxisAlignedBoundingBox& bb) const;
-	bool partiallyContains(const AxisAlignedBoundingBox& bb) const;
+	bool partially_contains(const AxisAlignedBoundingBox& bb) const;
 	float size() const;
 	Vec3 center() const;
-	Vec3 minBound() const;
-	Vec3 maxBound() const;
+	Vec3 min_bound() const;
+	Vec3 max_bound() const;
 
    private:
 	Vec3 min, max;
@@ -31,5 +31,6 @@ class AxisAlignedBoundingBox {
 };
 
 // From cgg Abgaben of Prof. Tramberend
-std::array<AxisAlignedBoundingBox, 2> splitAABB(AxisAlignedBoundingBox box);
+std::array<AxisAlignedBoundingBox, 2> split_bb(
+    const AxisAlignedBoundingBox& box);
 }  // namespace util

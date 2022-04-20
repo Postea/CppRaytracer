@@ -17,20 +17,15 @@ struct TriMeshNode {
 	int_fast16_t leaves_i;
 	int_fast16_t leaves_size;
 };
-class TriangleMesh : public Light, public Shape {
+class TriangleMesh : public Shape {
+	// TriangleMesh does not support uv coordinates
    public:
 	TriangleMesh(std::vector<Triangle> triangles);
 	TriangleMesh(std::istream& in,
 	             const std::shared_ptr<material::Material>& mat);
-	std::optional<cam::Hit> intersect(const cam::Ray& r) const override;
-	std::pair<float, float> texture_coordinates(
-	    const util::Vec3& pos) const override;
-	util::AxisAlignedBoundingBox bounds() const override;
 
-	util::SurfacePoint sampleLight(const cam::Hit& h) const override;
-	util::Vec3 lightEmission(const util::SurfacePoint& p) const override;
-	float lightPdf(const util::SurfacePoint& p,
-	               const util::Vec3& dl_out) const override;
+	std::optional<cam::Hit> intersect(const cam::Ray& r) const override;
+	util::AxisAlignedBoundingBox bounds() const override;
 
    public:
 	std::shared_ptr<material::Material> material;
@@ -38,9 +33,10 @@ class TriangleMesh : public Light, public Shape {
 	std::vector<TriMeshNode> hierarchy;
 
    private:
-	util::AxisAlignedBoundingBox initBB(std::vector<Triangle> triangles);
+	util::AxisAlignedBoundingBox init_bb(
+	    const std::vector<Triangle>& triangles);
 	std::optional<cam::Hit> TriangleMesh::intersect(size_t i,
 	                                                const cam::Ray& r) const;
-	void hierarch(size_t i, const std::vector<std::shared_ptr<Triangle>> v);
+	void hierarch(size_t i, const std::vector<std::shared_ptr<Triangle>>& v);
 };
 }  // namespace shapes

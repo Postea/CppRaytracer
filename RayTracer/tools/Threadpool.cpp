@@ -50,7 +50,7 @@ Threadpool::~Threadpool() {
 	assert(task_n == temp);
 }
 
-void Threadpool::queueTask(
+void Threadpool::queue_task(
     const std::function<std::vector<int64_t>(void)>& task) {
 	std::unique_lock<std::mutex> lock(m);
 	++task_n;
