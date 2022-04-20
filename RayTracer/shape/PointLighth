@@ -1,15 +1,11 @@
 #pragma once
 
-#include "../tools/Mat4.h"
-#include "../tools/Transformation.h"
 #include "Light.h"
 
 namespace shapes {
-class LightSingleGroup : public Light {
+class PointLight : public Light {
    public:
-	LightSingleGroup(const util::Transformation& trans,
-	                 std::shared_ptr<Light> shape);
-	LightSingleGroup(const util::Mat4& matrix, std::shared_ptr<Light> shape);
+	PointLight(const util::Vec3& emission);
 
 	util::SurfacePoint sample_light(const cam::Hit& h) const override;
 	util::Vec3 light_emission(const util::SurfacePoint& p) const override;
@@ -17,7 +13,6 @@ class LightSingleGroup : public Light {
 	                const util::Vec3& dl_out) const override;
 
    private:
-	std::shared_ptr<Light> light;
-	util::Transformation transform;
+	std::shared_ptr<material::Material> material;
 };
 }  // namespace shapes

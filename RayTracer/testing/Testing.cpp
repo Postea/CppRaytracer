@@ -6,8 +6,8 @@
 #include <limits>
 
 #include "../camera/Ray.h"
-#include "../material/DiffuseMaterial.h"
-#include "../shape/CirclePlane.h"
+#include "../material/Diffuse.h"
+#include "../shape/Disk.h"
 #include "../shape/Group.h"
 #include "../shape/Sphere.h"
 #include "../shape/Triangle.h"
@@ -260,11 +260,11 @@ void mat4_test() {
 		util::Vec3 x = util::Vec3(2, 4, -5);
 		util::Mat4 rota = util::rotate(util::Vec3(1, 0, 0), 40);
 		util::Mat4 tran = util::translate(util::Vec3(1, 1, 1));
-		util::Vec3 y = rota.transformPoint(x);
+		util::Vec3 y = rota.transform_point(x);
 		assert(round_to_5(y[1]) == 6.27811 && round_to_5(y[2]) == -1.25907);
-		y = tran.transformPoint(x);
+		y = tran.transform_point(x);
 		assert(round_to_5(y[1]) == 5 && round_to_5(y[2]) == -4);
-		y = tran.transformDir(x);
+		y = tran.transform_direction(x);
 		assert(round_to_5(y[1]) == 4 && round_to_5(y[2]) == -5);
 		std::cout << "passed." << std::endl;
 	}
@@ -382,8 +382,8 @@ void axisalignedboundingbox_test() {
 		                                 util::Vec3(25, 25, 25));
 
 		auto result = bb + bb2;
-		assert(result.minBound() == util::Vec3(10, 10, 10));
-		assert(result.maxBound() == util::Vec3(25, 25, 25));
+		assert(result.min_bound() == util::Vec3(10, 10, 10));
+		assert(result.max_bound() == util::Vec3(25, 25, 25));
 
 		util::AxisAlignedBoundingBox bb3(util::Vec3(10, 10, 10),
 		                                 util::Vec3(20, 20, 20));
@@ -391,8 +391,8 @@ void axisalignedboundingbox_test() {
 		util::AxisAlignedBoundingBox bb4(util::Vec3(15, 9, -1),
 		                                 util::Vec3(18, 10, 25));
 		auto result2 = bb3 + bb4;
-		assert(result2.minBound() == util::Vec3(10, 9, -1));
-		assert(result2.maxBound() == util::Vec3(20, 20, 25));
+		assert(result2.min_bound() == util::Vec3(10, 9, -1));
+		assert(result2.max_bound() == util::Vec3(20, 20, 25));
 
 		util::AxisAlignedBoundingBox bb5(util::Vec3(-45, 40, 0),
 		                                 util::Vec3(0, 40, 20));
@@ -401,14 +401,14 @@ void axisalignedboundingbox_test() {
 		                                 util::Vec3(-60, 90, 0));
 		auto result3 = bb5 + bb6;
 
-		assert(result3.minBound() == util::Vec3(-70, -5, -1));
-		assert(result3.maxBound() == util::Vec3(0, 90, 20));
+		assert(result3.min_bound() == util::Vec3(-70, -5, -1));
+		assert(result3.max_bound() == util::Vec3(0, 90, 20));
 
 		// Infinity expanse test
 		util::AxisAlignedBoundingBox infbb;
 		auto result4 = infbb + result3 + result2 + result;
-		assert(result4.maxBound() == infbb.maxBound() &&
-		       result4.minBound() == infbb.minBound());
+		assert(result4.max_bound() == infbb.max_bound() &&
+		       result4.min_bound() == infbb.min_bound());
 
 		std::cout << "passed." << std::endl;
 	}
@@ -465,22 +465,22 @@ void axisalignedboundingbox_test() {
 		// Split function tests
 		std::cout << "  split: ";
 		util::AxisAlignedBoundingBox bb(util::Vec3(-1), util::Vec3(1));
-		auto arr = util::splitAABB(bb);
-		assert(arr[0].minBound() == bb.minBound());
-		assert(arr[0].maxBound() == util::Vec3(0, 1, 1));
+		auto arr = util::split_bb(bb);
+		assert(arr[0].min_bound() == bb.min_bound());
+		assert(arr[0].max_bound() == util::Vec3(0, 1, 1));
 		assert(arr[0].center() == util::Vec3(-0.5, 0, 0));
-		assert(arr[1].maxBound() == bb.maxBound());
-		assert(arr[1].minBound() == util::Vec3(0, -1, -1));
+		assert(arr[1].max_bound() == bb.max_bound());
+		assert(arr[1].min_bound() == util::Vec3(0, -1, -1));
 		assert(arr[1].center() == util::Vec3(0.5, 0, 0));
 
 		util::AxisAlignedBoundingBox bb2(util::Vec3(0, 1, 2),
 		                                 util::Vec3(3, 2, 3));
-		arr = util::splitAABB(bb2);
-		assert(arr[0].minBound() == bb2.minBound());
-		assert(arr[0].maxBound() == util::Vec3(1.5, 2, 3));
+		arr = util::split_bb(bb2);
+		assert(arr[0].min_bound() == bb2.min_bound());
+		assert(arr[0].max_bound() == util::Vec3(1.5, 2, 3));
 		assert(arr[0].center() == util::Vec3(0.75, 1.5, 2.5));
-		assert(arr[1].maxBound() == bb2.maxBound());
-		assert(arr[1].minBound() == util::Vec3(1.5, 1, 2));
+		assert(arr[1].max_bound() == bb2.max_bound());
+		assert(arr[1].min_bound() == util::Vec3(1.5, 1, 2));
 		assert(arr[1].center() == util::Vec3(2.25, 1.5, 2.5));
 
 		std::cout << "passed." << std::endl;
@@ -490,22 +490,22 @@ void axisalignedboundingbox_test() {
 		std::cout << "  partially contains: ";
 		util::AxisAlignedBoundingBox bb(util::Vec3(-1), util::Vec3(1.5));
 		util::AxisAlignedBoundingBox bb2(util::Vec3(1), util::Vec3(2));
-		assert(bb.partiallyContains(bb2));
-		assert(bb2.partiallyContains(bb));
-		assert(bb2.partiallyContains(bb2));
+		assert(bb.partially_contains(bb2));
+		assert(bb2.partially_contains(bb));
+		assert(bb2.partially_contains(bb2));
 		bb = util::AxisAlignedBoundingBox(util::Vec3(-1, -1, -2),
 		                                  util::Vec3(1, 1, 2));
 		bb2 = util::AxisAlignedBoundingBox(util::Vec3(-10, -10, -10),
 		                                   util::Vec3(0, 0, 0));
-		assert(bb.partiallyContains(bb2));
-		assert(bb2.partiallyContains(bb));
-		assert(bb2.partiallyContains(bb2));
+		assert(bb.partially_contains(bb2));
+		assert(bb2.partially_contains(bb));
+		assert(bb2.partially_contains(bb2));
 		bb = util::AxisAlignedBoundingBox(util::Vec3(-1, -1, -2),
 		                                  util::Vec3(1, 1, 2));
 		bb2 = util::AxisAlignedBoundingBox(util::Vec3(-1, -2, -1),
 		                                   util::Vec3(1, 2, 1));
-		assert(!bb.partiallyContains(bb2));
-		assert(!bb2.partiallyContains(bb));
+		assert(!bb.partially_contains(bb2));
+		assert(!bb2.partially_contains(bb));
 
 		std::cout << "passed." << std::endl;
 	}
@@ -519,11 +519,11 @@ void shape_test() {
 	std::cout << "======================" << std::endl;
 
 	auto red_material =
-	    std::make_shared<material::DiffuseMaterial>(util::Vec3(1, 0, 0));
+	    std::make_shared<material::Diffuse>(util::Vec3(1, 0, 0));
 	{
-		std::cout << "  CirclePlane: ";
+		std::cout << "  Disk: ";
 
-		shapes::CirclePlane circ_plane(5.0, false, red_material);
+		shapes::Disk circ_plane(5.0, false, red_material);
 		cam::Ray direct_ray(util::Vec3(0, 3, 0), util::Vec3(0.3, -1, 0.2), 0,
 		                    100, false);
 		cam::Ray bounding_ray(util::Vec3(4.6, -1, 4), util::Vec3(-0.1, 1, 0.5),

@@ -10,6 +10,7 @@ SurfacePoint::SurfacePoint(const util::Vec3& point, const util::Vec3& n,
                            const std::shared_ptr<material::Material>& material)
     : x(point), n(n), uv(uv), material(material) {
 }
+
 std::optional<cam::Ray> SurfacePoint::scattered_ray(
     const cam::Ray& inc_ray) const {
 	auto d = material->scattered_d(inc_ray.d, n);
@@ -24,9 +25,6 @@ util::Vec3 SurfacePoint::albedo() const {
 util::Vec3 SurfacePoint::emission() const {
 	return material->emission(uv);
 }
-/*bool SurfacePoint::scatter(const util::Vec3& d, const util::Vec3& n) const {
-    return material->scatter(d, n);
-}*/
 util::Vec3 SurfacePoint::point() const {
 	return x;
 }
@@ -36,9 +34,8 @@ util::Vec3 SurfacePoint::normal() const {
 std::pair<float, float> SurfacePoint::texel() const {
 	return uv;
 }
-float SurfacePoint::calculateLightMultiplier(const util::Vec3& d_in,
-                                             const util::Vec3& d_out,
-                                             const util::Vec3& n) const {
-	return material->calculateLightMultiplier(d_in, d_out, n);
+float SurfacePoint::brdf(const util::Vec3& d_in, const util::Vec3& d_out,
+                         const util::Vec3& n) const {
+	return material->brdf(d_in, d_out, n);
 }
 }  // namespace util
