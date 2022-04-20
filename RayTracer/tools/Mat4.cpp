@@ -6,13 +6,13 @@
 
 namespace util {
 // Constructor
-Mat4::Mat4(std::array<float, 16> arr) : arr(arr){};
+Mat4::Mat4(const std::array<float, 16>& arr) : arr(arr){};
 Mat4::Mat4() : arr(identity().arr){};
 // Operator
-float Mat4::operator[](std::array<int, 2> i) const {
+float Mat4::operator[](const std::array<int, 2>& i) const {
 	return arr[4 * i[0] + i[1]];
 }
-float& Mat4::operator[](std::array<int, 2> i) {
+float& Mat4::operator[](const std::array<int, 2>& i) {
 	return arr[4 * i[0] + i[1]];
 }
 Mat4 Mat4::operator*(const Mat4& rhs) const {
@@ -43,13 +43,13 @@ Mat4 Mat4::transpose() const {
 	}
 	return x;
 }
-Vec3 Mat4::transformDir(const Vec3& v) const {
+Vec3 Mat4::transform_direction(const Vec3& v) const {
 	const float x = arr[0] * v[0] + arr[1] * v[1] + arr[2] * v[2];
 	const float y = arr[4] * v[0] + arr[5] * v[1] + arr[6] * v[2];
 	const float z = arr[8] * v[0] + arr[9] * v[1] + arr[10] * v[2];
 	return Vec3(x, y, z);
 }
-Vec3 Mat4::transformPoint(const Vec3& v) const {
+Vec3 Mat4::transform_point(const Vec3& v) const {
 	const float x = arr[0] * v[0] + arr[1] * v[1] + arr[2] * v[2] + arr[3];
 	const float y = arr[4] * v[0] + arr[5] * v[1] + arr[6] * v[2] + arr[7];
 	const float z = arr[8] * v[0] + arr[9] * v[1] + arr[10] * v[2] + arr[11];
@@ -58,7 +58,7 @@ Vec3 Mat4::transformPoint(const Vec3& v) const {
 Vec3 Mat4::position() const {
 	return Vec3(arr[3], arr[7], arr[11]);
 }
-Mat4 Mat4::invertFull() const {
+Mat4 Mat4::invert() const {
 	Mat4 ret;
 	std::array<float, 16> mat(arr);
 	std::array<float, 16> dst(ret.arr);

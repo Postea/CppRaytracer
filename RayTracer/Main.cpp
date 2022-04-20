@@ -10,16 +10,16 @@
 #include <vector>
 
 #include "Config.h"
-#include "material/BackgroundMaterial.h"
-#include "material/DiffuseMaterial.h"
+#include "material/Diffuse.h"
+#include "material/Emitting.h"
 #include "material/texture/Checkerboard.h"
 #include "material/texture/Constant.h"
 #include "sampling/Image.h"
 #include "sampling/Scene.h"
-#include "shape/CirclePlane.h"
+#include "shape/Disk.h"
 #include "shape/Group.h"
 #include "shape/LightSingleGroup.h"
-#include "shape/RectanglePlane.h"
+#include "shape/Rectangle.h"
 #include "shape/ShapeSingleGroup.h"
 #include "shape/SkySphere.h"
 #include "shape/Sphere.h"
@@ -37,18 +37,19 @@ using namespace shapes;
 using namespace std;
 
 size_t threadpool_size = 4;
-auto s = {4};
-auto l = {0};
-auto d = {3, INT32_MAX};
+std::array<size_t, 2> sample_configs[] = {
+    {1, 3},
+    {1, INT32_MAX},
+};  // n, d
 
 int main() {
 	cout << "Start building scene" << endl;
 	Mat4 ident;
 	Group group(ident);
-	auto checkered_board = make_shared<RectanglePlane>(
-	    30.0f, 30.0f, false,
-	    make_shared<DiffuseMaterial>(
-	        make_shared<Checkerboard>(8, Vec3(0.7), Vec3(0.35))));
+	auto checkered_board =
+	    make_shared<Rectangle>(30.0f, 30.0f, false,
+	                           make_shared<Diffuse>(make_shared<Checkerboard>(
+	                               8, Vec3(0.7), Vec3(0.35))));
 	// floor
 	group.add(ShapeSingleGroup(translate(Vec3(0, 0, 0)), checkered_board));
 	// ceiling
@@ -74,13 +75,13 @@ int main() {
 	//                               translate(Vec3(8, 8, 0)),
 	//                           checkered_board));
 	// cube
-	auto cube = make_shared<TriangleMesh>(
-	    std::ifstream("Cube.obj"), make_shared<DiffuseMaterial>(Vec3(1, 0, 0)));
+	auto cube = make_shared<TriangleMesh>(std::ifstream("Cube.obj"),
+	                                      make_shared<Diffuse>(Vec3(1, 0, 0)));
 	group.add(ShapeSingleGroup(translate(Vec3(0, 1, -3)), cube));
 
 	// light
-	auto rect_light = make_shared<RectanglePlane>(
-	    30.0f, 30.0f, false, make_shared<BackgroundMaterial>(Vec3(1)));
+	auto rect_light = make_shared<Rectangle>(30.0f, 30.0f, false,
+	                                         make_shared<Emitting>(Vec3(1)));
 
 	auto light_transform = rotate(Vec3(1, 0, 0), 90) *
 	                       rotate(Vec3(0, 1, 0), -90) *
@@ -96,29 +97,22 @@ int main() {
 
 	for (const auto& [camera_key, camera] : config::cameras) {
 		CamObs obs(camera, M_PI / 2, 350, 210);
+		for (const auto& [sample_n, max_depth] : sample_configs) {
+			//  scene building end
+			auto sc = std::make_shared<Scene>(
+			    Scene(group, lights, obs, max_depth, 0));
 
-		for (const auto& sample_n : s) {
-			for (const auto& sample_l : l) {
-				for (const auto& max_depth : d) {
-					//  scene building end
-					auto sc = std::make_shared<Scene>(
-					    Scene(group, lights, obs, max_depth, sample_l));
-
-					auto fnme = config::file_name(sample_n, sample_l, max_depth,
-					                              camera_key);
-					clock_t clkStart;
-					clock_t clkFinish;
-					cout << "Start render" << endl;
-					clkStart = clock();
-					Image img =
-					    raytrace(threadpool_size, fnme, "", sc, sample_n);
-					clkFinish = clock();
-					cout << "Start imaging to " << fnme << endl;
-					writeBmp(fnme.c_str(), img);
-					cout << "End" << endl;
-					std::cout << clkFinish - clkStart << endl;
-				}
-			}
+			auto fnme = config::file_name(sample_n, 0, max_depth, camera_key);
+			clock_t clkStart;
+			clock_t clkFinish;
+			cout << "Start render" << endl;
+			clkStart = clock();
+			Image img = raytrace(threadpool_size, fnme, "", sc, sample_n);
+			clkFinish = clock();
+			cout << "Start imaging to " << fnme << endl;
+			write_bmp(fnme.c_str(), img);
+			cout << "End" << endl;
+			std::cout << clkFinish - clkStart << endl;
 		}
 	}
 };

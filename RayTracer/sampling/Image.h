@@ -9,28 +9,34 @@
 namespace util {
 class Image : public Sampler {
    public:
-	void setPixel(int x, int y, Vec3 color);
-	void setPixels(size_t threadcount, std::string fname,std::string formula,
-	               std::shared_ptr<OptiSampler> sampler);
+	void set_pixel(int x, int y, const Vec3& color);
+	// Set all pixels with implemented threadpool
+	void set_pixels(size_t threadcount, std::string fname, std::string formula,
+	                std::shared_ptr<OptiSampler> sampler);
 
 	Vec3 operator[](const std::array<int, 2>& i) const;  // int x, int y
 	Vec3& operator[](const std::array<int, 2>& i);
 
+	// Here x,y are in [0,1]
 	Vec3 color(float x, float y) const override;
 
 	const int width, height;
-	void gammaCorrect(float gamma);
 
-	void halfImage(bool upper, float tolerance);
+	void gamma_correct(float gamma);
+
+	// Turn the images upper/lower half completly black.
+	// Usefull for sky sphere, where you only need one hemisphere
+	void half_image(bool upper, float tolerance);
 
 	friend Image raytrace(size_t threadcount, std::string fname,
 	                      std::string formula,
 	                      const std::shared_ptr<Scene>& scene, size_t n);
-	friend Image readImage(const char* filename);
+	friend Image read_image(const char* filename);
 
    protected:
-	std::vector<int64_t> setPixelsTask(int x, int y,
-	                                   std::shared_ptr<OptiSampler> sampler);
+	// Task for the threadpools
+	std::vector<int64_t> set_pixels_task(
+	    int x, int y, const std::shared_ptr<OptiSampler>& sampler);
 
    private:
 	std::vector<Vec3> vec;
@@ -39,7 +45,7 @@ class Image : public Sampler {
 
 Image raytrace(size_t threadcount, std::string fname, std::string formula,
                const std::shared_ptr<Scene>& scene, size_t n);
-void writeBmp(const char* filename, Image img);
-Image readImage(const char* filename);
+void write_bmp(const char* filename, const Image& img);
+Image read_image(const char* filename);
 
 }  // namespace util

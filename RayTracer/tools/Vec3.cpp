@@ -3,7 +3,7 @@
 namespace util {
 
 // Constructor
-Vec3::Vec3(std::array<float, 3> const& arr) : arr(arr) {
+Vec3::Vec3(const std::array<float, 3>& arr) : arr(arr) {
 }
 Vec3::Vec3(float x, float y, float z) : arr(std::array<float, 3>({x, y, z})) {
 }
@@ -118,7 +118,7 @@ bool Vec3::limited(float lower_limit, float upper_limit) const {
 	return x && y && z;
 }
 // Static
-float dot(const Vec3 lhs, const Vec3 rhs) {
+float dot(const Vec3& lhs, const Vec3& rhs) {
 	return ((lhs[0] * rhs[0]) + (lhs[1] * rhs[1]) + (lhs[2] * rhs[2]));
 }
 Vec3 cross(const Vec3& lhs, const Vec3& rhs) {
