@@ -38,29 +38,29 @@ AxisAlignedBoundingBox AxisAlignedBoundingBox::operator*(
 	AxisAlignedBoundingBox result(
 	    Vec3(std::numeric_limits<float>::infinity()),
 	    Vec3(-std::numeric_limits<float>::infinity()));
-	Vec3 v1 = rhs.transformPoint(Vec3(min.x(), min.y(), min.z()));
-	Vec3 v2 = rhs.transformPoint(Vec3(min.x(), min.y(), max.z()));
-	Vec3 v3 = rhs.transformPoint(Vec3(min.x(), max.y(), min.z()));
-	Vec3 v4 = rhs.transformPoint(Vec3(min.x(), min.y(), max.z()));
-	Vec3 v5 = rhs.transformPoint(Vec3(max.x(), min.y(), min.z()));
-	Vec3 v6 = rhs.transformPoint(Vec3(min.x(), min.y(), max.z()));
-	Vec3 v7 = rhs.transformPoint(Vec3(min.x(), max.y(), min.z()));
-	Vec3 v8 = rhs.transformPoint(Vec3(min.x(), max.y(), max.z()));
-	float minX = std::min<float>(
+	Vec3 v1 = rhs.transform_point(Vec3(min.x(), min.y(), min.z()));
+	Vec3 v2 = rhs.transform_point(Vec3(min.x(), min.y(), max.z()));
+	Vec3 v3 = rhs.transform_point(Vec3(min.x(), max.y(), min.z()));
+	Vec3 v4 = rhs.transform_point(Vec3(min.x(), min.y(), max.z()));
+	Vec3 v5 = rhs.transform_point(Vec3(max.x(), min.y(), min.z()));
+	Vec3 v6 = rhs.transform_point(Vec3(min.x(), min.y(), max.z()));
+	Vec3 v7 = rhs.transform_point(Vec3(min.x(), max.y(), min.z()));
+	Vec3 v8 = rhs.transform_point(Vec3(min.x(), max.y(), max.z()));
+	float min_x = std::min<float>(
 	    {v1.x(), v2.x(), v3.x(), v4.x(), v5.x(), v6.x(), v7.x(), v8.x()});
-	float minY = std::min<float>(
+	float min_y = std::min<float>(
 	    {v1.y(), v2.y(), v3.y(), v4.y(), v5.y(), v6.y(), v7.y(), v8.y()});
-	float minZ = std::min<float>(
+	float min_z = std::min<float>(
 	    {v1.z(), v2.z(), v3.z(), v4.z(), v5.z(), v6.z(), v7.z(), v8.z()});
-	float maxX = std::max<float>(
+	float max_x = std::max<float>(
 	    {v1.x(), v2.x(), v3.x(), v4.x(), v5.x(), v6.x(), v7.x(), v8.x()});
-	float maxY = std::max<float>(
+	float max_y = std::max<float>(
 	    {v1.y(), v2.y(), v3.y(), v4.y(), v5.y(), v6.y(), v7.y(), v8.y()});
-	float maxZ = std::max<float>(
+	float max_z = std::max<float>(
 	    {v1.z(), v2.z(), v3.z(), v4.z(), v5.z(), v6.z(), v7.z(), v8.z()});
 
-	return AxisAlignedBoundingBox(Vec3(minX, minY, minZ),
-	                              Vec3(maxX, maxY, maxZ));
+	return AxisAlignedBoundingBox(Vec3(min_x, min_y, min_z),
+	                              Vec3(max_x, max_y, max_z));
 }
 // Methods
 // https://education.siggraph.org/static/HyperGraph/raytrace/rtinter3.htm
@@ -94,14 +94,14 @@ bool AxisAlignedBoundingBox::contains(const Vec3& v) const {
 
 bool AxisAlignedBoundingBox::contains(const AxisAlignedBoundingBox& bb) const {
 	std::array<Vec3, 8> vertices = {
-	    Vec3(bb.minBound().x(), bb.minBound().y(), bb.minBound().z()),
-	    Vec3(bb.minBound().x(), bb.minBound().y(), bb.maxBound().z()),
-	    Vec3(bb.minBound().x(), bb.maxBound().y(), bb.minBound().z()),
-	    Vec3(bb.minBound().x(), bb.maxBound().y(), bb.maxBound().z()),
-	    Vec3(bb.maxBound().x(), bb.minBound().y(), bb.minBound().z()),
-	    Vec3(bb.maxBound().x(), bb.minBound().y(), bb.maxBound().z()),
-	    Vec3(bb.maxBound().x(), bb.maxBound().y(), bb.minBound().z()),
-	    Vec3(bb.maxBound().x(), bb.maxBound().y(), bb.maxBound().z())};
+	    Vec3(bb.min_bound().x(), bb.min_bound().y(), bb.min_bound().z()),
+	    Vec3(bb.min_bound().x(), bb.min_bound().y(), bb.max_bound().z()),
+	    Vec3(bb.min_bound().x(), bb.max_bound().y(), bb.min_bound().z()),
+	    Vec3(bb.min_bound().x(), bb.max_bound().y(), bb.max_bound().z()),
+	    Vec3(bb.max_bound().x(), bb.min_bound().y(), bb.min_bound().z()),
+	    Vec3(bb.max_bound().x(), bb.min_bound().y(), bb.max_bound().z()),
+	    Vec3(bb.max_bound().x(), bb.max_bound().y(), bb.min_bound().z()),
+	    Vec3(bb.max_bound().x(), bb.max_bound().y(), bb.max_bound().z())};
 	for (Vec3 v : vertices)
 		if (!contains(v)) return false;
 
@@ -112,31 +112,31 @@ bool AxisAlignedBoundingBox::contains(const AxisAlignedBoundingBox& bb) const {
 // to create a hierarchy. Theoretically there are overlapping bbs, where no
 // corner is inside the others.
 
-bool AxisAlignedBoundingBox::partiallyContains(
+bool AxisAlignedBoundingBox::partially_contains(
     const AxisAlignedBoundingBox& bb) const {
 	std::array<Vec3, 8> vertices = {
-	    Vec3(bb.minBound().x(), bb.minBound().y(), bb.minBound().z()),
-	    Vec3(bb.minBound().x(), bb.minBound().y(), bb.maxBound().z()),
-	    Vec3(bb.minBound().x(), bb.maxBound().y(), bb.minBound().z()),
-	    Vec3(bb.minBound().x(), bb.maxBound().y(), bb.maxBound().z()),
-	    Vec3(bb.maxBound().x(), bb.minBound().y(), bb.minBound().z()),
-	    Vec3(bb.maxBound().x(), bb.minBound().y(), bb.maxBound().z()),
-	    Vec3(bb.maxBound().x(), bb.maxBound().y(), bb.minBound().z()),
-	    Vec3(bb.maxBound().x(), bb.maxBound().y(), bb.maxBound().z())};
+	    Vec3(bb.min_bound().x(), bb.min_bound().y(), bb.min_bound().z()),
+	    Vec3(bb.min_bound().x(), bb.min_bound().y(), bb.max_bound().z()),
+	    Vec3(bb.min_bound().x(), bb.max_bound().y(), bb.min_bound().z()),
+	    Vec3(bb.min_bound().x(), bb.max_bound().y(), bb.max_bound().z()),
+	    Vec3(bb.max_bound().x(), bb.min_bound().y(), bb.min_bound().z()),
+	    Vec3(bb.max_bound().x(), bb.min_bound().y(), bb.max_bound().z()),
+	    Vec3(bb.max_bound().x(), bb.max_bound().y(), bb.min_bound().z()),
+	    Vec3(bb.max_bound().x(), bb.max_bound().y(), bb.max_bound().z())};
 	for (Vec3 v : vertices)
 		if (contains(v)) return true;
 	return false;
 }
 float AxisAlignedBoundingBox::size() const {
-	return (maxBound() - minBound()).length();
+	return (max_bound() - min_bound()).length();
 }
 Vec3 AxisAlignedBoundingBox::center() const {
 	return (max + min) / 2;
 }
-Vec3 AxisAlignedBoundingBox::minBound() const {
+Vec3 AxisAlignedBoundingBox::min_bound() const {
 	return min;
 }
-Vec3 AxisAlignedBoundingBox::maxBound() const {
+Vec3 AxisAlignedBoundingBox::max_bound() const {
 	return max;
 }
 void AxisAlignedBoundingBox::orientate() {
@@ -149,39 +149,42 @@ void AxisAlignedBoundingBox::orientate() {
 }
 // Pair is 0->Left 1->Right
 // From cgg Abgaben of Prof. Tramberend
-std::array<AxisAlignedBoundingBox, 2> splitAABB(AxisAlignedBoundingBox box) {
-	util::Vec3 size2 = (box.maxBound() - box.minBound()) / 2;
+std::array<AxisAlignedBoundingBox, 2> split_bb(
+    const AxisAlignedBoundingBox& box) {
+	util::Vec3 size2 = (box.max_bound() - box.min_bound()) / 2;
 	AxisAlignedBoundingBox left;
 	if (size2.x() >= size2.y() && size2.x() >= size2.z()) {
 		left = AxisAlignedBoundingBox(
-		    box.minBound(), util::Vec3(box.minBound().x() + size2.x(),
-		                               box.maxBound().y(), box.maxBound().z()));
+		    box.min_bound(),
+		    util::Vec3(box.min_bound().x() + size2.x(), box.max_bound().y(),
+		               box.max_bound().z()));
 	} else if (size2.y() >= size2.x() && size2.y() >= size2.z()) {
 		left = AxisAlignedBoundingBox(
-		    box.minBound(),
-		    util::Vec3(box.maxBound().x(), box.minBound().y() + size2.y(),
-		               box.maxBound().z()));
+		    box.min_bound(),
+		    util::Vec3(box.max_bound().x(), box.min_bound().y() + size2.y(),
+		               box.max_bound().z()));
 	} else {
 		left = AxisAlignedBoundingBox(
-		    box.minBound(), util::Vec3(box.maxBound().x(), box.maxBound().y(),
-		                               box.minBound().z() + size2.z()));
+		    box.min_bound(),
+		    util::Vec3(box.max_bound().x(), box.max_bound().y(),
+		               box.min_bound().z() + size2.z()));
 	}
 	AxisAlignedBoundingBox right;
 	if (size2.x() >= size2.y() && size2.x() >= size2.z()) {
 		right = AxisAlignedBoundingBox(
-		    util::Vec3(box.minBound().x() + size2.x(), box.minBound().y(),
-		               box.minBound().z()),
-		    box.maxBound());
+		    util::Vec3(box.min_bound().x() + size2.x(), box.min_bound().y(),
+		               box.min_bound().z()),
+		    box.max_bound());
 	} else if (size2.y() >= size2.x() && size2.y() >= size2.z()) {
 		right = AxisAlignedBoundingBox(
-		    util::Vec3(box.minBound().x(), box.minBound().y() + size2.y(),
-		               box.minBound().z()),
-		    box.maxBound());
+		    util::Vec3(box.min_bound().x(), box.min_bound().y() + size2.y(),
+		               box.min_bound().z()),
+		    box.max_bound());
 	} else {
 		right = AxisAlignedBoundingBox(
-		    util::Vec3(box.minBound().x(), box.minBound().y(),
-		               box.minBound().z() + size2.z()),
-		    box.maxBound());
+		    util::Vec3(box.min_bound().x(), box.min_bound().y(),
+		               box.min_bound().z() + size2.z()),
+		    box.max_bound());
 	}
 	return {left, right};
 }

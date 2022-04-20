@@ -9,14 +9,15 @@ Ray::Ray(const util::Vec3& x0, const util::Vec3& arg_d, float tmin, float tmax,
 	else
 		d = arg_d;
 }
-// Returns the value of the ray function at t
+
 util::Vec3 Ray::operator()(float t) const {
 	return x0 + (d * t);
 }
-// Check if t is within the rays bounds
+
 bool Ray::in_range(float t) const {
 	return t <= tmax && t >= tmin;
 }
+
 std::ostream& operator<<(std::ostream& os, const cam::Ray& rhs) {
 	os << "(" << rhs.x0 << " " << rhs.d << ")";
 	return os;

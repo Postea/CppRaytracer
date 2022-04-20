@@ -10,16 +10,16 @@
 #include <vector>
 
 #include "Config.h"
-#include "material/BackgroundMaterial.h"
-#include "material/DiffuseMaterial.h"
+#include "material/Diffuse.h"
+#include "material/Emitting.h"
 #include "material/texture/Checkerboard.h"
 #include "material/texture/Constant.h"
 #include "sampling/Image.h"
 #include "sampling/Scene.h"
-#include "shape/CirclePlane.h"
+#include "shape/Disk.h"
 #include "shape/Group.h"
 #include "shape/LightSingleGroup.h"
-#include "shape/RectanglePlane.h"
+#include "shape/Rectangle.h"
 #include "shape/ShapeSingleGroup.h"
 #include "shape/SkySphere.h"
 #include "shape/Sphere.h"
@@ -36,8 +36,21 @@ using namespace cam;
 using namespace shapes;
 using namespace std;
 
+int tree_recurs(const std::vector<shapes::TriMeshNode>& hierarchy,
+                shapes::TriMeshNode r) {
+	int ld = 1;
+	int rd = 1;
+	if (r.left != -1) {
+		ld += tree_recurs(hierarchy, hierarchy[r.left]);
+	}
+	if (r.right != -1) {
+		rd += tree_recurs(hierarchy, hierarchy[r.right]);
+	}
+	int d = max<int>(rd, ld);
+	// if (d != 0) cout << d << endl;
+	return d;
+}
 int main() {
-#if true
 	cout << "Start" << endl;
 	// Image img = Image (100, 100);
 
@@ -46,31 +59,31 @@ int main() {
 
 	Group group(ident);
 
-	Image sky_image = readImage(config::sky.c_str());
-	sky_image.halfImage(true, 0.01);
-	auto skysphere = make_shared<SkySphere>(
-	    SkySphere(make_shared<Image>(sky_image), sky_image, 0.2f));
+	Image sky_image = read_image(config::sky.c_str());
+	sky_image.half_image(true, 0.01);
+	auto skysphere =
+	    make_shared<SkySphere>(make_shared<Image>(sky_image), sky_image, 2.0f);
 	// auto skysphere =
 	// make_shared<SkySphere>(make_shared<Constant>(Vec3(0.9)));
 
 	group.add(skysphere);
 
-	auto floor = make_shared<RectanglePlane>(
-	    1000.0f, 1000.0f, false, make_shared<DiffuseMaterial>(Vec3(0.3)));
+	auto floor = make_shared<Rectangle>(1000.0f, 1000.0f, false,
+	                                    make_shared<Diffuse>(Vec3(0.3)));
 
 	group.add(ShapeSingleGroup(translate(Vec3(0, -1.001, 0)), floor));
 
-	auto checkered_board = make_shared<RectanglePlane>(
-	    16.0f, 16.0f, false,
-	    make_shared<DiffuseMaterial>(
-	        make_shared<Checkerboard>(8, Vec3(1), Vec3(0.9))));
+	auto checkered_board =
+	    make_shared<Rectangle>(16.0f, 16.0f, false,
+	                           make_shared<Diffuse>(make_shared<Checkerboard>(
+	                               8, Vec3(0.8), Vec3(0.4))));
 
 	group.add(ShapeSingleGroup(translate(Vec3(0, -1, 0)), checkered_board));
 
 	TriangleMesh rook(std::ifstream("Tower_Base.obj"),
-	                  make_shared<DiffuseMaterial>(Vec3(0.05f, 0.05f, 0.9f)));
+	                  make_shared<Diffuse>(Vec3(0.05f, 0.05f, 0.9f)));
 	TriangleMesh cube(std::ifstream("Cube.obj"),
-	                  make_shared<DiffuseMaterial>(Vec3(0.05f, 0.9f, 0.05f)));
+	                  make_shared<Diffuse>(Vec3(0.05f, 0.9f, 0.05f)));
 
 	group.add(ShapeSingleGroup(translate(Vec3(0, 0, 0)),
 	                           make_shared<TriangleMesh>(rook)));
@@ -78,7 +91,7 @@ int main() {
 	                           make_shared<TriangleMesh>(cube)));
 
 	auto red_sphere = make_shared<Sphere>(
-	    1.0f, make_shared<DiffuseMaterial>(Vec3(0.9f, 0.05f, 0.05f)));
+	    1.0f, make_shared<Diffuse>(Vec3(0.9f, 0.05f, 0.05f)));
 	group.add(ShapeSingleGroup(translate(Vec3(-3, 1, 0)), red_sphere));
 
 	std::vector<std::shared_ptr<Light>> lights = {skysphere};
@@ -93,32 +106,7 @@ int main() {
 	                     sc, config::sample_n);
 	clkFinish = clock();
 	cout << "Start imaging to " << config::fnme << endl;
-	writeBmp(config::fnme.c_str(), img);
+	write_bmp(config::fnme.c_str(), img);
 	cout << "End" << endl;
 	std::cout << clkFinish - clkStart;
-
-#elif false
-	// test::vec3_test();
-	// test::mat4_test();
-	// test::ray_test();
-	// test::shape_test();
-	// test::axisalignedboundingbox_test();
-
-#elif false
-	Image x = readImage("results/mis_2.bmp");
-	x.halfImage(true, 0.2);
-	cout << "halfed" << endl;
-	writeBmp("results/aaa.bmp", x);
-#elif true
-	cout << config::fnme << endl;
-#elif false
-	std::ifstream is("Extended_Cube.obj");
-	TriangleMesh mesh(is, nullptr);
-	cout << "leaves: " << mesh.leaves.size() << endl;
-	cout << "hierarchy: " << mesh.hierarchy.size() << endl;
-	for (auto hier : mesh.hierarchy) {
-		cout << "{" << hier.left << " " << hier.right << " " << hier.leaves_i
-		     << " " << hier.leaves_size << "}" << endl;
-	}
-#endif
 };

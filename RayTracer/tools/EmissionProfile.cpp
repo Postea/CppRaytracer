@@ -64,10 +64,10 @@ EmissionProfile::EmissionProfile(const std::shared_ptr<util::Sampler>& emission,
 
 std::pair<float, float> EmissionProfile::sample() const {
 	if (uniform) {
-		return {(float)util::dis0to1(util::gen),
-		        (float)util::dis0to1(util::gen)};
+		return {(float)util::dis_0_to_1(util::gen),
+		        (float)util::dis_0_to_1(util::gen)};
 	} else {
-		auto s = dis0to1(gen);
+		auto s = dis_0_to_1(gen);
 		auto res = binary_search(s);
 		return res.first;
 	}
