@@ -38,8 +38,7 @@ using namespace std;
 
 size_t threadpool_size = 4;
 std::array<size_t, 2> sample_configs[] = {
-    {1, 1},
-    //{1, 6}, {1, 7}, {2, 0}, {2, 16}, {5, 1}, {6, 0}, {10, 6}, {20, 0},
+    {1, 4}, {1, 6}, {1, 8}, {2, 0}, {3, 0},
 };  // n, l
 size_t max_depth = 8;
 
