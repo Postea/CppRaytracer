@@ -38,7 +38,8 @@ using namespace std;
 
 size_t threadpool_size = 4;
 std::array<size_t, 2> sample_configs[] = {
-    {1, 1}, {1, 6}, {1, 7}, {2, 0}, {2, 16}, {5, 1}, {6, 0}, {10, 6}, {20, 0},
+    {1, 1},
+    //{1, 6}, {1, 7}, {2, 0}, {2, 16}, {5, 1}, {6, 0}, {10, 6}, {20, 0},
 };  // n, l
 size_t max_depth = 8;
 auto sky_key = "FullMoon";
@@ -59,26 +60,27 @@ int main() {
 	    16.0f, 16.0f, false,
 	    make_shared<Diffuse>(make_shared<Checkerboard>(8, Vec3(1), Vec3(0.6))));
 
-	group.add(ShapeSingleGroup(translate(Vec3(0, -1, 0)), checkered_board));
+	// Board
+	group.add(ShapeSingleGroup(translate(Vec3(0, 0, 0)), checkered_board));
+	group.add(ShapeSingleGroup(
+	    translate(Vec3(0, -0.001, 0)),
+	    make_shared<Rectangle>(20.0f, 20.0f, false,
+	                           make_shared<Diffuse>(Vec3(0)))));
+	// Sides
+	group.add(ShapeSingleGroup(
+	    rotate(Vec3(1, 0, 0), -90) * translate(Vec3(0, -0.5, 10)),
+	    make_shared<Rectangle>(20.0f, 1.0f, false,
+	                           make_shared<Diffuse>(Vec3(1)))));
+	group.add(ShapeSingleGroup(
+	    rotate(Vec3(1, 0, 0), 90) * translate(Vec3(0, -0.5, -10)),
+	    make_shared<Rectangle>(20.0f, 1.0f, false,
+	                           make_shared<Diffuse>(Vec3(1)))));
 
-	TriangleMesh rook(std::ifstream("Tower_Base.obj"),
-	                  make_shared<Diffuse>(Vec3(0.0f, 0.0f, 1.0f)));
-	TriangleMesh cube(std::ifstream("Cube.obj"),
-	                  make_shared<Diffuse>(Vec3(0.0f, 1.0f, 0.0f)));
-
-	group.add(ShapeSingleGroup(translate(Vec3(0, 0, 0)),
-	                           make_shared<TriangleMesh>(rook)));
-	group.add(ShapeSingleGroup(translate(Vec3(3, 0, 0)),
-	                           make_shared<TriangleMesh>(cube)));
-
-	auto red_sphere =
-	    make_shared<Sphere>(1.0f, make_shared<Diffuse>(Vec3(1.0f, 0.0f, 0.0f)));
-	group.add(ShapeSingleGroup(translate(Vec3(-3, 1, 0)), red_sphere));
 	// Sky texture
 	Image sky_image = read_image(config::skies[sky_key].c_str());
 	sky_image.half_image(true, 0.01);
 	auto skysphere = make_shared<SkySphere>(
-	    SkySphere(make_shared<Image>(sky_image), sky_image, 10.0f));
+	    SkySphere(make_shared<Image>(sky_image), sky_image, 20.0f));
 	group.add(skysphere);
 
 	std::vector<std::shared_ptr<Light>> lights = {skysphere};
