@@ -42,7 +42,7 @@ Threadpool::~Threadpool() {
 		          << std::get<1>(x) << " tasks" << std::endl;
 	}
 	std::ofstream res;
-	res.open("results/results.txt", std::ios_base::app);
+	res.open("results/results_indoor.txt", std::ios_base::app);
 	res << fname << "\t" << prim_rays << "\t" << dire_rays << "\t"
 	    << prim_rays + dire_rays << "\t" << formula << "\t"
 	    << clock() - clkStart << std::endl;
