@@ -5,8 +5,7 @@ using namespace util;
 namespace config {
 
 std::map<std::string, util::Mat4> cameras{
-    {"upperAngle", rotate(Vec3(1, 0, 0), -40) * rotate(Vec3(0, 1, 0), -45) *
-                       translate(Vec3(-6, 10, 10))},
+    {"upperAngle", rotate(Vec3(1, 0, 0), -25) * translate(Vec3(0, 26, 50))},
     //{"lowerAngle", rotate(Vec3(1, 0, 0), 15) * translate(Vec3(0.5, 0.2, 6))},
     //{"topDown", rotate(Vec3(1, 0, 0), -90) * rotate(Vec3(1, 0, 0), 0)
     //*translate(Vec3(0, 7, 0))},
