@@ -11,3 +11,11 @@
 - Compile the code
   > cl.exe /Zi /EHsc /Fe: bin/raytracer.exe RayTracer/*.cpp Raytracer/tools/*.cpp Raytracer/camera/*.cpp Raytracer/material/*.cpp Raytracer/material/texture/*.cpp Raytracer/sampling/*.cpp Raytracer/shape/*.cpp Raytracer/testing/*.cpp /Fo:bin/ /Fd:bin/vs140.fdb /std:c++17 /MP
 - Executable at *\bin\raytracer.exe*
+
+
+#### Branches
+- *chess*: For the chessboard scene
+- *daysky*: For the daylight scenes
+- *indoor*: For the indoor scenes
+- *outdoor*: For the outdoor scenes
+- *master_counting*: Implemented the counting of rays
